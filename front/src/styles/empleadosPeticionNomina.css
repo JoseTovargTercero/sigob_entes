@@ -1,0 +1,67 @@
+.employee-nom-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.employee-nom-group button {
+  font-size: 12px;
+}
+
+.employee-nom-group select {
+  width: 100%;
+  text-overflow: ellipsis;
+
+  /* scrollbar-width: none; */
+}
+
+.request-step-container {
+  display: grid;
+  grid-template-rows: 50px 1fr 80px;
+}
+
+.request-step {
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+
+  flex-direction: column;
+}
+
+.request-table-container {
+  width: 100%;
+  padding: 1rem;
+
+  gap: 1rem;
+  min-height: 300px;
+}
+
+/* COMPARACIÓN DE PETICIONES */
+
+.request-comparation-container {
+  width: 100%;
+  gap: 1rem;
+  min-height: 300px;
+}
+#request-comparation-container table {
+  font-size: 12px;
+}
+
+#request-comparation-container table .table-blue-gray {
+  background-color: #e3edff;
+}
+
+.request-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  align-items: start;
+  justify-items: center;
+}
+.request-list-container table {
+  font-size: 12px;
+}
+
+.request-list-container table td {
+}
