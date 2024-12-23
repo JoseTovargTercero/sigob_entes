@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-11-2024 a las 02:33:42
+-- Tiempo de generación: 23-12-2024 a las 14:44:53
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 7.4.33
 
@@ -807,8 +807,11 @@ INSERT INTO `categorias` (`id`, `categoria`, `categoria_nombre`) VALUES
 CREATE TABLE `compromisos` (
   `id` int(255) NOT NULL,
   `correlativo` varchar(255) DEFAULT NULL,
-  `tipo` varchar(255) DEFAULT NULL,
-  `id_registro` int(255) NOT NULL
+  `descripcion` longtext DEFAULT NULL,
+  `id_registro` int(255) NOT NULL,
+  `id_ejercicio` int(255) NOT NULL,
+  `tabla_registro` longtext NOT NULL,
+  `numero_compromiso` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -3996,6 +3999,7 @@ INSERT INTO `empleados_por_grupo` (`id`, `id_empleado`, `id_grupo`, `status`) VA
 
 CREATE TABLE `entes` (
   `id` int(11) NOT NULL,
+  `partida` int(255) NOT NULL,
   `sector` varchar(10) NOT NULL,
   `programa` varchar(10) NOT NULL,
   `proyecto` varchar(10) NOT NULL,
@@ -4008,73 +4012,73 @@ CREATE TABLE `entes` (
 -- Volcado de datos para la tabla `entes`
 --
 
-INSERT INTO `entes` (`id`, `sector`, `programa`, `proyecto`, `actividad`, `ente_nombre`, `tipo_ente`) VALUES
-(1, '1', '1', '0', '51', 'CONSEJO LEGISLATIVO', 'J'),
-(2, '1', '2', '0', '51', 'CONTRALORIA GENERAL DEL ESTADO', 'J'),
-(3, '1', '3', '0', '51', 'PROCURADORIA GENERAL', 'J'),
-(4, '1', '4', '0', '51', 'SECRETARIA DEL DESPACHO DEL GOBERNADOR YSECRETARIA DE LA GESTION PUBLICA', 'J'),
-(5, '1', '5', '0', '51', 'SECRETARIA GENERAL DE GOBIERNO', 'J'),
-(6, '1', '6', '0', '51', 'SECRETARIA EJECUTIVA DE GESTION HUMANO', 'J'),
-(7, '1', '7', '0', '51', 'SECRETARIA DE PLANIFICACION, PROYECTO Y PRESUPUESTO', 'J'),
-(8, '1', '8', '0', '51', 'SERVICIOS DE ADMINISTRACION', 'J'),
-(9, '1', '9', '0', '51', 'TESORERIA', 'J'),
-(10, '1', '10', '0', '51', 'SECRETARIA EJECUTIVA INDIGENA', 'J'),
-(11, '1', '11', '0', '51', 'AUDITORIA INTERNA', 'J'),
-(12, '2', '14', '0', '51', 'COORDINACION DE SERVICIOS POLICIALES', 'J'),
-(13, '2', '15', '0', '51', 'SECRETARIA DE POLITICA DE ASUNTOS FRONTERIZOS', 'J'),
-(14, '2', '16', '0', '51', 'PROTECCION CIVIL', 'J'),
-(15, '2', '17', '0', '51', 'PREVENCION Y CONTROL DE SINIESTRO (BOMBEROS)', 'J'),
-(16, '3', '18', '0', '51', 'SECREATARIA DE TURISMO', 'J'),
-(18, '4', '21', '0', '51', 'SEC. EJEC. PARA LA ATENCION DE  LA JUVENTUD Y ESTUDIANTE UNIVERSITARIO', 'J'),
-(19, '5', '22', '0', '51', 'SEC. EJEC.DEL SISTEMA DE INFOR. COM. ( SICOAMA)', 'J'),
-(21, '5', '24', '0', '51', 'SECRETARIA DE CULTURA', 'J'),
-(22, '6', '26', '0', '51', 'SECRETARIA DE INFRAESTRUCTURA', 'J'),
-(23, '7', '28', '0', '51', 'ADMINISTRATIVOS MALARIOLOGIA-GOBERNACION', 'J'),
-(24, '8', '29', '0', '51', 'SECRETARIA Y COORDINACION', 'J'),
-(25, '8', '32', '0', '51', 'PROTECCION SOCIAL', 'J'),
-(26, '9', '33', '0', '51', 'CONTRATACION COLECTIVA DE EMPLEADOS', 'J'),
-(28, '1', '13', '0', '51', 'SECREATARIA EJECUTIVA DE BIENES Y SERVICIOS', 'J'),
-(29, '10', '34', '0', '51', 'AMAVISION', 'D'),
-(30, '10', '34', '0', '51', 'FUNDACION ORQUESTA SINFONICA JUVENIL E INFANTIL DE AMAZONAS', 'D'),
-(31, '10', '34', '0', '51', 'FUNDACION CULTURAL ESCUELA ACADEMICA DE ORQUESTAS Y BANDAS DE AMAZONAS', 'D'),
-(32, '10', '34', '0', '51', 'ESCUELA INTEGRAL DE DANZAS', 'D'),
-(33, '10', '34', '0', '51', 'FUNDAPRODICAM', 'D'),
-(34, '10', '34', '0', '51', 'SUPERINTENDENCIA DE ADMINISTRACION TRIBUTARIA DEL ESTADO AMAZONAS (SATEAMAZ)', 'D'),
-(35, '10', '34', '0', '51', 'MUSEO ETNOLOGICO', 'D'),
-(36, '10', '34', '0', '51', 'INSTITUTO REGIONAL DE DEPORTE AMAZONAS (I.R.D.A)', 'D'),
-(37, '10', '34', '0', '51', 'U.N.A', 'D'),
-(38, '10', '34', '0', '51', 'BIBLIOTECA PUBLICA SIMON RODRIGUEZ', 'D'),
-(39, '10', '34', '0', '51', 'AMAZONAS F.C', 'D'),
-(40, '10', '34', '0', '51', 'UNIVERSIDAD EXPERIMENTAL POLITECNICA DE LA FUERZA ARMADA NACIONAL NUCLEO AMAZONAS', 'D'),
-(41, '10', '34', '0', '51', 'UPEL', 'D'),
-(42, '10', '34', '0', '51', 'FUNDACIONIHIRU', 'D'),
-(43, '10', '34', '0', '51', 'FUNDA SALUD', 'D'),
-(44, '10', '34', '0', '51', 'HOSPITAL DR. JOSE GREGORIO HERNANDEZ', 'D'),
-(45, '10', '34', '0', '51', 'A.C. HERMANAS DE JESUS RESUCITADO CASA HOGAR \"CARMEN MARTINEZ\"', 'D'),
-(46, '10', '34', '0', '51', 'SIUMA', 'D'),
-(47, '10', '34', '0', '51', 'FUNDACION PARA LA ATENCION INTEGRAL A LA MUJER DE AMAZONAS', 'D'),
-(48, '10', '34', '0', '51', 'FUNDACION DE SISTEMA DE ATENCION INTEGRAL PARA LAS PERSONAS CON DISCAPACIDAD (SAIPDIS)', 'D'),
-(49, '10', '34', '0', '51', 'FUNDACION CENTRO DE HISTORIA DE LA IDENTIDAD AMAZONENCE', 'D'),
-(50, '10', '34', '0', '51', 'INVIOBRAS AMAZONAS', 'D'),
-(51, '10', '34', '0', '51', 'FUNDACION PROMO-AMAZONAS', 'D'),
-(52, '10', '34', '0', '51', 'INSCATA', 'D'),
-(53, '10', '34', '0', '51', 'LUBRICANTES AMAZONAS C.A', 'D'),
-(54, '10', '34', '0', '51', 'ALIMENTOS AMAZONAS C.A', 'D'),
-(55, '10', '34', '0', '51', 'HIDROAMAZONAS C.A', 'D'),
-(56, '10', '34', '0', '51', 'ASFALTO Y PAVIMENTOS AMAZONAS C.A', 'D'),
-(57, '10', '34', '0', '51', 'COMBUSTIBLES AMAZONAS C.A', 'D'),
-(58, '10', '34', '0', '51', 'SANEAMIENTO AMBIENTAL C.A', 'D'),
-(59, '10', '34', '0', '51', 'BLOQUES Y AGREGADOS AMAZONAS C.A', 'D'),
-(60, '10', '34', '0', '51', 'TEXTILES AMAZONAS C.A', 'D'),
-(61, '10', '34', '0', '51', 'ACUARIOS AMAZONAS', 'D'),
-(62, '10', '34', '0', '51', 'EXPORTADORA AMAZONAS C.A', 'D'),
-(63, '10', '34', '0', '51', 'GAS COMUNAL AMAZONAS C.A', 'D'),
-(64, '10', '34', '0', '51', 'FARMA-AMAZONAS C.A', 'D'),
-(65, '10', '34', '0', '51', 'EMPRESA FLUVIALES AMAZONAS C.A', 'D'),
-(66, '10', '34', '0', '51', 'EMPRESA PUBLICA DE AMAZONAS C.A', 'D'),
-(67, '10', '34', '0', '51', 'EMPRESA DE SERVICIOS Y MANTENIMIENTO GENERALES AMAZONAS C.A (SERVIAMAZONAS)', 'D'),
-(68, '10', '34', '0', '51', 'EMPRESA DE TURISMO', 'D'),
-(70, '10', '34', '0', '51', 'VICARIATO APOSTOLICO', 'D');
+INSERT INTO `entes` (`id`, `partida`, `sector`, `programa`, `proyecto`, `actividad`, `ente_nombre`, `tipo_ente`) VALUES
+(1, 1, '1', '1', '0', '51', 'CONSEJO LEGISLATIVO', 'J'),
+(2, 0, '1', '2', '0', '51', 'CONTRALORIA GENERAL DEL ESTADO', 'J'),
+(3, 0, '1', '3', '0', '51', 'PROCURADORIA GENERAL', 'J'),
+(4, 0, '1', '4', '0', '51', 'SECRETARIA DEL DESPACHO DEL GOBERNADOR YSECRETARIA DE LA GESTION PUBLICA', 'J'),
+(5, 0, '1', '5', '0', '51', 'SECRETARIA GENERAL DE GOBIERNO', 'J'),
+(6, 0, '1', '6', '0', '51', 'SECRETARIA EJECUTIVA DE GESTION HUMANO', 'J'),
+(7, 0, '1', '7', '0', '51', 'SECRETARIA DE PLANIFICACION, PROYECTO Y PRESUPUESTO', 'J'),
+(8, 0, '1', '8', '0', '51', 'SERVICIOS DE ADMINISTRACION', 'J'),
+(9, 0, '1', '9', '0', '51', 'TESORERIA', 'J'),
+(10, 0, '1', '10', '0', '51', 'SECRETARIA EJECUTIVA INDIGENA', 'J'),
+(11, 0, '1', '11', '0', '51', 'AUDITORIA INTERNA', 'J'),
+(12, 0, '2', '14', '0', '51', 'COORDINACION DE SERVICIOS POLICIALES', 'J'),
+(13, 0, '2', '15', '0', '51', 'SECRETARIA DE POLITICA DE ASUNTOS FRONTERIZOS', 'J'),
+(14, 0, '2', '16', '0', '51', 'PROTECCION CIVIL', 'J'),
+(15, 0, '2', '17', '0', '51', 'PREVENCION Y CONTROL DE SINIESTRO (BOMBEROS)', 'J'),
+(16, 0, '3', '18', '0', '51', 'SECREATARIA DE TURISMO', 'J'),
+(18, 0, '4', '21', '0', '51', 'SEC. EJEC. PARA LA ATENCION DE  LA JUVENTUD Y ESTUDIANTE UNIVERSITARIO', 'J'),
+(19, 0, '5', '22', '0', '51', 'SEC. EJEC.DEL SISTEMA DE INFOR. COM. ( SICOAMA)', 'J'),
+(21, 0, '5', '24', '0', '51', 'SECRETARIA DE CULTURA', 'J'),
+(22, 0, '6', '26', '0', '51', 'SECRETARIA DE INFRAESTRUCTURA', 'J'),
+(23, 0, '7', '28', '0', '51', 'ADMINISTRATIVOS MALARIOLOGIA-GOBERNACION', 'J'),
+(24, 0, '8', '29', '0', '51', 'SECRETARIA Y COORDINACION', 'J'),
+(25, 0, '8', '32', '0', '51', 'PROTECCION SOCIAL', 'J'),
+(26, 0, '9', '33', '0', '51', 'CONTRATACION COLECTIVA DE EMPLEADOS', 'J'),
+(28, 0, '1', '13', '0', '51', 'SECREATARIA EJECUTIVA DE BIENES Y SERVICIOS', 'J'),
+(29, 0, '10', '34', '0', '51', 'AMAVISION', 'D'),
+(30, 0, '10', '34', '0', '51', 'FUNDACION ORQUESTA SINFONICA JUVENIL E INFANTIL DE AMAZONAS', 'D'),
+(31, 0, '10', '34', '0', '51', 'FUNDACION CULTURAL ESCUELA ACADEMICA DE ORQUESTAS Y BANDAS DE AMAZONAS', 'D'),
+(32, 0, '10', '34', '0', '51', 'ESCUELA INTEGRAL DE DANZAS', 'D'),
+(33, 0, '10', '34', '0', '51', 'FUNDAPRODICAM', 'D'),
+(34, 0, '10', '34', '0', '51', 'SUPERINTENDENCIA DE ADMINISTRACION TRIBUTARIA DEL ESTADO AMAZONAS (SATEAMAZ)', 'D'),
+(35, 0, '10', '34', '0', '51', 'MUSEO ETNOLOGICO', 'D'),
+(36, 0, '10', '34', '0', '51', 'INSTITUTO REGIONAL DE DEPORTE AMAZONAS (I.R.D.A)', 'D'),
+(37, 0, '10', '34', '0', '51', 'U.N.A', 'D'),
+(38, 0, '10', '34', '0', '51', 'BIBLIOTECA PUBLICA SIMON RODRIGUEZ', 'D'),
+(39, 0, '10', '34', '0', '51', 'AMAZONAS F.C', 'D'),
+(40, 0, '10', '34', '0', '51', 'UNIVERSIDAD EXPERIMENTAL POLITECNICA DE LA FUERZA ARMADA NACIONAL NUCLEO AMAZONAS', 'D'),
+(41, 0, '10', '34', '0', '51', 'UPEL', 'D'),
+(42, 0, '10', '34', '0', '51', 'FUNDACIONIHIRU', 'D'),
+(43, 0, '10', '34', '0', '51', 'FUNDA SALUD', 'D'),
+(44, 0, '10', '34', '0', '51', 'HOSPITAL DR. JOSE GREGORIO HERNANDEZ', 'D'),
+(45, 0, '10', '34', '0', '51', 'A.C. HERMANAS DE JESUS RESUCITADO CASA HOGAR \"CARMEN MARTINEZ\"', 'D'),
+(46, 0, '10', '34', '0', '51', 'SIUMA', 'D'),
+(47, 0, '10', '34', '0', '51', 'FUNDACION PARA LA ATENCION INTEGRAL A LA MUJER DE AMAZONAS', 'D'),
+(48, 0, '10', '34', '0', '51', 'FUNDACION DE SISTEMA DE ATENCION INTEGRAL PARA LAS PERSONAS CON DISCAPACIDAD (SAIPDIS)', 'D'),
+(49, 0, '10', '34', '0', '51', 'FUNDACION CENTRO DE HISTORIA DE LA IDENTIDAD AMAZONENCE', 'D'),
+(50, 0, '10', '34', '0', '51', 'INVIOBRAS AMAZONAS', 'D'),
+(51, 0, '10', '34', '0', '51', 'FUNDACION PROMO-AMAZONAS', 'D'),
+(52, 0, '10', '34', '0', '51', 'INSCATA', 'D'),
+(53, 0, '10', '34', '0', '51', 'LUBRICANTES AMAZONAS C.A', 'D'),
+(54, 0, '10', '34', '0', '51', 'ALIMENTOS AMAZONAS C.A', 'D'),
+(55, 0, '10', '34', '0', '51', 'HIDROAMAZONAS C.A', 'D'),
+(56, 0, '10', '34', '0', '51', 'ASFALTO Y PAVIMENTOS AMAZONAS C.A', 'D'),
+(57, 0, '10', '34', '0', '51', 'COMBUSTIBLES AMAZONAS C.A', 'D'),
+(58, 0, '10', '34', '0', '51', 'SANEAMIENTO AMBIENTAL C.A', 'D'),
+(59, 0, '10', '34', '0', '51', 'BLOQUES Y AGREGADOS AMAZONAS C.A', 'D'),
+(60, 0, '10', '34', '0', '51', 'TEXTILES AMAZONAS C.A', 'D'),
+(61, 0, '10', '34', '0', '51', 'ACUARIOS AMAZONAS', 'D'),
+(62, 0, '10', '34', '0', '51', 'EXPORTADORA AMAZONAS C.A', 'D'),
+(63, 0, '10', '34', '0', '51', 'GAS COMUNAL AMAZONAS C.A', 'D'),
+(64, 0, '10', '34', '0', '51', 'FARMA-AMAZONAS C.A', 'D'),
+(65, 0, '10', '34', '0', '51', 'EMPRESA FLUVIALES AMAZONAS C.A', 'D'),
+(66, 0, '10', '34', '0', '51', 'EMPRESA PUBLICA DE AMAZONAS C.A', 'D'),
+(67, 0, '10', '34', '0', '51', 'EMPRESA DE SERVICIOS Y MANTENIMIENTO GENERALES AMAZONAS C.A (SERVIAMAZONAS)', 'D'),
+(68, 0, '10', '34', '0', '51', 'EMPRESA DE TURISMO', 'D'),
+(70, 0, '10', '34', '0', '51', 'VICARIATO APOSTOLICO', 'D');
 
 -- --------------------------------------------------------
 
@@ -4084,6 +4088,7 @@ INSERT INTO `entes` (`id`, `sector`, `programa`, `proyecto`, `actividad`, `ente_
 
 CREATE TABLE `entes_dependencias` (
   `id` int(255) NOT NULL,
+  `partida` int(255) NOT NULL,
   `ue` varchar(10) DEFAULT NULL,
   `sector` varchar(10) DEFAULT NULL,
   `programa` varchar(10) DEFAULT NULL,
@@ -4097,132 +4102,132 @@ CREATE TABLE `entes_dependencias` (
 -- Volcado de datos para la tabla `entes_dependencias`
 --
 
-INSERT INTO `entes_dependencias` (`id`, `ue`, `sector`, `programa`, `proyecto`, `actividad`, `ente_nombre`, `tipo_ente`) VALUES
-(5, '4', '1', '4', '0', '52', 'SECRETARIA EJECUTIVA', 'J'),
-(6, '4', '1', '4', '0', '53', 'CONTRATACIONES PUBLICAS', 'J'),
-(7, '4', '1', '4', '0', '54', 'ASESORIA JURIDICA', 'J'),
-(9, '5', '1', '5', '0', '52', 'SERVICIOS DE INFORMACION Y CUSTODIA DE DOCUMENTOS', 'J'),
-(10, '5', '1', '5', '0', '53', 'ASESORAMIENTO JURIDICO', 'J'),
-(11, '5', '1', '5', '0', '54', 'ASUNTOS POLITICOS', 'J'),
-(12, '5', '1', '5', '0', '55', 'OFICINA DEL FONDO DE COMPENSACION INTERRITORIAL', 'J'),
-(14, '6', '1', '6', '0', '52', 'RECLUTAMIENTO Y SELECCION Y EVALUACION DE PERSONAL', 'J'),
-(15, '6', '1', '6', '0', '53', 'REGISTRO Y CONTROL', 'J'),
-(16, '6', '1', '6', '0', '54', 'PREVISION SOCIAL', 'J'),
-(17, '6', '1', '6', '0', '55', 'RELACIONES LABORALES', 'J'),
-(18, '6', '1', '6', '0', '56', 'AUDITORIA, CONTROL Y FISCALIZACION LABORAL', 'J'),
-(19, '6', '1', '6', '0', '57', 'SEGURO SOCIAL', 'J'),
-(20, '6', '1', '6', '0', '58', 'ELABORACION PROCESAMIENTO Y GENERACION DE NOMINAS', 'J'),
-(22, '7', '1', '7', '0', '52', 'FORMULACION Y EVALUACION PRESUPUESTARIA', 'J'),
-(23, '7', '1', '7', '0', '53', 'CONTROL Y EJECUCION PRESUPUESTARIA', 'J'),
-(24, '7', '1', '7', '0', '54', 'PLANIFICACION Y EVALUACION DE PROYECTOS', 'J'),
-(25, '7', '1', '7', '0', '55', 'INFORMATICA', 'J'),
-(27, '8', '1', '8', '0', '52', 'SERVICIOS CONTABLES', 'J'),
-(28, '8', '1', '8', '0', '53', 'SERVICIOS DE COMPRAS Y SUMINISTROS', 'J'),
-(29, '8', '1', '8', '0', '54', 'OFICINA DE BINES Y SERVICIOS', 'J'),
-(31, '9', '1', '9', '0', '52', 'SERVICIOS CONTABLES DEL TESORO', 'J'),
-(32, '9', '1', '9', '0', '53', 'UNIDAD DE ORDENAMIENTO DE PAGO', 'J'),
-(33, '9', '1', '9', '0', '54', 'SERVICIO DE APOYO FISCAL', 'J'),
-(36, '11', '1', '11', '0', '52', 'OFICINA DE CONTROL POSTERIOR', 'J'),
-(37, '11', '1', '11', '0', '53', 'OFICINA DE  DETERMINACION DE RESPONSABILIDAD', 'J'),
-(39, '28', '1', '13', '0', '52', 'OFICINA DE REGISTRO Y CONTROL DE BIENES MUEBLES E INMUEBLES', 'J'),
-(40, '28', '1', '13', '0', '53', 'OFICINA DE CONTABILIDAD', 'J'),
-(41, '28', '1', '13', '0', '54', 'OFICINA DE INVENTARIOS', 'J'),
-(42, '28', '1', '13', '0', '55', 'SEGURIDAD Y VIGILANCIA', 'J'),
-(44, '12', '2', '14', '0', '52', 'CIRMIL', 'J'),
-(49, '16', '3', '18', '0', '52', 'OPERADORES TURISTICO Y EMPRENDEDORES', 'J'),
-(50, '16', '3', '18', '0', '53', 'PROMOCION Y COMUNICACIÓN', 'J'),
-(51, '16', '3', '18', '0', '54', 'INSPECTOR DE TURISMO', 'J'),
-(52, '17', '4', '20', '0', '52', 'JUBILADOS Y PENSIONADOS DE EDUCACION', 'J'),
-(54, '18', '4', '21', '0', '52', 'ASUNTOS DE LA JUVENTUD', 'J'),
-(55, '18', '4', '21', '0', '53', 'JEFATURA DE LOS ESTUDIANTES', 'J'),
-(56, '18', '4', '21', '0', '54', 'ORIENTACION Y PREVENCION A LOS ESTUDIANTES', 'J'),
-(58, '19', '5', '22', '0', '52', 'JEFATURA DE PRENSA', 'J'),
-(59, '19', '5', '22', '0', '53', 'JEFATURA COMUNICACIÓN DIGITAL', 'J'),
-(60, '19', '5', '22', '0', '54', 'JEFATURA DE DISEÑO Y PUBLICIDAD', 'J'),
-(61, '19', '5', '22', '0', '55', 'OFICINA DE REDES SOCIALES', 'J'),
-(64, '21', '5', '24', '0', '57', 'CONTRUCCION Y MEJORAMIENTO DE OBRAS EN BINES PARA EL DESARROLLO CULTURAL (FCI)', 'J'),
-(66, '22', '6', '26', '0', '52', 'DIVISION DE SUPERVICION Y EVALUACION DE PROYECTO', 'J'),
-(67, '22', '6', '26', '0', '53', 'DIVISION DE INFORMATICA, REGISTRO Y CONTROL', 'J'),
-(68, '22', '6', '26', '0', '54', 'ASESORIA LEGAL', 'J'),
-(69, '22', '6', '27', '1', '57', 'CONTRUCCION Y MEJORAMIENTO DE OBRAS  (FCI)', 'J'),
-(71, '23', '7', '28', '0', '52', 'CONTRATACION COLECTIVA OBREROS DE LA SALUD', 'J'),
-(72, '23', '7', '28', '1', '57', 'CONTRUCCION Y MEJORAS DE OBRAS EN BIENES PARA EL FORTALECIMIENTO DE LA SALUD (FCI)', 'J'),
-(74, '24', '8', '29', '0', '52', 'JEFATRA DE SOLUCION DE CONFLICTOS', 'J'),
-(75, '24', '8', '29', '0', '53', 'GESTION COMUNAL', 'J'),
-(76, '24', '8', '29', '0', '54', 'FORMACION Y ASESORIA LEGAL', 'J'),
-(78, '25', '8', '32', '0', '52', 'PROGRAMAS SOCIALES', 'J'),
-(79, '25', '8', '32', '0', '53', 'ATENCION AL SERVIDOR PUBLICO', 'J'),
-(80, '25', '8', '32', '0', '54', 'GESTION INSTITUCIONAL', 'J'),
-(82, '26', '9', '33', '0', '52', 'CONTRATACION COLECTIVA DE OBREROS DE INFRAESTRUCTURA', 'J'),
-(83, '26', '9', '33', '0', '53', 'PENSIONADOS Y JUBILADOS', 'J'),
-(84, '26', '9', '33', '0', '54', 'CONTRATADOS GOBERNACION', 'J'),
-(85, '26', '9', '33', '0', '55', 'PERSONAL DIRECTIVO DE ALTO NIVEL Y JEFATURAS', 'J'),
-(130, '1', '1', '1', '0', '51', 'CONSEJO LEGISLATIVO', 'J'),
-(131, '2', '1', '2', '0', '51', 'CONTRALORIA GENERAL DEL ESTADO', 'J'),
-(132, '3', '1', '3', '0', '51', 'PROCURADORIA GENERAL', 'J'),
-(133, '4', '1', '4', '0', '51', 'SECRETARIA DEL DESPACHO DEL GOBERNADOR Y SECRETARIA DE LA GESTION PUBLICA', 'J'),
-(134, '5', '1', '5', '0', '51', 'SECRETARIA GENERAL DE GOBIERNO', 'J'),
-(135, '6', '1', '6', '0', '51', 'SECRETARIA EJECUTIVA DE GESTION HUMANO', 'J'),
-(136, '7', '1', '7', '0', '51', 'SECRETARIA DE PLANIFICACION, PROYECTO Y PRESUPUESTO', 'J'),
-(137, '8', '1', '8', '0', '51', 'SERVICIOS DE ADMINISTRACION', 'J'),
-(138, '9', '1', '9', '0', '51', 'TESORERIA', 'J'),
-(139, '10', '1', '10', '0', '51', 'SECRETARIA EJECUTIVA INDIGENA', 'J'),
-(140, '11', '1', '11', '0', '51', 'AUDITORIA INTERNA', 'J'),
-(141, '12', '2', '14', '0', '51', 'COORDINACION DE SERVICIOS POLICIALES', 'J'),
-(142, '13', '2', '15', '0', '51', 'SECRETARIA DE POLITICA DE ASUNTOS FRONTERIZOS', 'J'),
-(143, '14', '2', '16', '0', '51', 'PROTECCION CIVIL', 'J'),
-(144, '15', '2', '17', '0', '51', 'PREVENCION Y CONTROL DE SINIESTRO (BOMBEROS)', 'J'),
-(145, '16', '3', '18', '0', '51', 'SECRETARIA DE TURISMO', 'J'),
-(146, '18', '4', '21', '0', '51', 'SEC. EJEC. PARA LA ATENCION DE LA JUVENTUD Y ESTUDIANTE UNIVERSITARIO', 'J'),
-(147, '19', '5', '22', '0', '51', 'SEC. EJEC. DEL SISTEMA DE INFOR. COM. (SICOAMA)', 'J'),
-(148, '21', '5', '24', '0', '51', 'SECRETARIA DE CULTURA', 'J'),
-(149, '22', '6', '26', '0', '51', 'SECRETARIA DE INFRAESTRUCTURA', 'J'),
-(150, '23', '7', '28', '0', '51', 'ADMINISTRATIVOS MALARIOLOGIA-GOBERNACION', 'J'),
-(151, '24', '8', '29', '0', '51', 'SECRETARIA Y COORDINACION', 'J'),
-(152, '25', '8', '32', '0', '51', 'PROTECCION SOCIAL', 'J'),
-(153, '26', '9', '33', '0', '51', 'CONTRATACION COLECTIVA DE EMPLEADOS', 'J'),
-(154, '28', '1', '13', '0', '51', 'SECRETARIA EJECUTIVA DE BIENES Y SERVICIOS', 'J'),
-(155, '29', '10', '34', '0', '51', 'AMAVISION', 'D'),
-(156, '30', '10', '34', '0', '51', 'FUNDACION ORQUESTA SINFONICA JUVENIL E INFANTIL DE AMAZONAS', 'D'),
-(157, '31', '10', '34', '0', '51', 'FUNDACION CULTURAL ESCUELA ACADEMICA DE ORQUESTAS Y BANDAS DE AMAZONAS', 'D'),
-(158, '32', '10', '34', '0', '51', 'ESCUELA INTEGRAL DE DANZAS', 'D'),
-(159, '33', '10', '34', '0', '51', 'FUNDAPRODICAM', 'D'),
-(160, '34', '10', '34', '0', '51', 'SUPERINTENDENCIA DE ADMINISTRACION TRIBUTARIA DEL ESTADO AMAZONAS (SATEAMAZ)', 'D'),
-(161, '35', '10', '34', '0', '51', 'MUSEO ETNOLOGICO', 'D'),
-(162, '36', '10', '34', '0', '51', 'INSTITUTO REGIONAL DE DEPORTE AMAZONAS (I.R.D.A)', 'D'),
-(163, '37', '10', '34', '0', '51', 'U.N.A', 'D'),
-(164, '38', '10', '34', '0', '51', 'BIBLIOTECA PUBLICA SIMON RODRIGUEZ', 'D'),
-(165, '39', '10', '34', '0', '51', 'AMAZONAS F.C', 'D'),
-(166, '40', '10', '34', '0', '51', 'UNIVERSIDAD EXPERIMENTAL POLITECNICA DE LA FUERZA ARMADA NACIONAL NUCLEO AMAZONAS', 'D'),
-(167, '41', '10', '34', '0', '51', 'UPEL', 'D'),
-(168, '42', '10', '34', '0', '51', 'FUNDACIONIHIRU', 'D'),
-(169, '43', '10', '34', '0', '51', 'FUNDA SALUD', 'D'),
-(170, '44', '10', '34', '0', '51', 'HOSPITAL DR. JOSE GREGORIO HERNANDEZ', 'D'),
-(171, '45', '10', '34', '0', '51', 'A.C. HERMANAS DE JESUS RESUCITADO CASA HOGAR \"CARMEN MARTINEZ\"', 'D'),
-(172, '46', '10', '34', '0', '51', 'SIUMA', 'D'),
-(173, '47', '10', '34', '0', '51', 'FUNDACION PARA LA ATENCION INTEGRAL A LA MUJER DE AMAZONAS', 'D'),
-(174, '48', '10', '34', '0', '51', 'FUNDACION DE SISTEMA DE ATENCION INTEGRAL PARA LAS PERSONAS CON DISCAPACIDAD (SAIPDIS)', 'D'),
-(175, '49', '10', '34', '0', '51', 'FUNDACION CENTRO DE HISTORIA DE LA IDENTIDAD AMAZONENCE', 'D'),
-(176, '50', '10', '34', '0', '51', 'INVIOBRAS AMAZONAS', 'D'),
-(177, '51', '10', '34', '0', '51', 'FUNDACION PROMO-AMAZONAS', 'D'),
-(178, '52', '10', '34', '0', '51', 'INSCATA', 'D'),
-(179, '53', '10', '34', '0', '51', 'LUBRICANTES AMAZONAS C.A', 'D'),
-(180, '54', '10', '34', '0', '51', 'ALIMENTOS AMAZONAS C.A', 'D'),
-(181, '55', '10', '34', '0', '51', 'HIDROAMAZONAS C.A', 'D'),
-(182, '56', '10', '34', '0', '51', 'ASFALTO Y PAVIMENTOS AMAZONAS C.A', 'D'),
-(183, '57', '10', '34', '0', '51', 'COMBUSTIBLES AMAZONAS C.A', 'D'),
-(184, '58', '10', '34', '0', '51', 'SANEAMIENTO AMBIENTAL C.A', 'D'),
-(185, '59', '10', '34', '0', '51', 'BLOQUES Y AGREGADOS AMAZONAS C.A', 'D'),
-(186, '60', '10', '34', '0', '51', 'TEXTILES AMAZONAS C.A', 'D'),
-(187, '61', '10', '34', '0', '51', 'ACUARIOS AMAZONAS', 'D'),
-(188, '62', '10', '34', '0', '51', 'EXPORTADORA AMAZONAS C.A', 'D'),
-(189, '63', '10', '34', '0', '51', 'GAS COMUNAL AMAZONAS C.A', 'D'),
-(190, '64', '10', '34', '0', '51', 'FARMA-AMAZONAS C.A', 'D'),
-(191, '65', '10', '34', '0', '51', 'EMPRESA FLUVIALES AMAZONAS C.A', 'D'),
-(192, '66', '10', '34', '0', '51', 'EMPRESA PUBLICA DE AMAZONAS C.A', 'D'),
-(193, '67', '10', '34', '0', '51', 'EMPRESA DE SERVICIOS Y MANTENIMIENTO GENERALES AMAZONAS C.A (SERVIAMAZONAS)', 'D'),
-(194, '68', '10', '34', '0', '51', 'EMPRESA DE TURISMO', 'D'),
-(195, '70', '10', '34', '0', '51', 'VICARIATO APOSTOLICO', 'D');
+INSERT INTO `entes_dependencias` (`id`, `partida`, `ue`, `sector`, `programa`, `proyecto`, `actividad`, `ente_nombre`, `tipo_ente`) VALUES
+(5, 1, '4', '1', '4', '0', '52', 'SECRETARIA EJECUTIVA', 'J'),
+(6, 0, '4', '1', '4', '0', '53', 'CONTRATACIONES PUBLICAS', 'J'),
+(7, 0, '4', '1', '4', '0', '54', 'ASESORIA JURIDICA', 'J'),
+(9, 0, '5', '1', '5', '0', '52', 'SERVICIOS DE INFORMACION Y CUSTODIA DE DOCUMENTOS', 'J'),
+(10, 0, '5', '1', '5', '0', '53', 'ASESORAMIENTO JURIDICO', 'J'),
+(11, 0, '5', '1', '5', '0', '54', 'ASUNTOS POLITICOS', 'J'),
+(12, 0, '5', '1', '5', '0', '55', 'OFICINA DEL FONDO DE COMPENSACION INTERRITORIAL', 'J'),
+(14, 0, '6', '1', '6', '0', '52', 'RECLUTAMIENTO Y SELECCION Y EVALUACION DE PERSONAL', 'J'),
+(15, 0, '6', '1', '6', '0', '53', 'REGISTRO Y CONTROL', 'J'),
+(16, 0, '6', '1', '6', '0', '54', 'PREVISION SOCIAL', 'J'),
+(17, 0, '6', '1', '6', '0', '55', 'RELACIONES LABORALES', 'J'),
+(18, 0, '6', '1', '6', '0', '56', 'AUDITORIA, CONTROL Y FISCALIZACION LABORAL', 'J'),
+(19, 0, '6', '1', '6', '0', '57', 'SEGURO SOCIAL', 'J'),
+(20, 0, '6', '1', '6', '0', '58', 'ELABORACION PROCESAMIENTO Y GENERACION DE NOMINAS', 'J'),
+(22, 0, '7', '1', '7', '0', '52', 'FORMULACION Y EVALUACION PRESUPUESTARIA', 'J'),
+(23, 0, '7', '1', '7', '0', '53', 'CONTROL Y EJECUCION PRESUPUESTARIA', 'J'),
+(24, 0, '7', '1', '7', '0', '54', 'PLANIFICACION Y EVALUACION DE PROYECTOS', 'J'),
+(25, 0, '7', '1', '7', '0', '55', 'INFORMATICA', 'J'),
+(27, 0, '8', '1', '8', '0', '52', 'SERVICIOS CONTABLES', 'J'),
+(28, 0, '8', '1', '8', '0', '53', 'SERVICIOS DE COMPRAS Y SUMINISTROS', 'J'),
+(29, 0, '8', '1', '8', '0', '54', 'OFICINA DE BINES Y SERVICIOS', 'J'),
+(31, 0, '9', '1', '9', '0', '52', 'SERVICIOS CONTABLES DEL TESORO', 'J'),
+(32, 0, '9', '1', '9', '0', '53', 'UNIDAD DE ORDENAMIENTO DE PAGO', 'J'),
+(33, 0, '9', '1', '9', '0', '54', 'SERVICIO DE APOYO FISCAL', 'J'),
+(36, 0, '11', '1', '11', '0', '52', 'OFICINA DE CONTROL POSTERIOR', 'J'),
+(37, 0, '11', '1', '11', '0', '53', 'OFICINA DE  DETERMINACION DE RESPONSABILIDAD', 'J'),
+(39, 0, '28', '1', '13', '0', '52', 'OFICINA DE REGISTRO Y CONTROL DE BIENES MUEBLES E INMUEBLES', 'J'),
+(40, 0, '28', '1', '13', '0', '53', 'OFICINA DE CONTABILIDAD', 'J'),
+(41, 0, '28', '1', '13', '0', '54', 'OFICINA DE INVENTARIOS', 'J'),
+(42, 0, '28', '1', '13', '0', '55', 'SEGURIDAD Y VIGILANCIA', 'J'),
+(44, 0, '12', '2', '14', '0', '52', 'CIRMIL', 'J'),
+(49, 0, '16', '3', '18', '0', '52', 'OPERADORES TURISTICO Y EMPRENDEDORES', 'J'),
+(50, 0, '16', '3', '18', '0', '53', 'PROMOCION Y COMUNICACIÓN', 'J'),
+(51, 0, '16', '3', '18', '0', '54', 'INSPECTOR DE TURISMO', 'J'),
+(52, 0, '17', '4', '20', '0', '52', 'JUBILADOS Y PENSIONADOS DE EDUCACION', 'J'),
+(54, 0, '18', '4', '21', '0', '52', 'ASUNTOS DE LA JUVENTUD', 'J'),
+(55, 0, '18', '4', '21', '0', '53', 'JEFATURA DE LOS ESTUDIANTES', 'J'),
+(56, 0, '18', '4', '21', '0', '54', 'ORIENTACION Y PREVENCION A LOS ESTUDIANTES', 'J'),
+(58, 0, '19', '5', '22', '0', '52', 'JEFATURA DE PRENSA', 'J'),
+(59, 0, '19', '5', '22', '0', '53', 'JEFATURA COMUNICACIÓN DIGITAL', 'J'),
+(60, 0, '19', '5', '22', '0', '54', 'JEFATURA DE DISEÑO Y PUBLICIDAD', 'J'),
+(61, 0, '19', '5', '22', '0', '55', 'OFICINA DE REDES SOCIALES', 'J'),
+(64, 0, '21', '5', '24', '0', '57', 'CONTRUCCION Y MEJORAMIENTO DE OBRAS EN BINES PARA EL DESARROLLO CULTURAL (FCI)', 'J'),
+(66, 0, '22', '6', '26', '0', '52', 'DIVISION DE SUPERVICION Y EVALUACION DE PROYECTO', 'J'),
+(67, 0, '22', '6', '26', '0', '53', 'DIVISION DE INFORMATICA, REGISTRO Y CONTROL', 'J'),
+(68, 0, '22', '6', '26', '0', '54', 'ASESORIA LEGAL', 'J'),
+(69, 0, '22', '6', '27', '1', '57', 'CONTRUCCION Y MEJORAMIENTO DE OBRAS  (FCI)', 'J'),
+(71, 0, '23', '7', '28', '0', '52', 'CONTRATACION COLECTIVA OBREROS DE LA SALUD', 'J'),
+(72, 0, '23', '7', '28', '1', '57', 'CONTRUCCION Y MEJORAS DE OBRAS EN BIENES PARA EL FORTALECIMIENTO DE LA SALUD (FCI)', 'J'),
+(74, 0, '24', '8', '29', '0', '52', 'JEFATRA DE SOLUCION DE CONFLICTOS', 'J'),
+(75, 0, '24', '8', '29', '0', '53', 'GESTION COMUNAL', 'J'),
+(76, 0, '24', '8', '29', '0', '54', 'FORMACION Y ASESORIA LEGAL', 'J'),
+(78, 0, '25', '8', '32', '0', '52', 'PROGRAMAS SOCIALES', 'J'),
+(79, 0, '25', '8', '32', '0', '53', 'ATENCION AL SERVIDOR PUBLICO', 'J'),
+(80, 0, '25', '8', '32', '0', '54', 'GESTION INSTITUCIONAL', 'J'),
+(82, 0, '26', '9', '33', '0', '52', 'CONTRATACION COLECTIVA DE OBREROS DE INFRAESTRUCTURA', 'J'),
+(83, 0, '26', '9', '33', '0', '53', 'PENSIONADOS Y JUBILADOS', 'J'),
+(84, 0, '26', '9', '33', '0', '54', 'CONTRATADOS GOBERNACION', 'J'),
+(85, 0, '26', '9', '33', '0', '55', 'PERSONAL DIRECTIVO DE ALTO NIVEL Y JEFATURAS', 'J'),
+(130, 0, '1', '1', '1', '0', '51', 'CONSEJO LEGISLATIVO', 'J'),
+(131, 0, '2', '1', '2', '0', '51', 'CONTRALORIA GENERAL DEL ESTADO', 'J'),
+(132, 0, '3', '1', '3', '0', '51', 'PROCURADORIA GENERAL', 'J'),
+(133, 0, '4', '1', '4', '0', '51', 'SECRETARIA DEL DESPACHO DEL GOBERNADOR Y SECRETARIA DE LA GESTION PUBLICA', 'J'),
+(134, 0, '5', '1', '5', '0', '51', 'SECRETARIA GENERAL DE GOBIERNO', 'J'),
+(135, 0, '6', '1', '6', '0', '51', 'SECRETARIA EJECUTIVA DE GESTION HUMANO', 'J'),
+(136, 0, '7', '1', '7', '0', '51', 'SECRETARIA DE PLANIFICACION, PROYECTO Y PRESUPUESTO', 'J'),
+(137, 0, '8', '1', '8', '0', '51', 'SERVICIOS DE ADMINISTRACION', 'J'),
+(138, 0, '9', '1', '9', '0', '51', 'TESORERIA', 'J'),
+(139, 0, '10', '1', '10', '0', '51', 'SECRETARIA EJECUTIVA INDIGENA', 'J'),
+(140, 0, '11', '1', '11', '0', '51', 'AUDITORIA INTERNA', 'J'),
+(141, 0, '12', '2', '14', '0', '51', 'COORDINACION DE SERVICIOS POLICIALES', 'J'),
+(142, 0, '13', '2', '15', '0', '51', 'SECRETARIA DE POLITICA DE ASUNTOS FRONTERIZOS', 'J'),
+(143, 0, '14', '2', '16', '0', '51', 'PROTECCION CIVIL', 'J'),
+(144, 0, '15', '2', '17', '0', '51', 'PREVENCION Y CONTROL DE SINIESTRO (BOMBEROS)', 'J'),
+(145, 0, '16', '3', '18', '0', '51', 'SECRETARIA DE TURISMO', 'J'),
+(146, 0, '18', '4', '21', '0', '51', 'SEC. EJEC. PARA LA ATENCION DE LA JUVENTUD Y ESTUDIANTE UNIVERSITARIO', 'J'),
+(147, 0, '19', '5', '22', '0', '51', 'SEC. EJEC. DEL SISTEMA DE INFOR. COM. (SICOAMA)', 'J'),
+(148, 0, '21', '5', '24', '0', '51', 'SECRETARIA DE CULTURA', 'J'),
+(149, 0, '22', '6', '26', '0', '51', 'SECRETARIA DE INFRAESTRUCTURA', 'J'),
+(150, 0, '23', '7', '28', '0', '51', 'ADMINISTRATIVOS MALARIOLOGIA-GOBERNACION', 'J'),
+(151, 0, '24', '8', '29', '0', '51', 'SECRETARIA Y COORDINACION', 'J'),
+(152, 0, '25', '8', '32', '0', '51', 'PROTECCION SOCIAL', 'J'),
+(153, 0, '26', '9', '33', '0', '51', 'CONTRATACION COLECTIVA DE EMPLEADOS', 'J'),
+(154, 0, '28', '1', '13', '0', '51', 'SECRETARIA EJECUTIVA DE BIENES Y SERVICIOS', 'J'),
+(155, 0, '29', '10', '34', '0', '51', 'AMAVISION', 'D'),
+(156, 0, '30', '10', '34', '0', '51', 'FUNDACION ORQUESTA SINFONICA JUVENIL E INFANTIL DE AMAZONAS', 'D'),
+(157, 0, '31', '10', '34', '0', '51', 'FUNDACION CULTURAL ESCUELA ACADEMICA DE ORQUESTAS Y BANDAS DE AMAZONAS', 'D'),
+(158, 0, '32', '10', '34', '0', '51', 'ESCUELA INTEGRAL DE DANZAS', 'D'),
+(159, 0, '33', '10', '34', '0', '51', 'FUNDAPRODICAM', 'D'),
+(160, 0, '34', '10', '34', '0', '51', 'SUPERINTENDENCIA DE ADMINISTRACION TRIBUTARIA DEL ESTADO AMAZONAS (SATEAMAZ)', 'D'),
+(161, 0, '35', '10', '34', '0', '51', 'MUSEO ETNOLOGICO', 'D'),
+(162, 0, '36', '10', '34', '0', '51', 'INSTITUTO REGIONAL DE DEPORTE AMAZONAS (I.R.D.A)', 'D'),
+(163, 0, '37', '10', '34', '0', '51', 'U.N.A', 'D'),
+(164, 0, '38', '10', '34', '0', '51', 'BIBLIOTECA PUBLICA SIMON RODRIGUEZ', 'D'),
+(165, 0, '39', '10', '34', '0', '51', 'AMAZONAS F.C', 'D'),
+(166, 0, '40', '10', '34', '0', '51', 'UNIVERSIDAD EXPERIMENTAL POLITECNICA DE LA FUERZA ARMADA NACIONAL NUCLEO AMAZONAS', 'D'),
+(167, 0, '41', '10', '34', '0', '51', 'UPEL', 'D'),
+(168, 0, '42', '10', '34', '0', '51', 'FUNDACIONIHIRU', 'D'),
+(169, 0, '43', '10', '34', '0', '51', 'FUNDA SALUD', 'D'),
+(170, 0, '44', '10', '34', '0', '51', 'HOSPITAL DR. JOSE GREGORIO HERNANDEZ', 'D'),
+(171, 0, '45', '10', '34', '0', '51', 'A.C. HERMANAS DE JESUS RESUCITADO CASA HOGAR \"CARMEN MARTINEZ\"', 'D'),
+(172, 0, '46', '10', '34', '0', '51', 'SIUMA', 'D'),
+(173, 0, '47', '10', '34', '0', '51', 'FUNDACION PARA LA ATENCION INTEGRAL A LA MUJER DE AMAZONAS', 'D'),
+(174, 0, '48', '10', '34', '0', '51', 'FUNDACION DE SISTEMA DE ATENCION INTEGRAL PARA LAS PERSONAS CON DISCAPACIDAD (SAIPDIS)', 'D'),
+(175, 0, '49', '10', '34', '0', '51', 'FUNDACION CENTRO DE HISTORIA DE LA IDENTIDAD AMAZONENCE', 'D'),
+(176, 0, '50', '10', '34', '0', '51', 'INVIOBRAS AMAZONAS', 'D'),
+(177, 0, '51', '10', '34', '0', '51', 'FUNDACION PROMO-AMAZONAS', 'D'),
+(178, 0, '52', '10', '34', '0', '51', 'INSCATA', 'D'),
+(179, 0, '53', '10', '34', '0', '51', 'LUBRICANTES AMAZONAS C.A', 'D'),
+(180, 0, '54', '10', '34', '0', '51', 'ALIMENTOS AMAZONAS C.A', 'D'),
+(181, 0, '55', '10', '34', '0', '51', 'HIDROAMAZONAS C.A', 'D'),
+(182, 0, '56', '10', '34', '0', '51', 'ASFALTO Y PAVIMENTOS AMAZONAS C.A', 'D'),
+(183, 0, '57', '10', '34', '0', '51', 'COMBUSTIBLES AMAZONAS C.A', 'D'),
+(184, 0, '58', '10', '34', '0', '51', 'SANEAMIENTO AMBIENTAL C.A', 'D'),
+(185, 0, '59', '10', '34', '0', '51', 'BLOQUES Y AGREGADOS AMAZONAS C.A', 'D'),
+(186, 0, '60', '10', '34', '0', '51', 'TEXTILES AMAZONAS C.A', 'D'),
+(187, 0, '61', '10', '34', '0', '51', 'ACUARIOS AMAZONAS', 'D'),
+(188, 0, '62', '10', '34', '0', '51', 'EXPORTADORA AMAZONAS C.A', 'D'),
+(189, 0, '63', '10', '34', '0', '51', 'GAS COMUNAL AMAZONAS C.A', 'D'),
+(190, 0, '64', '10', '34', '0', '51', 'FARMA-AMAZONAS C.A', 'D'),
+(191, 0, '65', '10', '34', '0', '51', 'EMPRESA FLUVIALES AMAZONAS C.A', 'D'),
+(192, 0, '66', '10', '34', '0', '51', 'EMPRESA PUBLICA DE AMAZONAS C.A', 'D'),
+(193, 0, '67', '10', '34', '0', '51', 'EMPRESA DE SERVICIOS Y MANTENIMIENTO GENERALES AMAZONAS C.A (SERVIAMAZONAS)', 'D'),
+(194, 0, '68', '10', '34', '0', '51', 'EMPRESA DE TURISMO', 'D'),
+(195, 0, '70', '10', '34', '0', '51', 'VICARIATO APOSTOLICO', 'D');
 
 -- --------------------------------------------------------
 
@@ -4247,7 +4252,12 @@ INSERT INTO `error_log` (`id`, `descripcion`, `fecha`) VALUES
 (4, 'El tipo de ente Descentralizado solo permite una distribución.', '2024-10-24 12:51:44'),
 (5, 'La suma de los montos de las distribuciones no es igual al monto total.', '2024-10-24 12:53:07'),
 (6, 'La suma de los montos de las distribuciones no es igual al monto total.', '2024-10-24 20:46:06'),
-(7, 'El tipo de ente Descentralizado solo permite una distribución.[{\"id_distribucion\":\"13\",\"monto\":500},{\"id_distribucion\":\"14\",\"monto\":500},{\"id_distribucion\":\"15\",\"monto\":500},{\"id_distribucion\":\"16\",\"monto\":500}]', '2024-11-05 08:31:33');
+(7, 'El tipo de ente Descentralizado solo permite una distribución.[{\"id_distribucion\":\"13\",\"monto\":500},{\"id_distribucion\":\"14\",\"monto\":500},{\"id_distribucion\":\"15\",\"monto\":500},{\"id_distribucion\":\"16\",\"monto\":500}]', '2024-11-05 08:31:33'),
+(8, 'La suma de los montos de las distribuciones es mayor al monto total de la asignacion.', '2024-12-16 08:52:02'),
+(9, 'La suma de los montos de las distribuciones es mayor al monto total de la asignacion.', '2024-12-16 08:52:09'),
+(10, 'El presupuesto actual es insuficiente para el monto de la partida: 400.00.00.00.0000', '2024-12-17 09:05:32'),
+(11, 'La solicitud ya ha sido procesada anteriormente', '2024-12-17 09:15:47'),
+(12, 'El presupuesto actual es insuficiente para el monto del gasto en la distribución con ID: 16', '2024-12-18 10:18:39');
 
 -- --------------------------------------------------------
 
@@ -4282,8 +4292,21 @@ CREATE TABLE `gastos` (
   `descripcion` longtext NOT NULL,
   `monto` varchar(255) DEFAULT NULL,
   `status` int(255) NOT NULL,
-  `id_ejercicio` int(255) NOT NULL
+  `id_ejercicio` int(255) NOT NULL,
+  `beneficiario` longtext NOT NULL,
+  `identificador` longtext NOT NULL,
+  `distribuciones` longtext NOT NULL,
+  `fecha` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `gastos`
+--
+
+INSERT INTO `gastos` (`id`, `id_tipo`, `descripcion`, `monto`, `status`, `id_ejercicio`, `beneficiario`, `identificador`, `distribuciones`, `fecha`) VALUES
+(2, 2, 'fsafsafa', '1000', 1, 2, 'fsafafa', '2425252', '[{\"id_distribucion\":16,\"monto\":1000}]', '2024-12-17'),
+(3, 2, 'fsafafa', '1001', 1, 2, 'gwgwgw', '2425252', '[{\"id_distribucion\":17,\"monto\":1001}]', '2024-12-18'),
+(4, 2, 'fsafa', '1000', 1, 2, 'fsfw2f2', '2425252', '[{\"id_distribucion\":16,\"monto\":1000}]', '2024-12-18');
 
 -- --------------------------------------------------------
 
@@ -5178,7 +5201,8 @@ INSERT INTO `menu` (`id`, `oficina`, `categoria`, `nombre`, `dir`, `icono`) VALU
 (38, 'nomina', 'Nómina', 'Registro de nominas', 'mod_nomina/nom_grupos', 'bx-wallet-alt'),
 (39, 'nomina', 'Nómina', 'Pagar nomina', 'mod_nomina/nom_peticiones_form', 'bx-wallet-alt'),
 (40, 'pl_formulacion', NULL, 'Reportes', 'mod_pl_formulacion/form_reportes', 'bx-download'),
-(42, '', 'usuarios', 'Seguimiento general', 'mod_global/global_user_logs', NULL);
+(42, '', 'usuarios', 'Seguimiento general', 'mod_global/global_user_logs', NULL),
+(43, 'entes', NULL, 'solicitud de dozavo', 'mod_entes/solicitud_dozavo_vista', NULL);
 
 -- --------------------------------------------------------
 
@@ -11323,24 +11347,27 @@ CREATE TABLE `solicitud_dozavos` (
   `fecha` varchar(255) DEFAULT NULL,
   `partidas` varchar(255) DEFAULT NULL,
   `id_ente` int(255) DEFAULT NULL,
-  `status` int(255) DEFAULT NULL
+  `status` int(255) DEFAULT NULL,
+  `id_ejercicio` int(255) NOT NULL,
+  `mes` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `solicitud_dozavos`
 --
 
-INSERT INTO `solicitud_dozavos` (`id`, `numero_orden`, `numero_compromiso`, `descripcion`, `tipo`, `monto`, `fecha`, `partidas`, `id_ente`, `status`) VALUES
-(1, '1', 'C1001', 'Compra de material de oficina', 'A', '500.0', '2024-01-15', '[{ \"id\": 3, \"monto\": 166.67 }, { \"id\": 14, \"monto\": 166.67 }, { \"id\": 25, \"monto\": 166.66 }]', 1, 0),
-(2, '2', 'C1002', 'Pago a proveedor', 'A', '1200.0', '2024-02-23', '[{ \"id\": 8, \"monto\": 1200.0 }]', 1, 0),
-(3, '3', 'C1003', 'Renovación de licencias de software', 'A', '800.0', '2024-03-08', '[{ \"id\": 18, \"monto\": 400.0 }, { \"id\": 47, \"monto\": 400.0 }]', 1, 0),
-(4, '4', 'C1004', 'Gastos de envío', 'A', '300.0', '2024-04-19', '[{ \"id\": 37, \"monto\": 300.0 }]', 1, 0),
-(5, '5', 'C1005', 'Publicidad en redes sociales', 'A', '700.0', '2024-05-27', '[{ \"id\": 42, \"monto\": 233.33 }, { \"id\": 65, \"monto\": 233.33 }, { \"id\": 69, \"monto\": 233.34 }]', 1, 0),
-(6, '6', 'C1006', 'Capacitación del personal', 'D', '1000.0', '2024-06-14', '[{ \"id\": 80, \"monto\": 333.33 }]', 1, 0),
-(7, '7', 'C1007', 'Mantenimiento de equipamiento', 'D', '600.0', '2024-07-03', '[{ \"id\": 90, \"monto\": 300.0 }, { \"id\": 103, \"monto\": 300.0 }]', 1, 0),
-(8, '8', 'C1008', 'Compra de material de limpieza', 'D', '400.0', '2024-08-11', '[{ \"id\": 104, \"monto\": 200.0 }, { \"id\": 110, \"monto\": 200.0 }]', 1, 0),
-(9, '9', 'C1009', 'Consultoría externa', 'D', '1500.0', '2024-09-25', '[{ \"id\": 5, \"monto\": 1500.0 }]', 1, 0),
-(10, '10', 'C1010', 'Actualización de equipo informático', 'D', '2000.0', '2024-10-30', '[{ \"id\": 5, \"monto\": 500.0 }, { \"id\": 12, \"monto\": 500.0 }, { \"id\": 26, \"monto\": 500.0 }, { \"id\": 78, \"monto\": 500.0 }]', 1, 0);
+INSERT INTO `solicitud_dozavos` (`id`, `numero_orden`, `numero_compromiso`, `descripcion`, `tipo`, `monto`, `fecha`, `partidas`, `id_ente`, `status`, `id_ejercicio`, `mes`) VALUES
+(1, '1', 'C1001', 'Compra de material de oficina', 'A', '500.0', '2024-01-15', '[{ \"id\": 3, \"monto\": 166.67 }, { \"id\": 14, \"monto\": 166.67 }, { \"id\": 25, \"monto\": 166.66 }]', 1, 0, 0, 0),
+(2, '2', 'C1002', 'Pago a proveedor', 'A', '1200.0', '2024-02-23', '[{ \"id\": 8, \"monto\": 1200.0 }]', 1, 0, 0, 0),
+(3, '3', 'C1003', 'Renovación de licencias de software', 'A', '800.0', '2024-03-08', '[{ \"id\": 18, \"monto\": 400.0 }, { \"id\": 47, \"monto\": 400.0 }]', 1, 0, 0, 0),
+(4, '4', 'C1004', 'Gastos de envío', 'A', '300.0', '2024-04-19', '[{ \"id\": 37, \"monto\": 300.0 }]', 1, 0, 0, 0),
+(5, '5', 'C1005', 'Publicidad en redes sociales', 'A', '700.0', '2024-05-27', '[{ \"id\": 42, \"monto\": 233.33 }, { \"id\": 65, \"monto\": 233.33 }, { \"id\": 69, \"monto\": 233.34 }]', 1, 0, 0, 0),
+(6, '6', 'C1006', 'Capacitación del personal', 'D', '1000.0', '2024-06-14', '[{ \"id\": 80, \"monto\": 333.33 }]', 1, 0, 0, 0),
+(7, '7', 'C1007', 'Mantenimiento de equipamiento', 'D', '600.0', '2024-07-03', '[{ \"id\": 90, \"monto\": 300.0 }, { \"id\": 103, \"monto\": 300.0 }]', 1, 0, 0, 0),
+(8, '8', 'C1008', 'Compra de material de limpieza', 'D', '400.0', '2024-08-11', '[{ \"id\": 104, \"monto\": 200.0 }, { \"id\": 110, \"monto\": 200.0 }]', 1, 0, 0, 0),
+(9, '9', 'C1009', 'Consultoría externa', 'D', '1500.0', '2024-09-25', '[{ \"id\": 5, \"monto\": 1500.0 }]', 1, 0, 0, 0),
+(10, '10', 'C1010', 'Actualización de equipo informático', 'D', '2000.0', '2024-10-30', '[{ \"id\": 5, \"monto\": 500.0 }, { \"id\": 12, \"monto\": 500.0 }, { \"id\": 26, \"monto\": 500.0 }, { \"id\": 78, \"monto\": 500.0 }]', 1, 0, 0, 0),
+(22, 'O00001-2024', '554512fssafa', 'DESCRIPCION EJEMPLO', 'D', '25000', '2024-12-17', '[{\"id\":724,\"monto\":8333.33},{\"id\":725,\"monto\":8333.33},{\"id\":726,\"monto\":8333.33}]', 1, 0, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -11352,6 +11379,18 @@ CREATE TABLE `system_bd` (
   `id` int(11) NOT NULL,
   `actualizacion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `system_bd`
+--
+
+INSERT INTO `system_bd` (`id`, `actualizacion`) VALUES
+(12, 1),
+(11, 13),
+(13, 14),
+(14, 15),
+(15, 16),
+(16, 17);
 
 -- --------------------------------------------------------
 
@@ -11369,21 +11408,24 @@ CREATE TABLE `system_users` (
   `creado` datetime DEFAULT current_timestamp(),
   `u_nivel` int(11) DEFAULT NULL,
   `u_status` int(11) NOT NULL DEFAULT 1,
-  `u_cedula` varchar(255) DEFAULT NULL
+  `u_cedula` varchar(255) DEFAULT NULL,
+  `id_ente` int(255) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `system_users`
 --
 
-INSERT INTO `system_users` (`u_id`, `u_nombre`, `u_oficina_id`, `u_oficina`, `u_email`, `u_contrasena`, `creado`, `u_nivel`, `u_status`, `u_cedula`) VALUES
-(31, 'user Nombre', 1, 'nomina', 'corro@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-03-07 11:18:19', 1, 1, '6722697'),
-(33, 'otro user', 2, 'registro_control', 'correo2@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-05-29 16:32:32', 2, 1, '6722697'),
-(34, 'relaciones_laborales_user\r\n', 3, 'relaciones_laborales', 'corro3@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-08-06 18:31:06', 1, 1, '6722697'),
-(35, 'Ricardo', 4, 'pl_formulacion', 'rr@gmail.com', '$2y$10$azF/dOpnDs9sCTYiLEF7kO8612REFdjpk8Te.bih4BaNDSfhAw9MO', '2024-10-12 11:21:03', 1, 1, '6722697'),
-(36, 'Otro user', 4, 'pl_formulacion', 'dc@gmail.com', '$2y$10$rkLTvh67l6wU6P3sNrmDoOKE9fYZeEe46nkk7VtYcRB20nM0cgIZ.', '2024-10-12 15:47:50', 2, 1, '6722697'),
-(37, 'Otro user nomina', 1, 'nomina', 'll@gmail.com', '$2y$10$7rP3s5kmozULLCHQpVCQ9exS28MkvJpV8x4whtmS2Z0EnXD2YbeK.', '2024-10-12 21:15:58', 2, 1, '6722697'),
-(38, 'YO', 4, 'pl_formulacion', 'AAAac.80014.dc@gmail.com', '$2y$10$3uf.A1xijNn8S10tm7uVUecZFAiucPQ81ENB0D5nJTS96sfLcp6pG', '2024-10-15 21:25:50', 2, 1, '27640176');
+INSERT INTO `system_users` (`u_id`, `u_nombre`, `u_oficina_id`, `u_oficina`, `u_email`, `u_contrasena`, `creado`, `u_nivel`, `u_status`, `u_cedula`, `id_ente`) VALUES
+(31, 'user Nombre', 1, 'nomina', 'corro@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-03-07 11:18:19', 1, 1, '6722697', 1),
+(33, 'otro user', 2, 'registro_control', 'correo2@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-05-29 16:32:32', 2, 1, '6722697', 1),
+(34, 'relaciones_laborales_user\r\n', 3, 'relaciones_laborales', 'corro3@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-08-06 18:31:06', 1, 1, '6722697', 1),
+(35, 'Ricardo', 4, 'pl_formulacion', 'rr@gmail.com', '$2y$10$azF/dOpnDs9sCTYiLEF7kO8612REFdjpk8Te.bih4BaNDSfhAw9MO', '2024-10-12 11:21:03', 1, 1, '6722697', 1),
+(36, 'Otro user', 4, 'pl_formulacion', 'dc@gmail.com', '$2y$10$rkLTvh67l6wU6P3sNrmDoOKE9fYZeEe46nkk7VtYcRB20nM0cgIZ.', '2024-10-12 15:47:50', 2, 1, '6722697', 1),
+(37, 'Otro user nomina', 1, 'nomina', 'll@gmail.com', '$2y$10$7rP3s5kmozULLCHQpVCQ9exS28MkvJpV8x4whtmS2Z0EnXD2YbeK.', '2024-10-12 21:15:58', 2, 1, '6722697', 1),
+(38, 'YO', 5, 'ejecucion_p', 'AAAac.80014.dc@gmail.com', '$2y$10$azF/dOpnDs9sCTYiLEF7kO8612REFdjpk8Te.bih4BaNDSfhAw9MO', '2024-10-15 21:25:50', 1, 1, '27640176', 1),
+(40, 'user ejecucion', 5, 'ejecucion_p', 'eje@correo.com', '$2y$10$eyp1moy39kuw4uredk7ao.uuzq10yniz95izlm70mupo5j6yzebvg', '2024-08-06 18:31:06', 1, 1, '67226972', 1),
+(41, 'user ente', 6, 'entes', 'ente@correo.com', '$2y$10$eyp1moy39kuw4uredk7ao.uuzq10yniz95izlm70mupo5j6yzebvg', '2024-12-20 16:30:38', 1, 1, '67226972', 1);
 
 -- --------------------------------------------------------
 
@@ -11411,7 +11453,9 @@ INSERT INTO `system_users_permisos` (`id`, `id_user`, `id_item_menu`) VALUES
 (12, 37, 20),
 (13, 38, 1),
 (14, 38, 2),
-(15, 38, 3);
+(15, 38, 3),
+(16, 40, 20),
+(17, 40, 21);
 
 -- --------------------------------------------------------
 
@@ -11863,7 +11907,7 @@ CREATE TABLE `tasa` (
 --
 
 INSERT INTO `tasa` (`id`, `descripcion`, `simbolo`, `valor`) VALUES
-(1, 'Precio del Dólar Actual', '$', '42.8569');
+(1, 'Precio del Dólar Actual', '$', '51.5398');
 
 -- --------------------------------------------------------
 
@@ -11898,7 +11942,11 @@ INSERT INTO `tasa_historico` (`id`, `u_nombre`, `precio`, `descripcion`, `fecha`
 (12, 'sigob', '41.0429', 'actualizacion automática', '27-10-2024'),
 (13, 'sigob', '42.2256', 'actualizacion automática', '30-10-2024'),
 (14, 'sigob', '42.5622', 'actualizacion automática', '31-10-2024'),
-(15, 'sigob', '42.8569', 'actualizacion automática', '05-11-2024');
+(15, 'sigob', '42.8569', 'actualizacion automática', '05-11-2024'),
+(16, 'sigob', '50.3319', 'actualizacion automática', '16-12-2024'),
+(17, 'sigob', '50.371', 'actualizacion automática', '17-12-2024'),
+(18, 'sigob', '50.5419', 'actualizacion automática', '18-12-2024'),
+(19, 'sigob', '51.5398', 'actualizacion automática', '23-12-2024');
 
 -- --------------------------------------------------------
 
@@ -11908,9 +11956,15 @@ INSERT INTO `tasa_historico` (`id`, `u_nombre`, `precio`, `descripcion`, `fecha`
 
 CREATE TABLE `tipo_gastos` (
   `id` int(255) NOT NULL,
-  `nombre` longtext DEFAULT NULL,
-  `id_partida` int(255) NOT NULL
+  `nombre` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_gastos`
+--
+
+INSERT INTO `tipo_gastos` (`id`, `nombre`) VALUES
+(2, 'AGUINALDO');
 
 -- --------------------------------------------------------
 
@@ -16614,6 +16668,12 @@ ALTER TABLE `tasa_historico`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `tipo_gastos`
+--
+ALTER TABLE `tipo_gastos`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `titulo_1`
 --
 ALTER TABLE `titulo_1`
@@ -16639,7 +16699,7 @@ ALTER TABLE `txt`
 -- AUTO_INCREMENT de la tabla `asignacion_ente`
 --
 ALTER TABLE `asignacion_ente`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `audit_logs`
@@ -16675,7 +16735,7 @@ ALTER TABLE `categorias`
 -- AUTO_INCREMENT de la tabla `compromisos`
 --
 ALTER TABLE `compromisos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `conceptos`
@@ -16717,19 +16777,19 @@ ALTER TABLE `descripcion_programas`
 -- AUTO_INCREMENT de la tabla `distribucion_entes`
 --
 ALTER TABLE `distribucion_entes`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `distribucion_presupuestaria`
 --
 ALTER TABLE `distribucion_presupuestaria`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `ejercicio_fiscal`
 --
 ALTER TABLE `ejercicio_fiscal`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -16765,7 +16825,7 @@ ALTER TABLE `entes_dependencias`
 -- AUTO_INCREMENT de la tabla `error_log`
 --
 ALTER TABLE `error_log`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `frecuencias_por_grupo`
@@ -16777,7 +16837,7 @@ ALTER TABLE `frecuencias_por_grupo`
 -- AUTO_INCREMENT de la tabla `gastos`
 --
 ALTER TABLE `gastos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `historico_conceptos`
@@ -16825,7 +16885,7 @@ ALTER TABLE `informacion_personas`
 -- AUTO_INCREMENT de la tabla `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `modificaciones_empleados`
@@ -16981,25 +17041,25 @@ ALTER TABLE `reportes`
 -- AUTO_INCREMENT de la tabla `solicitud_dozavos`
 --
 ALTER TABLE `solicitud_dozavos`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `system_bd`
 --
 ALTER TABLE `system_bd`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `system_users`
 --
 ALTER TABLE `system_users`
-  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT de la tabla `system_users_permisos`
 --
 ALTER TABLE `system_users_permisos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `tabuladores`
@@ -17023,7 +17083,13 @@ ALTER TABLE `tasa`
 -- AUTO_INCREMENT de la tabla `tasa_historico`
 --
 ALTER TABLE `tasa_historico`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_gastos`
+--
+ALTER TABLE `tipo_gastos`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `titulo_1`
