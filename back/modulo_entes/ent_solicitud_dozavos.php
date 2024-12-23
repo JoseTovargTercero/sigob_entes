@@ -218,7 +218,7 @@ function registrarSolicitudozavo($data)
     global $conexion;
 
     try {
-        if (!isset($data['descripcion']) || !isset($data['monto']) || !isset($data['tipo']) || !isset($data['partidas']) || !isset($data['id_ente']) || !isset($data['id_ejercicio']) || !isset($data['mes'])) {
+        if (!isset($data['descripcion']) || !isset($data['monto']) || !isset($data['tipo']) || !isset($data['partidas']) || !isset($_SESSION['id_ente']) || !isset($data['id_ejercicio']) || !isset($data['mes'])) {
             return json_encode(["error" => "Faltan datos obligatorios para registrar la solicitud."]);
         }
 
@@ -227,7 +227,7 @@ function registrarSolicitudozavo($data)
 
         $mesActual = date("n"); // Mes actual (1-12)
         $mesSolicitado = $data['mes']; // Mes solicitado
-        $idEnte = $data['id_ente'];
+        $idEnte = $_SESSION['id_ente'];
         $idEjercicio = $data['id_ejercicio'];
 
         // Verificar si ya existe una solicitud pendiente (status = 1)
@@ -332,11 +332,11 @@ function gestionarSolicitudDozavos2($idSolicitud, $accion, $codigo)
 
         // Iniciar la transacción
         $conexion->begin_transaction();
-
+        $id_ente = $_SESSION['id_ente'];
         // Consultar los detalles de la solicitud, incluyendo el campo partidas
-        $sqlSolicitud = "SELECT numero_orden, numero_compromiso, descripcion, tipo, monto, id_ente, partidas, status, id_ejercicio FROM solicitud_dozavos WHERE id = ?";
+        $sqlSolicitud = "SELECT numero_orden, numero_compromiso, descripcion, tipo, monto, id_ente, partidas, status, id_ejercicio FROM solicitud_dozavos WHERE id = ? AND id_ente = ?";
         $stmtSolicitud = $conexion->prepare($sqlSolicitud);
-        $stmtSolicitud->bind_param("i", $idSolicitud);
+        $stmtSolicitud->bind_param("ii", $idSolicitud, $id_ente);
         $stmtSolicitud->execute();
         $resultadoSolicitud = $stmtSolicitud->get_result();
 
@@ -350,7 +350,6 @@ function gestionarSolicitudDozavos2($idSolicitud, $accion, $codigo)
         $descripcion = $filaSolicitud['descripcion'];
         $tipo = $filaSolicitud['tipo'];
         $montoTotal = $filaSolicitud['monto'];
-        $id_ente = $filaSolicitud['id_ente'];
         $status = $filaSolicitud['status'];
         $id_ejercicio = $filaSolicitud['id_ejercicio'];
 
