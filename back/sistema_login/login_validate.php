@@ -29,6 +29,7 @@ if ($result->num_rows > 0) {
 			$_SESSION['u_oficina'] = $row['u_oficina'];
 			$_SESSION['u_nivel'] = $row['u_nivel'];
 			$_SESSION['u_cedula'] = $row['u_cedula'];
+			$_SESSION['id_ente'] = $row['id_ente'];
 			$_SESSION['verificar_upload'] = false;
 
 
