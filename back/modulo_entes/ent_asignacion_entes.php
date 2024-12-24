@@ -152,6 +152,25 @@ function eliminarAsignacionEnte($id)
         return json_encode(['error' => $e->getMessage()]);
     }
 }
+function obtenerDetallesPorId($conexion, $tabla, $id) {
+    try {
+        $sql = "SELECT * FROM $tabla WHERE id = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc(); // Devuelve el registro como un arreglo asociativo
+        } else {
+            return null; // No se encontró el registro
+        }
+    } catch (Exception $e) {
+        registrarError($e->getMessage());
+        return null; // Error en la consulta
+    }
+}
+
 
 
 function consultarAsignacionPorId($id, $id_ejercicio)
