@@ -1,3 +1,4 @@
+import { ente_solicitud_dozavo } from '../components/ente_solicitud_dozavo.js'
 import {
   ejerciciosLista,
   validarEjercicioActual,
@@ -10,12 +11,15 @@ import {
 const d = document
 const w = window
 
-export const validateSolicitudEntesView = () => {
-  let ejercicioFiscal = ejerciciosLista({
+export const validateSolicitudEntesView = async () => {
+  let ejercicioFiscal = await ejerciciosLista({
     elementToInsert: 'ejercicios-fiscales',
   })
-
-  validarEjercicioActual(ejercicioFiscal)
+  // let data = await getPreAsignacionEnte(1)
+  ente_solicitud_dozavo({
+    elementToInsert: 'solicitudes-entes-dozavos-view',
+    ejercicioId: ejercicioFiscal ? ejercicioFiscal.id : null,
+  })
 
   validateSolicitudEntesTable(ejercicioFiscal ? ejercicioFiscal.id : null)
 

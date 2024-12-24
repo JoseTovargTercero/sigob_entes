@@ -46,6 +46,7 @@ require_once '../../back/sistema_global/session.php';
             <div class="row mb3">
 
                 <div class="col-lg-12 mb-3" id="solicitudes-entes-dozavos-view">
+
                     <div class="card">
 
                         <div class="card-header d-flex justify-content-between">
