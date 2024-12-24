@@ -189,9 +189,9 @@ function consultarAsignacionPorId($id, $id_ejercicio)
         $sql = "SELECT a.*, e.partida, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad 
                 FROM asignacion_ente a
                 JOIN entes e ON a.id_ente = e.id
-                WHERE a.id = ? AND a.id_ente = ? AND a.id_ejercicio = ?";
+                WHERE a.id_ente = ? AND a.id_ejercicio = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("iii", $id, $idEnteSesion, $id_ejercicio);
+        $stmt->bind_param("ii", $idEnteSesion, $id_ejercicio);
         $stmt->execute();
         $result = $stmt->get_result();
 
