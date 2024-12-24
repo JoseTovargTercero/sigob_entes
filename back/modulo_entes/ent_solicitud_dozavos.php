@@ -67,7 +67,7 @@ function consultarSolicitudes()
     $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes,  status, id_ejercicio FROM solicitud_dozavos WHERE id_ente = ?";
     $result = $conexion->query($sql);
     $result->bind_param("i", $idEnte);
-    $stmt->execute();
+    $result->execute();
 
     if ($result->num_rows > 0) {
         $solicitudes = [];
