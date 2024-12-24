@@ -213,11 +213,11 @@ export const pre_solicitudGenerar_card = async ({
   if (oldCardElement) oldCardElement.remove()
 
   let asignacionEnte = await getPreAsignacionEnte(enteId)
+  console.log(asignacionEnte)
 
   let dependencias = asignacionEnte.dependencias
 
   let actividadesEnte = asignacionEnte.actividades_entes
-  console.log(actividadesEnte)
 
   const listaDependencias = () => {
     let dozavoMontoTotal = 0
