@@ -59,83 +59,68 @@ function gestionarSolicitudDozavos($data)
     }
 }
 
-// Función para consultar todas las solicitudes
 function consultarSolicitudes()
 {
     global $conexion;
     $idEnte = $_SESSION["id_ente"];
-    $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes,  status, id_ejercicio FROM solicitud_dozavos WHERE id_ente = ?";
-    $result = $conexion->query($sql);
-    $result->bind_param("i", $idEnte);
-    $result->execute();
 
-    if ($result->num_rows > 0) {
-        $solicitudes = [];
+    try {
+        // Consulta principal con detalles básicos de solicitud_dozavos
+        $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
+                       s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
+                       e.ente_nombre, e.tipo_ente
+                FROM solicitud_dozavos s
+                JOIN entes e ON s.id_ente = e.id
+                WHERE s.id_ente = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idEnte);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        while ($row = $result->fetch_assoc()) {
-            // Procesar las partidas asociadas
-            $partidasArray = json_decode($row['partidas'], true);
+        if ($result->num_rows > 0) {
+            $solicitudes = [];
 
-            foreach ($partidasArray as &$partida) {
-                $idDistribucion = $partida['id'];
-                $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
-                $stmtPartida = $conexion->prepare($sqlPartida);
-                $stmtPartida->bind_param("i", $idDistribucion);
-                $stmtPartida->execute();
-                $stmtPartida->bind_result($id_partida2);
-                $stmtPartida->fetch();
-                $stmtPartida->close();
+            while ($row = $result->fetch_assoc()) {
+                // Procesar las partidas asociadas
+                $partidasArray = json_decode($row['partidas'], true);
 
-                $id_partida = $id_partida2;
+                foreach ($partidasArray as &$partida) {
+                    $idDistribucion = $partida['id'];
 
+                    // Consulta consolidada para obtener datos de partidas_presupuestarias
+                    $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
+                                   FROM distribucion_presupuestaria dp
+                                   JOIN partidas_presupuestarias p ON dp.id_partida = p.id
+                                   WHERE dp.id = ?";
+                    $stmtPartida = $conexion->prepare($sqlPartida);
+                    $stmtPartida->bind_param("i", $idDistribucion);
+                    $stmtPartida->execute();
+                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                    $stmtPartida->fetch();
+                    $stmtPartida->close();
 
+                    // Agregar datos a la partida
+                    $partida['partida'] = $partidaCod;
+                    $partida['nombre'] = $nombre;
+                    $partida['descripcion'] = $descripcion;
+                }
 
+                // Agregar las partidas procesadas al registro
+                $row['partidas'] = $partidasArray;
 
-
-
-
-                $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
-                $stmtPartida = $conexion->prepare($sqlPartida);
-                $stmtPartida->bind_param("i", $id_partida);
-                $stmtPartida->execute();
-                $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                $stmtPartida->fetch();
-                $stmtPartida->close();
-
-                $partida['partida'] = $partidaCod;
-                $partida['nombre'] = $nombre;
-                $partida['descripcion'] = $descripcion;
+                // Añadir la solicitud completa a la lista de solicitudes
+                $solicitudes[] = $row;
             }
 
-            // Agregar las partidas procesadas al registro
-            $row['partidas'] = $partidasArray;
-
-            // Consultar la información del ente asociado
-            
-            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-            $stmtEnte = $conexion->prepare($sqlEnte);
-            $stmtEnte->bind_param("i", $idEnte);
-            $stmtEnte->execute();
-            $resultEnte = $stmtEnte->get_result();
-            $dataEnte = $resultEnte->fetch_assoc();
-            $stmtEnte->close();
-
-            // Agregar la información del ente como un ítem más
-            if ($dataEnte) {
-                $row['ente'] = $dataEnte;
-            } else {
-                $row['ente'] = null; // Si no se encuentra, se asigna como null
-            }
-
-            // Añadir la solicitud completa a la lista de solicitudes
-            $solicitudes[] = $row;
+            return json_encode(["success" => $solicitudes]);
+        } else {
+            return json_encode(["success" => "No se encontraron registros en solicitud_dozavos."]);
         }
-
-        return json_encode(["success" => $solicitudes]);
-    } else {
-        return json_encode(["success" => "No se encontraron registros en solicitud_dozavos."]);
+    } catch (Exception $e) {
+        return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
+
 
 // Función para consultar una solicitud por ID
 function consultarSolicitudPorId($data)

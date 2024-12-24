@@ -177,7 +177,6 @@ function consultarAsignacionPorId($id, $id_ejercicio)
 {
     global $conexion;
 
-
     // Obtener id_ente de la sesión
     if (!isset($_SESSION['id_ente'])) {
         return json_encode(["error" => "El usuario no tiene un ente asignado en la sesión."]);
@@ -187,9 +186,9 @@ function consultarAsignacionPorId($id, $id_ejercicio)
     try {
         // Consulta principal para obtener los datos de asignacion_ente y sus detalles del ente
         $sql = "SELECT a.*, e.partida, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad 
-        FROM asignacion_ente a
-        JOIN entes e ON a.id_ente = e.id
-        WHERE a.id = ? AND a.id_ente = ? AND a.id_ejercicio = ?";
+                FROM asignacion_ente a
+                JOIN entes e ON a.id_ente = e.id
+                WHERE a.id_ente = ? AND a.id_ejercicio = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $idEnteSesion, $id_ejercicio);
         $stmt->execute();
@@ -198,6 +197,9 @@ function consultarAsignacionPorId($id, $id_ejercicio)
         if ($result->num_rows > 0) {
             $asignacion = $result->fetch_assoc();
 
+            // Usar el id obtenido de la primera consulta
+            $idAsignacion = $asignacion['id'];
+
             // Consulta para obtener los detalles de actividades_entes asociados al id_asignacion y id_ejercicio
             $sqlActividades = "SELECT de.id AS actividad_id, de.id_ente, de.distribucion, de.monto_total, de.status, de.id_ejercicio,
                                       ed.actividad, ed.ente_nombre
@@ -205,7 +207,7 @@ function consultarAsignacionPorId($id, $id_ejercicio)
                                LEFT JOIN entes_dependencias ed ON de.actividad_id = ed.id
                                WHERE de.id_asignacion = ? AND de.id_ejercicio = ?";
             $stmtActividades = $conexion->prepare($sqlActividades);
-            $stmtActividades->bind_param("ii", $id, $id_ejercicio);
+            $stmtActividades->bind_param("ii", $idAsignacion, $id_ejercicio);
             $stmtActividades->execute();
             $resultActividades = $stmtActividades->get_result();
 
@@ -256,6 +258,7 @@ function consultarAsignacionPorId($id, $id_ejercicio)
         return json_encode(['error' => $e->getMessage()]);
     }
 }
+
 
 function consultarTodasAsignaciones($id_ejercicio)
 {
