@@ -187,9 +187,9 @@ function consultarAsignacionPorId($id, $id_ejercicio)
     try {
         // Consulta principal para obtener los datos de asignacion_ente y sus detalles del ente
         $sql = "SELECT a.*, e.partida, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad 
-                FROM asignacion_ente a
-                JOIN entes e ON a.id_ente = e.id
-                WHERE a.id_ente = ? AND a.id_ejercicio = ?";
+        FROM asignacion_ente a
+        JOIN entes e ON a.id_ente = e.id
+        WHERE a.id = ? AND a.id_ente = ? AND a.id_ejercicio = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $idEnteSesion, $id_ejercicio);
         $stmt->execute();
