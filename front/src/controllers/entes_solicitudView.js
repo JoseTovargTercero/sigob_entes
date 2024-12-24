@@ -1,3 +1,7 @@
+import {
+  getEntesAsignacion,
+  getEnteSolicitudesDozavos,
+} from '../api/entes_solicitudesDozavos.js'
 import { ente_solicitud_dozavo } from '../components/ente_solicitud_dozavo.js'
 import {
   ejerciciosLista,
@@ -15,11 +19,22 @@ export const validateSolicitudEntesView = async () => {
   let ejercicioFiscal = await ejerciciosLista({
     elementToInsert: 'ejercicios-fiscales',
   })
-  // let data = await getPreAsignacionEnte(1)
-  ente_solicitud_dozavo({
-    elementToInsert: 'solicitudes-entes-dozavos-view',
-    ejercicioId: ejercicioFiscal ? ejercicioFiscal.id : null,
-  })
+
+  if (!ejercicioFiscal) {
+    toastNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Seleccione o registre un ejercicio fiscal',
+    })
+    return
+  } else {
+    let data = await getEnteSolicitudesDozavos(ejercicioFiscal.id)
+    console.log(data)
+
+    ente_solicitud_dozavo({
+      elementToInsert: 'solicitudes-entes-dozavos-view',
+      ejercicioId: ejercicioFiscal ? ejercicioFiscal.id : null,
+    })
+  }
 
   validateSolicitudEntesTable(ejercicioFiscal ? ejercicioFiscal.id : null)
 

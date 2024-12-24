@@ -50,23 +50,23 @@ const getEntesAsignaciones = async (id_ejercicio) => {
   }
 }
 
-const getEntesAsignacion = async (id, id_ejercicio) => {
+const getEntesAsignacion = async (id_ejercicio) => {
   showLoader()
   try {
     let res = await fetch(entesDistribucionUrl, {
       method: 'POST',
       body: JSON.stringify({
         accion: 'consultar_por_id',
-        id,
         id_ejercicio,
       }),
     })
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
-    // const clone = res.clone()
+    const clone = res.clone()
 
-    // let text = await clone.text()
+    let text = await clone.text()
+    console.log(text)
 
     const json = await res.json()
 
