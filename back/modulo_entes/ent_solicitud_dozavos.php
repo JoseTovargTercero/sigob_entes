@@ -21,7 +21,7 @@ function gestionarSolicitudDozavos($data)
 
         // Acción: Consultar todos los registros
         if ($accion === 'consulta') {
-            return consultarSolicitudes();
+            return consultarSolicitudes($data);
         }
 
         // Acción: Consultar un registro por ID
@@ -59,10 +59,16 @@ function gestionarSolicitudDozavos($data)
     }
 }
 
-function consultarSolicitudes()
+function consultarSolicitudes($data)
 {
     global $conexion;
+
+    if (!isset($data['id_ejercicio'])) {
+        return json_encode(["error" => "No se ha especificado el ID del ejercicio."]);
+    }
+
     $idEnte = $_SESSION["id_ente"];
+    $idEjercicio = $data['id_ejercicio'];
 
     try {
         // Consulta principal con detalles básicos de solicitud_dozavos
@@ -71,9 +77,9 @@ function consultarSolicitudes()
                        e.ente_nombre, e.tipo_ente
                 FROM solicitud_dozavos s
                 JOIN entes e ON s.id_ente = e.id
-                WHERE s.id_ente = ?";
+                WHERE s.id_ente = ? AND s.id_ejercicio = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("i", $idEnte);
+        $stmt->bind_param("ii", $idEnte, $idEjercicio);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -127,17 +133,20 @@ function consultarSolicitudPorId($data)
 {
     global $conexion;
 
-    if (!isset($data['id'])) {
-        return json_encode(["error" => "No se ha especificado ID para consulta."]);
+    if (!isset($data['id']) || !isset($data['id_ejercicio'])) {
+        return json_encode(["error" => "No se ha especificado ID o ID del ejercicio para la consulta."]);
     }
 
     $id = $data['id'];
+    $idEjercicio = $data['id_ejercicio'];
     $idEnte = $_SESSION["id_ente"];
 
     // Consultar la solicitud principal
-    $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio FROM solicitud_dozavos WHERE id = ? AND id_ente = ?";
+    $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
+            FROM solicitud_dozavos 
+            WHERE id = ? AND id_ente = ? AND id_ejercicio = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ii", $id, $idEnte);
+    $stmt->bind_param("iii", $id, $idEnte, $idEjercicio);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -179,7 +188,6 @@ function consultarSolicitudPorId($data)
         $row['partidas'] = $partidasArray;
 
         // Consultar la información del ente asociado
-        
         $sqlEnte = "SELECT * FROM entes WHERE id = ?";
         $stmtEnte = $conexion->prepare($sqlEnte);
         $stmtEnte->bind_param("i", $idEnte);
@@ -193,9 +201,10 @@ function consultarSolicitudPorId($data)
 
         return json_encode(["success" => $row]);
     } else {
-        return json_encode(["error" => "No se encontró el registro con el ID especificado."]);
+        return json_encode(["error" => "No se encontró el registro con el ID especificado o el ejercicio no coincide."]);
     }
 }
+
 
 function registrarSolicitudozavo($data)
 {
