@@ -3,7 +3,7 @@
 
 
 if ($_SERVER['SERVER_NAME'] == 'localhost') {
-    define('URL', 'http://localhost/sigob/');
+    define('URL', 'http://localhost/sigob_entes/');
     define('PASSWORD', "");
     define('USER', 'root');
 } elseif ($_SERVER['SERVER_NAME'] == 'gitcom-ve.com') {

@@ -63,10 +63,10 @@ const getEntesAsignacion = async (id_ejercicio) => {
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
-    const clone = res.clone()
+    // const clone = res.clone()
 
-    let text = await clone.text()
-    console.log(text)
+    // let text = await clone.text()
+    // console.log(text)
 
     const json = await res.json()
 
@@ -91,35 +91,26 @@ const getEntesAsignacion = async (id_ejercicio) => {
   }
 }
 
-const getEnteSolicitudesDozavos = async (id_ejercicio, id) => {
+const getEnteSolicitudesDozavos = async ({ id_ejercicio }) => {
   showLoader()
   try {
-    let res
-    if (id)
-      res = await fetch(entesSolicitudesDozavosUrl, {
-        method: 'POST',
-        body: JSON.stringify({ accion: 'consulta_id', id, id_ejercicio }),
-      })
-    else
-      res = await fetch(entesSolicitudesDozavosUrl, {
-        method: 'POST',
-        body: JSON.stringify({ accion: 'consultar', id_ejercicio }),
-      })
+    let res = await fetch(entesSolicitudesDozavosUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion: 'consulta', id_ejercicio }),
+    })
+
+    console.log(res)
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
-    const clone = res.clone()
-    const text = await clone.text()
+    // const clone = res.clone()
+    // const text = await clone.text()
 
-    console.log(text)
+    // console.log(text)
 
     const json = await res.json()
 
     console.log(json)
-
-    if (id) {
-      return json.success
-    }
 
     if (json.success) {
       return json.success
@@ -140,4 +131,49 @@ const getEnteSolicitudesDozavos = async (id_ejercicio, id) => {
   }
 }
 
-export { getEntesAsignaciones, getEntesAsignacion, getEnteSolicitudesDozavos }
+const getEnteSolicitudDozavos = async ({ id_ejercicio, id }) => {
+  showLoader()
+  try {
+    let res = await fetch(entesSolicitudesDozavosUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion: 'consulta_id', id_ejercicio, id }),
+    })
+
+    console.log(res)
+
+    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+
+    // const clone = res.clone()
+    // const text = await clone.text()
+
+    // console.log(text)
+
+    const json = await res.json()
+
+    console.log(json)
+
+    if (json.success) {
+      return json.success
+    }
+    if (json.error) {
+      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+    }
+    return json
+  } catch (e) {
+    console.log(e)
+
+    return confirmNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Error al obtener solicitudes',
+    })
+  } finally {
+    hideLoader()
+  }
+}
+
+export {
+  getEntesAsignaciones,
+  getEntesAsignacion,
+  getEnteSolicitudesDozavos,
+  getEnteSolicitudDozavos,
+}

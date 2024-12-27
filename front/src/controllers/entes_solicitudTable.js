@@ -1,6 +1,7 @@
 import { getSolicitudesDozavos } from '../api/pre_solicitudesDozavos.js'
 
-import { separarMiles, tableLanguage } from '../helpers/helpers.js'
+import { separadorLocal, tableLanguage } from '../helpers/helpers.js'
+import { meses } from '../helpers/types.js'
 
 const d = document
 const w = window
@@ -36,9 +37,7 @@ export async function validateSolicitudEntesTable(id_ejercicio) {
   // loadSolicitudEntesTable(id_ejercicio)
 }
 
-export async function loadSolicitudEntesTable({ id_ejercicio }) {
-  let solicitudes = await getSolicitudesDozavos()
-
+export async function loadSolicitudEntesTable({ id_ejercicio, solicitudes }) {
   if (!Array.isArray(solicitudes)) return
 
   if (!solicitudes || solicitudes.error) return
@@ -47,7 +46,7 @@ export async function loadSolicitudEntesTable({ id_ejercicio }) {
   let data = datosOrdenados
     .filter(
       (solicitud) =>
-        Number(solicitud.status) !== 3 &&
+        Number(solicitud.status) === 0 &&
         Number(id_ejercicio) === Number(solicitud.id_ejercicio)
     )
     .map((solicitud) => {

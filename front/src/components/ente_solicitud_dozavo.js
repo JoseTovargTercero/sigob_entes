@@ -264,6 +264,7 @@ let dozavo = {
 export const ente_solicitud_dozavo = async ({
   elementToInsert,
   ejercicioId,
+  enteSolicitudData,
 }) => {
   let fieldList = { ejemplo: '' }
   let fieldListErrors = {
@@ -275,8 +276,6 @@ export const ente_solicitud_dozavo = async ({
   }
 
   let nombreCard = 'ente-solicitud-dozavo'
-
-  let enteSolicitudData = null
 
   const haveAsignation = () => {
     if (!enteData) {
