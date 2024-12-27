@@ -282,21 +282,19 @@ function consultarSolicitudPorMes($data)
                 $rows[] = $row;
             }
 
-            // Consultar la información del ente asociado
-            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-            $stmtEnte = $conexion->prepare($sqlEnte);
-            $stmtEnte->bind_param("i", $idEnte);
-            $stmtEnte->execute();
-            $resultEnte = $stmtEnte->get_result();
-            $dataEnte = $resultEnte->fetch_assoc();
-            $stmtEnte->close();
+             // Consultar la información del ente asociado
+        $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+        $stmtEnte = $conexion->prepare($sqlEnte);
+        $stmtEnte->bind_param("i", $idEnte);
+        $stmtEnte->execute();
+        $resultEnte = $stmtEnte->get_result();
+        $dataEnte = $resultEnte->fetch_assoc();
+        $stmtEnte->close();
 
-            return json_encode([
-                "success" => [
-                    "solicitudes" => $rows,
-                    "ente" => $dataEnte ?: null
-                ]
-            ]);
+        // Agregar la información del ente como un ítem más
+        $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+
+        
         } else {
             return json_encode(["success" => null]);
         }
