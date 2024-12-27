@@ -297,9 +297,10 @@ function consultarSolicitudPorMes($data)
 
                 // Agregar la información del ente como un ítem más
                 $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+                return json_encode(["success" => $rows]);
             }
 
-            return json_encode(["success" => $rows]);
+            
         } else {
             return json_encode(["success" => null]);
         }
