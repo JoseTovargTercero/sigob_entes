@@ -246,6 +246,11 @@ function consultarSolicitudPorMes($data)
         if ($result->num_rows > 0) {
             $rows = [];
             while ($row = $result->fetch_assoc()) {
+                // Si numero_compromiso es 0, lo ponemos como null
+                if ($row['numero_compromiso'] == 0) {
+                    $row['numero_compromiso'] = null;
+                }
+
                 // Procesar las partidas asociadas
                 $partidasArray = json_decode($row['partidas'], true);
 
@@ -280,19 +285,21 @@ function consultarSolicitudPorMes($data)
                 // Agregar las partidas procesadas
                 $row['partidas'] = $partidasArray;
                 $rows[] = $row;
-                 // Consultar la información del ente asociado
-        $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-        $stmtEnte = $conexion->prepare($sqlEnte);
-        $stmtEnte->bind_param("i", $idEnte);
-        $stmtEnte->execute();
-        $resultEnte = $stmtEnte->get_result();
-        $dataEnte = $resultEnte->fetch_assoc();
-        $stmtEnte->close();
 
-        // Agregar la información del ente como un ítem más
-        $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
-        return json_encode(["success" => $row]);
-        }
+                // Consultar la información del ente asociado
+                $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+                $stmtEnte = $conexion->prepare($sqlEnte);
+                $stmtEnte->bind_param("i", $idEnte);
+                $stmtEnte->execute();
+                $resultEnte = $stmtEnte->get_result();
+                $dataEnte = $resultEnte->fetch_assoc();
+                $stmtEnte->close();
+
+                // Agregar la información del ente como un ítem más
+                $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+            }
+
+            return json_encode(["success" => $rows]);
         } else {
             return json_encode(["success" => null]);
         }
