@@ -280,9 +280,7 @@ function consultarSolicitudPorMes($data)
                 // Agregar las partidas procesadas
                 $row['partidas'] = $partidasArray;
                 $rows[] = $row;
-            }
-
-             // Consultar la información del ente asociado
+                 // Consultar la información del ente asociado
         $sqlEnte = "SELECT * FROM entes WHERE id = ?";
         $stmtEnte = $conexion->prepare($sqlEnte);
         $stmtEnte->bind_param("i", $idEnte);
@@ -294,7 +292,7 @@ function consultarSolicitudPorMes($data)
         // Agregar la información del ente como un ítem más
         $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
         return json_encode(["success" => $row]);
-        
+        }
         } else {
             return json_encode(["success" => null]);
         }
