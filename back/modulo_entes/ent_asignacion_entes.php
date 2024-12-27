@@ -248,6 +248,19 @@ function consultarAsignacionPorId($id, $id_ejercicio)
             }
 
             $asignacion['actividades_entes'] = $actividadesEntes;
+            // Verificar si hay dependencias
+            $sqlDependencias = "SELECT * FROM entes_dependencias WHERE ue = ?";
+            $stmtDependencias = $conexion->prepare($sqlDependencias);
+            $stmtDependencias->bind_param("i", $idEnteSesion);
+            $stmtDependencias->execute();
+            $resultDependencias = $stmtDependencias->get_result();
+
+            // Guardar las dependencias en un array si existen registros, si no, devolver un array vacío
+            $dependencias = [];
+            while ($dependencia = $resultDependencias->fetch_assoc()) {
+                $dependencias[] = $dependencia;
+            }
+            $asignacion['dependencias'] = $dependencias;
 
             return json_encode(["success" => $asignacion]);
         } else {
