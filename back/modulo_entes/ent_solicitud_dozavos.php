@@ -280,9 +280,8 @@ function consultarSolicitudPorMes($data)
                     $partida['partida'] = $partidaCod;
                     $partida['nombre'] = $nombre;
                     $partida['descripcion'] = $descripcion;
-                }
 
-                // Agregar las partidas procesadas
+                     // Agregar las partidas procesadas
                 $row['partidas'] = $partidasArray;
                 $rows[] = $row;
 
@@ -298,6 +297,9 @@ function consultarSolicitudPorMes($data)
                 // Agregar la información del ente como un ítem más
                 $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
                 return json_encode(["success" => $rows]);
+                }
+
+               
             }
 
             
