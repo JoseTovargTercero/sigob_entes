@@ -239,9 +239,6 @@ function consultarSolicitudPorMes($data)
                 FROM solicitud_dozavos 
                 WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
         $stmt = $conexion->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de solicitudes: " . $conexion->error);
-        }
         $stmt->bind_param("iii", $idEnte, $idEjercicio, $mesActual);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -258,9 +255,6 @@ function consultarSolicitudPorMes($data)
                     // Obtener el id_partida desde distribucion_presupuestaria
                     $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
                     $stmtPartida = $conexion->prepare($sqlPartida);
-                    if (!$stmtPartida) {
-                        throw new Exception("Error al preparar consulta de partidas: " . $conexion->error);
-                    }
                     $stmtPartida->bind_param("i", $idDistribucion);
                     $stmtPartida->execute();
                     $stmtPartida->bind_result($id_partida2);
@@ -272,9 +266,6 @@ function consultarSolicitudPorMes($data)
                     // Obtener información de la partida presupuestaria
                     $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
                     $stmtPartida = $conexion->prepare($sqlPartida);
-                    if (!$stmtPartida) {
-                        throw new Exception("Error al preparar consulta de partidas presupuestarias: " . $conexion->error);
-                    }
                     $stmtPartida->bind_param("i", $id_partida);
                     $stmtPartida->execute();
                     $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
@@ -292,11 +283,8 @@ function consultarSolicitudPorMes($data)
             }
 
             // Consultar la información del ente asociado
-            $sqlEnte = "SELECT id, nombre, tipo, descripcion FROM entes WHERE id = ?";
+            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
             $stmtEnte = $conexion->prepare($sqlEnte);
-            if (!$stmtEnte) {
-                throw new Exception("Error al preparar consulta de ente: " . $conexion->error);
-            }
             $stmtEnte->bind_param("i", $idEnte);
             $stmtEnte->execute();
             $resultEnte = $stmtEnte->get_result();
@@ -316,7 +304,6 @@ function consultarSolicitudPorMes($data)
         return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
-
 
 
 
