@@ -152,7 +152,8 @@ function eliminarAsignacionEnte($id)
         return json_encode(['error' => $e->getMessage()]);
     }
 }
-function obtenerDetallesPorId($conexion, $tabla, $id) {
+function obtenerDetallesPorId($conexion, $tabla, $id)
+{
     try {
         $sql = "SELECT * FROM $tabla WHERE id = ?";
         $stmt = $conexion->prepare($sql);
@@ -173,7 +174,7 @@ function obtenerDetallesPorId($conexion, $tabla, $id) {
 
 
 
-function consultarAsignacionPorId($id, $id_ejercicio)
+function consultarAsignacionPorId($id_ejercicio)
 {
     global $conexion;
 
@@ -337,10 +338,10 @@ if (isset($data["accion"])) {
         echo eliminarAsignacionEnte($id);
 
         // Consultar por ID
-    } elseif ($accion === "consultar_por_id" && isset($data["id"]) && isset($data["id_ejercicio"])) {
-        $id = $data["id"];
+    } elseif ($accion === "consultar_por_id" && isset($data["id_ejercicio"])) {
+
         $id_ejercicio = $data["id_ejercicio"];
-        echo consultarAsignacionPorId($id, $id_ejercicio);
+        echo consultarAsignacionPorId($id_ejercicio);
 
         // Consultar todos los registros
     } elseif ($accion === "consultar") {

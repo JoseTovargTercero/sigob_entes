@@ -23,8 +23,12 @@ export const entes_solicitudDozavo_card = async ({
 }) => {
   // closed es para saber si se puede cerrar la card
 
-  const modalElemet = d.getElementById('card-solicitud-dozavo')
-  if (modalElemet) modalElemet.remove()
+  const oldCardElement = d.getElementById(`card-solicitud-dozavo`)
+  if (oldCardElement) {
+    closeModalCard(oldCardElement)
+  }
+
+  console.log(data)
 
   const partidasLi = () => {
     return data.partidas
@@ -51,7 +55,7 @@ export const entes_solicitudDozavo_card = async ({
     return `  <div class='card-body'>
         <div class='alert alert-info'>
           <b>No existen solicitudes previas para este periodo.</b>
-          <button class='btn btn-sm btn-info'>Crear solicitud</button>
+          <button class='btn btn-sm btn-info' id="solicitud-ente-registrar">Crear solicitud</button>
         </div>
       </div>`
   }
@@ -61,9 +65,13 @@ export const entes_solicitudDozavo_card = async ({
         <div class=''>
           <h5 class='mb-0'>Información de solicitud de dozavo</h5>
           <small class='mt-0 text-muted'>
-            Certifique la información de la solicitud de dozavo para el mes de  <b>${
-              meses[data.mes]
-            }</b>
+            ${
+              data === null
+                ? 'No posee solicitudes'
+                : ` Certifique la información de la solicitud de dozavo para el mes de  <b>${
+                    meses[data.mes]
+                  }</b>`
+            }
           </small>
         </div>
         ${
@@ -88,7 +96,7 @@ export const entes_solicitudDozavo_card = async ({
               <div class='row'>
                 <div class='col-sm'>
                   <b>Ente: </b>
-                  <p>${data.ente_nombre}</p>
+                  <p>${data.ente.ente_nombre}</p>
                 </div>
                 <div class='col-sm'>
                   <b>Tipo de ente: </b>
@@ -123,7 +131,7 @@ export const entes_solicitudDozavo_card = async ({
                 </div>
                 <div class='col-sm'>
                   <b>Compromiso: </b>
-                  <p>${data.numero_compromiso}</p>
+                  <p>${data.numero_compromiso || 'No registrado'}</p>
                 </div>
               </div>
             </div>
@@ -158,6 +166,8 @@ export const entes_solicitudDozavo_card = async ({
 
   d.getElementById(elementToInsert).insertAdjacentHTML('beforebegin', card)
 
+  let cardElement = d.getElementById(`card-solicitud-dozavo`)
+
   let listDataTable = new DataTable('#solicitud-partidas', {
     responsive: true,
     scrollY: 120,
@@ -175,24 +185,29 @@ export const entes_solicitudDozavo_card = async ({
       bottomEnd: 'paging',
     },
   })
-  const closeModalCard = () => {
-    let cardElement = d.getElementById('card-solicitud-dozavo')
-
-    cardElement.remove()
-    d.removeEventListener('click', validateClick)
-    // formElement.removeEventListener('input', validateInputFunction)
-
+  function closeModalCard(card) {
+    card.remove()
+    card.removeEventListener('click', validateClick)
+    // cardElement.removeEventListener('input', validateInputFunction)
     return false
   }
 
   function validateClick(e) {
     if (e.target.dataset.close) {
-      closeModalCard()
+      closeModalCard(cardElement)
       if (reset) {
         reset()
       }
     }
+
+    if (e.target.id === 'solicitud-ente-registrar') {
+      cardElement.addEventListener('click', validateClick)
+
+      closeModalCard(cardElement)
+    }
   }
 
-  d.addEventListener('click', validateClick)
+  if (closed) {
+    cardElement.addEventListener('click', validateClick)
+  }
 }

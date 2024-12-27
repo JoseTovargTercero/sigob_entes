@@ -29,7 +29,7 @@ const getEntesAsignaciones = async (id_ejercicio) => {
 
     const json = await res.json()
 
-    console.log(json)
+    // console.log(json)
     if (json.success) {
       return json.success
     }
@@ -63,10 +63,10 @@ const getEntesAsignacion = async (id_ejercicio) => {
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
-    // const clone = res.clone()
+    const clone = res.clone()
 
-    // let text = await clone.text()
-    // console.log(text)
+    let text = await clone.text()
+    console.log(text)
 
     const json = await res.json()
 
@@ -99,7 +99,7 @@ const getEnteSolicitudesDozavos = async ({ id_ejercicio }) => {
       body: JSON.stringify({ accion: 'consulta', id_ejercicio }),
     })
 
-    console.log(res)
+    // console.log(res)
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
@@ -110,7 +110,7 @@ const getEnteSolicitudesDozavos = async ({ id_ejercicio }) => {
 
     const json = await res.json()
 
-    console.log(json)
+    // console.log(json)
 
     if (json.success) {
       return json.success
@@ -139,7 +139,47 @@ const getEnteSolicitudDozavos = async ({ id_ejercicio, id }) => {
       body: JSON.stringify({ accion: 'consulta_id', id_ejercicio, id }),
     })
 
-    console.log(res)
+    // console.log(res)
+
+    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+
+    // const clone = res.clone()
+    // const text = await clone.text()
+
+    // console.log(text)
+
+    const json = await res.json()
+
+    // console.log(json)
+
+    if (json.success) {
+      return json.success
+    }
+    if (json.error) {
+      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+    }
+    return json
+  } catch (e) {
+    console.log(e)
+
+    return confirmNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Error al obtener solicitudes',
+    })
+  } finally {
+    hideLoader()
+  }
+}
+
+const getEnteSolicitudDozavosMes = async ({ id_ejercicio }) => {
+  showLoader()
+  try {
+    let res = await fetch(entesSolicitudesDozavosUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion: 'consulta_mes', id_ejercicio }),
+    })
+
+    // console.log(res)
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
@@ -152,8 +192,46 @@ const getEnteSolicitudDozavos = async ({ id_ejercicio, id }) => {
 
     console.log(json)
 
-    if (json.success) {
+    if (json.hasOwnProperty('success')) {
       return json.success
+    }
+    if (json.error) {
+      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+    }
+    return json
+  } catch (e) {
+    console.log(e)
+
+    return confirmNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Error al obtener solicitudes',
+    })
+  } finally {
+    hideLoader()
+  }
+}
+
+const registrarEnteSolicitudDozavo = async (data) => {
+  showLoader()
+  try {
+    let res = await fetch(entesSolicitudesDozavosUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion: 'registrar', ...data }),
+    })
+
+    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+
+    const clone = res.clone()
+    const text = await clone.text()
+
+    console.log(text)
+    const json = await res.json()
+
+    if (json.success) {
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.done,
+        message: json.success,
+      })
     }
     if (json.error) {
       toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
@@ -176,4 +254,6 @@ export {
   getEntesAsignacion,
   getEnteSolicitudesDozavos,
   getEnteSolicitudDozavos,
+  getEnteSolicitudDozavosMes,
+  registrarEnteSolicitudDozavo,
 }

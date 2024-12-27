@@ -1,3 +1,4 @@
+import { getEnteSolicitudesDozavos } from '../api/entes_solicitudesDozavos.js'
 import { getSolicitudesDozavos } from '../api/pre_solicitudesDozavos.js'
 
 import { separadorLocal, tableLanguage } from '../helpers/helpers.js'
@@ -37,7 +38,10 @@ export async function validateSolicitudEntesTable(id_ejercicio) {
   // loadSolicitudEntesTable(id_ejercicio)
 }
 
-export async function loadSolicitudEntesTable({ id_ejercicio, solicitudes }) {
+export async function loadSolicitudEntesTable({ id_ejercicio }) {
+  let solicitudes = await getEnteSolicitudesDozavos({
+    id_ejercicio,
+  })
   if (!Array.isArray(solicitudes)) return
 
   if (!solicitudes || solicitudes.error) return

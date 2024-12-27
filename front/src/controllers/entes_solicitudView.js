@@ -1,10 +1,12 @@
 import {
   getEntesAsignacion,
   getEnteSolicitudDozavos,
+  getEnteSolicitudDozavosMes,
   getEnteSolicitudesDozavos,
 } from '../api/entes_solicitudesDozavos.js'
 import { ente_solicitud_dozavo } from '../components/ente_solicitud_dozavo.js'
 import { entes_solicitudDozavo_card } from '../components/entes_solicitudDozavo_card.js'
+import { entes_solicitudGenerar_card } from '../components/entes_solicitudDozavoForm_card.js'
 import {
   ejerciciosLista,
   validarEjercicioActual,
@@ -32,31 +34,20 @@ export const validateSolicitudEntesView = async () => {
     return
   }
 
-  let data = await getEnteSolicitudesDozavos({
-    id_ejercicio: ejercicioFiscal.id,
-  })
-
   loadSolicitudEntesTable({
     id_ejercicio: ejercicioFiscal.id,
-    solicitudes: data,
   })
 
-  let date = new Date()
+  let solicitudMesActual = await getEnteSolicitudDozavosMes({
+    id_ejercicio: ejercicioFiscal.id,
+  })
 
-  let solicitud =
-    data.length > 0 ? data.find((el) => el.mes === date.getMonth()) : null
+  console.log(solicitudMesActual)
 
-  if (data.length > 0 && solicitud) {
-    entes_solicitudDozavo_card({
-      elementToInsert: 'solicitudes-entes-dozavos-view',
-      data: solicitud,
-    })
-  } else {
-    entes_solicitudDozavo_card({
-      elementToInsert: 'solicitudes-entes-dozavos-view',
-      data: null,
-    })
-  }
+  entes_solicitudDozavo_card({
+    elementToInsert: 'solicitudes-entes-dozavos-view',
+    data: solicitudMesActual,
+  })
 
   d.addEventListener('click', async (e) => {
     if (e.target.id === 'solicitud-ente-registrar') {
@@ -67,13 +58,25 @@ export const validateSolicitudEntesView = async () => {
         })
         return
       }
+
+      entes_solicitudGenerar_card({
+        elementToInsert: 'solicitudes-entes-dozavos-view',
+        ejercicioId: ejercicioFiscal.id,
+        reset: function () {
+          getEnteSolicitudDozavosMes({
+            id_ejercicio: ejercicioFiscal.id,
+          }).then((data) => {
+            entes_solicitudDozavo_card({
+              elementToInsert: 'solicitudes-entes-dozavos-view',
+              data: data,
+            })
+          })
+        },
+      })
     }
 
     if (e.target.dataset.detalleid) {
       scroll(0, 0)
-
-      let formCard = d.getElementById('solicitud-ente-card')
-      if (formCard) formCard.remove()
 
       let solicitud = await getEnteSolicitudDozavos({
         id_ejercicio: ejercicioFiscal.id,
@@ -84,27 +87,15 @@ export const validateSolicitudEntesView = async () => {
         elementToInsert: 'solicitudes-entes-dozavos-view',
         data: solicitud,
         closed: true,
-        reset: async function () {
-          let date = new Date()
-
-          console.log(date)
-
-          let solicitud =
-            data.length > 0
-              ? data.find((el) => el.mes === date.getMonth())
-              : null
-
-          if (data.length > 0 && solicitud) {
+        reset: function () {
+          getEnteSolicitudDozavosMes({
+            id_ejercicio: ejercicioFiscal.id,
+          }).then((data) => {
             entes_solicitudDozavo_card({
               elementToInsert: 'solicitudes-entes-dozavos-view',
-              data: solicitud,
+              data: data,
             })
-          } else {
-            entes_solicitudDozavo_card({
-              elementToInsert: 'solicitudes-entes-dozavos-view',
-              data: null,
-            })
-          }
+          })
         },
       })
     }
