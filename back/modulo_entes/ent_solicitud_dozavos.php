@@ -28,6 +28,10 @@ function gestionarSolicitudDozavos($data)
         if ($accion === 'consulta_id') {
             return consultarSolicitudPorId($data);
         }
+         // Acción: Consultar un registro por ID
+        if ($accion === 'consulta_mes') {
+            return consultarSolicitudPorMes($data);
+        }
 
         // Acción: Registrar una nueva solicitud
         if ($accion === 'registrar') {
@@ -202,6 +206,86 @@ function consultarSolicitudPorId($data)
         return json_encode(["success" => $row]);
     } else {
         return json_encode(["error" => "No se encontró el registro con el ID especificado o el ejercicio no coincide."]);
+    }
+}
+function consultarSolicitudPorMes($data)
+{
+    global $conexion;
+
+    if (!isset($data['id_ejercicio'])) {
+        return json_encode(["error" => "No se ha especificado el ID del ejercicio para la consulta."]);
+    }
+
+    $idEjercicio = $data['id_ejercicio'];
+    $idEnte = $_SESSION["id_ente"];
+    $mesActual = date("n") - 1; // Obtener el mes actual en formato de 0 a 11
+
+    try {
+        // Consultar la solicitud principal
+        $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
+                FROM solicitud_dozavos 
+                WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("iii", $idEnte, $idEjercicio, $mesActual);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            // Procesar las partidas asociadas
+            $partidasArray = json_decode($row['partidas'], true);
+
+            foreach ($partidasArray as &$partida) {
+                $idDistribucion = $partida['id'];
+
+                // Obtener el id_partida desde distribucion_presupuestaria
+                $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $idDistribucion);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($id_partida2);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                $id_partida = $id_partida2;
+
+                // Obtener información de la partida presupuestaria
+                $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $id_partida);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                $partida['partida'] = $partidaCod;
+                $partida['nombre'] = $nombre;
+                $partida['descripcion'] = $descripcion;
+            }
+
+            // Agregar las partidas procesadas
+            $row['partidas'] = $partidasArray;
+
+            // Consultar la información del ente asociado
+            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+            $stmtEnte = $conexion->prepare($sqlEnte);
+            $stmtEnte->bind_param("i", $idEnte);
+            $stmtEnte->execute();
+            $resultEnte = $stmtEnte->get_result();
+            $dataEnte = $resultEnte->fetch_assoc();
+            $stmtEnte->close();
+
+            // Agregar la información del ente como un ítem más
+            $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+
+            return json_encode(["success" => $row]);
+        } else {
+            // Si no hay registros, devolver null en success
+            return json_encode(["success" => null]);
+        }
+    } catch (Exception $e) {
+        return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
 
