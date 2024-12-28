@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-12-2024 a las 14:44:53
--- Versión del servidor: 10.4.27-MariaDB
--- Versión de PHP: 7.4.33
+-- Tiempo de generación: 28-12-2024 a las 01:22:07
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -5202,7 +5202,7 @@ INSERT INTO `menu` (`id`, `oficina`, `categoria`, `nombre`, `dir`, `icono`) VALU
 (39, 'nomina', 'Nómina', 'Pagar nomina', 'mod_nomina/nom_peticiones_form', 'bx-wallet-alt'),
 (40, 'pl_formulacion', NULL, 'Reportes', 'mod_pl_formulacion/form_reportes', 'bx-download'),
 (42, '', 'usuarios', 'Seguimiento general', 'mod_global/global_user_logs', NULL),
-(43, 'entes', NULL, 'solicitud de dozavo', 'mod_entes/solicitud_dozavo_vista', NULL);
+(43, 'entes', NULL, 'Solicitudes dozavos', 'mod_entes/entes_solicitudes_vista', 'bx-envelope');
 
 -- --------------------------------------------------------
 
@@ -11424,8 +11424,8 @@ INSERT INTO `system_users` (`u_id`, `u_nombre`, `u_oficina_id`, `u_oficina`, `u_
 (36, 'Otro user', 4, 'pl_formulacion', 'dc@gmail.com', '$2y$10$rkLTvh67l6wU6P3sNrmDoOKE9fYZeEe46nkk7VtYcRB20nM0cgIZ.', '2024-10-12 15:47:50', 2, 1, '6722697', 1),
 (37, 'Otro user nomina', 1, 'nomina', 'll@gmail.com', '$2y$10$7rP3s5kmozULLCHQpVCQ9exS28MkvJpV8x4whtmS2Z0EnXD2YbeK.', '2024-10-12 21:15:58', 2, 1, '6722697', 1),
 (38, 'YO', 5, 'ejecucion_p', 'AAAac.80014.dc@gmail.com', '$2y$10$azF/dOpnDs9sCTYiLEF7kO8612REFdjpk8Te.bih4BaNDSfhAw9MO', '2024-10-15 21:25:50', 1, 1, '27640176', 1),
-(40, 'user ejecucion', 5, 'ejecucion_p', 'eje@correo.com', '$2y$10$eyp1moy39kuw4uredk7ao.uuzq10yniz95izlm70mupo5j6yzebvg', '2024-08-06 18:31:06', 1, 1, '67226972', 1),
-(41, 'user ente', 6, 'entes', 'ente@correo.com', '$2y$10$eyp1moy39kuw4uredk7ao.uuzq10yniz95izlm70mupo5j6yzebvg', '2024-12-20 16:30:38', 1, 1, '67226972', 1);
+(40, 'user ejecucion', 5, 'ejecucion_p', 'eje@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-08-06 18:31:06', 1, 1, '67226972', 1),
+(41, 'user ente', 6, 'entes', 'ente@correo.com', '$2y$10$EyP1MOY39kuw4uREdk7ao.UUzQ10YNIZ95IZLM70MUPo5J6YzEBVG', '2024-12-20 16:30:38', 1, 1, '67226972', 1);
 
 -- --------------------------------------------------------
 
@@ -11907,7 +11907,7 @@ CREATE TABLE `tasa` (
 --
 
 INSERT INTO `tasa` (`id`, `descripcion`, `simbolo`, `valor`) VALUES
-(1, 'Precio del Dólar Actual', '$', '51.5398');
+(1, 'Precio del Dólar Actual', '$', '51.9345');
 
 -- --------------------------------------------------------
 
@@ -11946,7 +11946,8 @@ INSERT INTO `tasa_historico` (`id`, `u_nombre`, `precio`, `descripcion`, `fecha`
 (16, 'sigob', '50.3319', 'actualizacion automática', '16-12-2024'),
 (17, 'sigob', '50.371', 'actualizacion automática', '17-12-2024'),
 (18, 'sigob', '50.5419', 'actualizacion automática', '18-12-2024'),
-(19, 'sigob', '51.5398', 'actualizacion automática', '23-12-2024');
+(19, 'sigob', '51.5398', 'actualizacion automática', '23-12-2024'),
+(20, 'sigob', '51.9345', 'actualizacion automática', '27-12-2024');
 
 -- --------------------------------------------------------
 
@@ -17083,7 +17084,7 @@ ALTER TABLE `tasa`
 -- AUTO_INCREMENT de la tabla `tasa_historico`
 --
 ALTER TABLE `tasa_historico`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_gastos`

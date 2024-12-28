@@ -8,7 +8,7 @@ import {
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
 const d = document
 
-const nombre_componente = ({ elementToInsert }) => {
+const nombre_componente = ({ elementToInsert, close = false }) => {
   let fieldList = { ejemplo: '' }
   let fieldListErrors = {
     ejemplo: {
@@ -21,7 +21,12 @@ const nombre_componente = ({ elementToInsert }) => {
   let nombreCard = '${nombreCard}'
 
   const oldCardElement = d.getElementById(`${nombreCard}-form-card`)
-  if (oldCardElement) oldCardElement.remove()
+
+  if (oldCardElement) {
+    closeCard(oldCardElement)
+  }
+
+  if (close) return
 
   let card = `<div class='card slide-up-animation' id='${nombreCard}-form-card'>
       <div class='card-header d-flex justify-content-between'>

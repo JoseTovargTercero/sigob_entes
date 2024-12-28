@@ -28,8 +28,6 @@ export const entes_solicitudDozavo_card = async ({
     closeModalCard(oldCardElement)
   }
 
-  console.log(data)
-
   const partidasLi = () => {
     return data.partidas
       ? data.partidas

@@ -11,6 +11,8 @@ import {
   ejerciciosLista,
   validarEjercicioActual,
 } from '../components/form_ejerciciosLista.js'
+import { toastNotification } from '../helpers/helpers.js'
+import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
 import {
   loadSolicitudEntesTable,
   validateSolicitudEntesTable,
@@ -41,8 +43,6 @@ export const validateSolicitudEntesView = async () => {
   let solicitudMesActual = await getEnteSolicitudDozavosMes({
     id_ejercicio: ejercicioFiscal.id,
   })
-
-  console.log(solicitudMesActual)
 
   entes_solicitudDozavo_card({
     elementToInsert: 'solicitudes-entes-dozavos-view',
@@ -76,6 +76,12 @@ export const validateSolicitudEntesView = async () => {
     }
 
     if (e.target.dataset.detalleid) {
+      // CERRAR FORMULARIO
+      entes_solicitudGenerar_card({
+        elementToInsert: 'solicitudes-entes-dozavos-view',
+        close: true,
+      })
+
       scroll(0, 0)
 
       let solicitud = await getEnteSolicitudDozavos({
@@ -88,6 +94,8 @@ export const validateSolicitudEntesView = async () => {
         data: solicitud,
         closed: true,
         reset: function () {
+          // CARGAR SOLICITUD DE MES POR DEFECTO EN CASO DE CERRAR LA CARD DE DETALLES
+
           getEnteSolicitudDozavosMes({
             id_ejercicio: ejercicioFiscal.id,
           }).then((data) => {
@@ -100,21 +108,28 @@ export const validateSolicitudEntesView = async () => {
       })
     }
 
-    // if (e.target.dataset.validarid) {
-    //   pre_solicitudGenerar_card({
-    //     elementToInsert: 'solicitudes-dozavos-view',
-    //     enteId: e.target.dataset.validarid,
-    //     ejercicioId: ejercicioFiscal.id,
-    //   })
-    // }
     if (e.target.dataset.ejercicioid) {
       // QUITAR CARD SI SE CAMBIA EL AÑO FISCAL
       let formCard = d.getElementById('solicitud-ente-card')
       if (formCard) formCard.remove()
 
-      loadSolicitudEntesTable(e.target.dataset.ejercicioid)
+      loadSolicitudEntesTable({ id_ejercicio: e.target.dataset.ejercicioid })
       ejercicioFiscal = await validarEjercicioActual({
         ejercicioTarget: e.target,
+      })
+
+      entes_solicitudGenerar_card({
+        elementToInsert: 'solicitudes-entes-dozavos-view',
+        close: true,
+      })
+
+      getEnteSolicitudDozavosMes({
+        id_ejercicio: ejercicioFiscal.id,
+      }).then((data) => {
+        entes_solicitudDozavo_card({
+          elementToInsert: 'solicitudes-entes-dozavos-view',
+          data: data,
+        })
       })
     }
   })

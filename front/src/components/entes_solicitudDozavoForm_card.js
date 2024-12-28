@@ -199,6 +199,7 @@ const mesesOptions = () => {
 export const entes_solicitudGenerar_card = async ({
   elementToInsert,
   enteId,
+  close = false,
   ejercicioId,
   reset,
 }) => {
@@ -217,10 +218,13 @@ export const entes_solicitudGenerar_card = async ({
   }
 
   const oldCardElement = d.getElementById('solicitud-distribucion-form-card')
-  if (oldCardElement) oldCardElement.remove()
+  if (oldCardElement) {
+    closeCard(oldCardElement)
+  }
+
+  if (close) return
 
   let asignacionEnte = await getEntesAsignacion(ejercicioId)
-  console.log(asignacionEnte)
 
   let dependencias = asignacionEnte.dependencias
 
@@ -415,22 +419,22 @@ export const entes_solicitudGenerar_card = async ({
   let cardElement = d.getElementById('solicitud-distribucion-form-card')
   // let formElement = d.getElementById('solicitud-distribucion-form')
 
-  const closeCard = () => {
+  function closeCard(card) {
     // validateEditButtons()
-    cardElement.remove()
-    cardElement.removeEventListener('click', validateClick)
-    cardElement.removeEventListener('input', validateInputFunction)
+    card.remove()
+    card.removeEventListener('click', validateClick)
+    card.removeEventListener('input', validateInputFunction)
 
     return false
   }
 
   async function validateClick(e) {
     if (e.target.dataset.close) {
-      closeCard()
+      closeCard(cardElement)
     }
 
     if (e.target.id === 'solicitud-cancelar') {
-      closeCard()
+      closeCard(cardElement)
     }
 
     if (e.target.id === 'solicitud-generar') {
@@ -521,7 +525,7 @@ export const entes_solicitudGenerar_card = async ({
       successFunction: async function () {
         let res = await registrarEnteSolicitudDozavo(data)
         if (res.success) {
-          closeCard()
+          closeCard(cardElement)
           loadSolicitudEntesTable({ id_ejercicio: ejercicioId })
           reset()
         }
