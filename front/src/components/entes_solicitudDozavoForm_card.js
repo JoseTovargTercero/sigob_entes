@@ -202,6 +202,7 @@ export const entes_solicitudGenerar_card = async ({
   close = false,
   ejercicioId,
   reset,
+  asignacionEnte,
 }) => {
   let fieldList = { mes: '', descripcion: '' }
   let fieldListErrors = {
@@ -223,8 +224,6 @@ export const entes_solicitudGenerar_card = async ({
   }
 
   if (close) return
-
-  let asignacionEnte = await getEntesAsignacion(ejercicioId)
 
   let dependencias = asignacionEnte.dependencias
 

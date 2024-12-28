@@ -59,9 +59,16 @@ export const validateSolicitudEntesView = async () => {
         return
       }
 
+      let asignacionEnte = await getEntesAsignacion(ejercicioFiscal.id)
+
+      if (asignacionEnte.error) {
+        return
+      }
+
       entes_solicitudGenerar_card({
         elementToInsert: 'solicitudes-entes-dozavos-view',
         ejercicioId: ejercicioFiscal.id,
+        asignacionEnte: asignacionEnte,
         reset: function () {
           getEnteSolicitudDozavosMes({
             id_ejercicio: ejercicioFiscal.id,
