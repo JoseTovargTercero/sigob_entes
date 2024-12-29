@@ -23,5 +23,5 @@ if ($_SERVER['SERVER_NAME'] == 'localhost') {
 
 
 define('HOST', 'localhost');
-define('DB', 'sigob');
+define('DB', 'sigob_entes');
 define('CHARSET', 'utf8mb4');
