@@ -60,6 +60,7 @@ export const validateSolicitudEntesView = async () => {
       }
 
       let asignacionEnte = await getEntesAsignacion(ejercicioFiscal.id)
+      console.log(asignacionEnte)
 
       if (asignacionEnte.error) {
         return

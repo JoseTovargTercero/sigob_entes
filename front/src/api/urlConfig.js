@@ -1,5 +1,14 @@
+function validateUrl() {
+  let url = new URL(window.location.href)
+  let protocol = url.protocol
+  let host = url.host
+  let pathname = url.pathname
+
+  return `${protocol}//${host}`
+}
+
 const config = {
-  BASE_URL: 'http://localhost',
+  BASE_URL: validateUrl(),
   APP_NAME: 'sigob_entes',
   DIR: 'back',
   MODULE_NAMES: {
@@ -8,5 +17,7 @@ const config = {
     FORMULACION: 'modulo_pl_formulacion',
   },
 }
+
+console.log(config)
 
 export default config

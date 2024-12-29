@@ -69,7 +69,7 @@ const getEntesAsignacion = async (id_ejercicio) => {
 
     const json = await res.json()
 
-    // console.log(json)
+    console.log(json)
     if (json.success) {
       return json.success
     }
