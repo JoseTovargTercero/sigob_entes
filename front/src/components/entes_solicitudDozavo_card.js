@@ -99,7 +99,11 @@ export const entes_solicitudDozavo_card = async ({
                 <div class='col-sm'>
                   <b>Tipo de ente: </b>
                   <p>
-                    ${data.tipo_ente === 'J' ? 'Jurídico' : 'Descentralizado'}
+                    ${
+                      data.ente.tipo_ente === 'J'
+                        ? 'Jurídico'
+                        : 'Descentralizado'
+                    }
                   </p>
                 </div>
                 <div class='col-sm'>
