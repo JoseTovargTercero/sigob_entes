@@ -6,10 +6,10 @@ import {
   toastNotification,
 } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
-import config from './urlConfig.js'
+import { config, APP_URL } from './urlConfig.js'
 
-const entesDistribucionUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.ENTES}/ent_asignacion_entes.php`
-const entesSolicitudesDozavosUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.ENTES}/ent_solicitud_dozavos.php`
+const entesDistribucionUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_asignacion_entes.php`
+const entesSolicitudesDozavosUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_solicitud_dozavos.php`
 
 const getEntesAsignaciones = async (id_ejercicio) => {
   showLoader()
