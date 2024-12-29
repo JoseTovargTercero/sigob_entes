@@ -6,15 +6,14 @@ import {
   toastNotification,
 } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
+import config from './urlConfig.js'
 
-const ejercicioFiscalUrl =
-  '../../../../sigob_entes/back/sistema_global/ejercicio_fiscal.php'
+const ejercicioFiscalUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.GLOBAL}/ejercicio_fiscal.php`
 
-const distribucionPresupuestariaUrl =
-  '../../../../sigob_entes/back/modulo_pl_formulacion/form_distribucion.php'
+const distribucionPresupuestariaUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.FORMULACION}/form_distribucion.php`
 
-const distribucionPresupuestariaEntesUrl =
-  '../../../../sigob/back/modulo_pl_formulacion/form_distribucion_entes.php'
+const distribucionPresupuestariaEntesUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.FORMULACION}/form_distribucion_entes.php`
+
 const getEjecicios = async (id) => {
   showLoader()
   try {

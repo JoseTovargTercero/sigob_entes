@@ -5,8 +5,9 @@ import {
   toastNotification,
 } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
+import config from './urlConfig.js'
 
-const apiUrl = '../../../sigob/back/sistema_global/_DBH-select.php'
+const apiUrl = `${config.BASE_URL}/${config.APP_NAME}/${config.DIR}/${config.MODULE_NAMES.GLOBAL}/_DBH-select.php`
 
 const selectTables = async (table, config = null) => {
   showLoader()
