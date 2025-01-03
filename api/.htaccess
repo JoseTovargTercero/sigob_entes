@@ -1,0 +1,6 @@
+Options All -Indexes
+Options -MultiViews
+
+RewriteEngine on
+
+RewriteRule ^ index.php [QSA,L]
