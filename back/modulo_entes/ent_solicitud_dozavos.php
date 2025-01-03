@@ -318,7 +318,7 @@ function registrarSolicitudozavo($data)
         // Iniciar una transacción
         $conexion->begin_transaction();
 
-        $mesActual = date("n") - 1; // Mes actual (0-11)
+        $mesActual = (date("n") - 1); // Mes actual (0-11)
         $mesSolicitado = $data['mes']; // Mes solicitado (0-11)
         $idEnte = $_SESSION['id_ente'];
         $idEjercicio = $data['id_ejercicio'];
@@ -345,10 +345,13 @@ function registrarSolicitudozavo($data)
         $filaMesActual = $resultadoMesActual->fetch_assoc();
         $existeMesActual = $filaMesActual['total'] > 0;
 
+        // Calcular el mes siguiente correctamente
+        $mesSiguiente = ($mesActual + 1) % 12;
+
         // Condiciones para permitir el registro
         if ($mesSolicitado == $mesActual && !$existeMesActual) {
             // Permitido registrar para el mes en curso si aún no existe
-        } elseif ($mesSolicitado == ($mesActual + 1) && $existeMesActual) {
+        } elseif ($mesSolicitado == $mesSiguiente && $existeMesActual) {
             // Permitido registrar para el siguiente mes si el mes actual ya existe
         } else {
             $conexion->rollback();
@@ -381,6 +384,7 @@ function registrarSolicitudozavo($data)
         return json_encode(["error" => $e->getMessage()]);
     }
 }
+
 
 
 
