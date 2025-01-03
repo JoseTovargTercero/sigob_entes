@@ -231,7 +231,6 @@ function consultarSolicitudPorMes($data)
     }
 
     $mesActual = date("n") - 1;
-    $mesActual = $mesActual < 1 ? 12 : $mesActual; // Ajustar para diciembre
 
     try {
         // Consultar las solicitudes principales
