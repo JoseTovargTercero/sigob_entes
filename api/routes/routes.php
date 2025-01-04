@@ -80,7 +80,9 @@ function validateRoutes($path, $method)
                     $dataRequest = $data;
                     $resultado = $solicutudesController->gestionarSolicitudDozavos2($dataRequest["id"], $dataRequest["accion_gestion"], $data['codigo'] ?? ''); // Llamar a la función de consulta por mes
 
-
+                    if (array_key_exists('compromiso', $resultado)) {
+                        return ['status' => 200, 'success' => $resultado['success'], "compromiso" => $resultado['compromiso']];
+                    }
                 }
 
                 if ($accion === 'registrar') {

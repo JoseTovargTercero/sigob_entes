@@ -19,6 +19,7 @@ const config = {
     ENTES: 'modulo_entes/',
     GLOBAL: 'sistema_global/',
     FORMULACION: 'modulo_pl_formulacion/',
+    EJECUCION: 'modulo_ejecucion_presupuestaria/',
   },
 }
 

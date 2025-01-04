@@ -28,7 +28,7 @@ function gestionarSolicitudDozavos($data)
         if ($accion === 'consulta_id') {
             return consultarSolicitudPorId($data);
         }
-         // Acción: Consultar un registro por ID
+        // Acción: Consultar un registro por ID
         if ($accion === 'consulta_mes') {
             return consultarSolicitudPorMes($data);
         }
@@ -231,6 +231,7 @@ function consultarSolicitudPorMes($data)
     }
 
     $mesActual = date("n") - 1;
+    $mesActual = $mesActual < 1 ? 12 : $mesActual; // Ajustar para diciembre
 
     try {
         // Consultar las solicitudes principales
@@ -246,7 +247,7 @@ function consultarSolicitudPorMes($data)
             $rows = [];
 
             while ($row = $result->fetch_assoc()) {
-                 if ($row['numero_compromiso'] == 0) {
+                if ($row['numero_compromiso'] == 0) {
                     $row['numero_compromiso'] = null;
                 }
                 // Procesar las partidas asociadas
@@ -283,19 +284,19 @@ function consultarSolicitudPorMes($data)
                 // Agregar las partidas procesadas
                 $row['partidas'] = $partidasArray;
                 $rows[] = $row;
-                 // Consultar la información del ente asociado
-        $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-        $stmtEnte = $conexion->prepare($sqlEnte);
-        $stmtEnte->bind_param("i", $idEnte);
-        $stmtEnte->execute();
-        $resultEnte = $stmtEnte->get_result();
-        $dataEnte = $resultEnte->fetch_assoc();
-        $stmtEnte->close();
+                // Consultar la información del ente asociado
+                $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+                $stmtEnte = $conexion->prepare($sqlEnte);
+                $stmtEnte->bind_param("i", $idEnte);
+                $stmtEnte->execute();
+                $resultEnte = $stmtEnte->get_result();
+                $dataEnte = $resultEnte->fetch_assoc();
+                $stmtEnte->close();
 
-        // Agregar la información del ente como un ítem más
-        $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
-        return json_encode(["success" => $row]);
-        }
+                // Agregar la información del ente como un ítem más
+                $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+                return json_encode(["success" => $row]);
+            }
         } else {
             return json_encode(["success" => null]);
         }
