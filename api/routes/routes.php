@@ -4,7 +4,6 @@ $path = explode('/', $_SERVER['REQUEST_URI']);
 $path = array_filter($path);
 
 $method = $_SERVER['REQUEST_METHOD'];
-
 function validateRoutes($path, $method)
 {
     if (count($path) < 2) {
@@ -12,23 +11,97 @@ function validateRoutes($path, $method)
     }
 
     $json = ['status' => 200, 'result' => ''];
+
     $path = explode('?', $path[2]);
 
-    if ($path[0] === 'solicitudes') {
-        require_once '../../config/conexion.php';
-        require_once '../../controllers/solicitudes.controller.php';
+    if (
+        $path[0] === 'solicitudes'
+    ) {
 
-        $solicitudesController = new SolicitudesController($conexion);
+        require_once '.../../config/conexion.php';
+        require_once '.../../controllers/solicitudes.controller.php';
+
+        $solicutudesController = new SolicitudesController($conexion);
+
+        // Variables para las solicitudes
+        $dataRequest = [];
 
         switch ($method) {
             case 'GET':
-                return handleGetRequest($solicitudesController);
+
+                $resultado = [];
+
+                $params = $_GET;
+
+                if (!isset($params['id_ejercicio'])) {
+                    return ['status' => 400, 'result' => 'Falta el id del ejercicio'];
+                }
+
+                if (isset($params['id'])) {
+                    // Acción para consultar un registro por ID
+                    $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id'], 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por mes
+                }
+                if (isset($params['mes'])) {
+                    // Acción para consultar registros por mes
+                    $dataRequest = ['accion' => 'consulta_mes', 'mes' => $params['mes'], 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
+                } else {
+                    // Acción para consultar todos los registros
+                    $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
+
+                }
+
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
 
             case 'POST':
-                return handlePostRequest($solicitudesController);
+
+                $data = json_decode(file_get_contents('php://input'), true);
+
+
+                if (!isset($data['accion'])) {
+                    return ['status' => 400, 'result' => 'Falta la acción'];
+                }
+                $accion = $data['accion'];
+
+                if ($accion === 'gestionar') {
+                    // Acción para gestionar la solicitud
+                    if (!isset($data['id']) || !isset($data['accion_gestion'])) {
+                        return ['status' => 400, 'result' => 'Faltan parámetros para gestionar'];
+                    }
+                    return gestionarSolicitudDozavos2($data['id'], $data['accion_gestion'], $data['codigo'] ?? '');
+
+                }
+
+                if ($accion === 'registrar') {
+                    // Acción para registrar una nueva solicitud
+                    return registrarSolicitudozavo($data);
+                }
+
+                if ($accion === 'update') {
+                    // Acción para actualizar un registro
+                    return actualizarSolicitudozavo($data);
+                }
+
+                break;
 
             case 'DELETE':
-                return handleDeleteRequest($solicitudesController);
+            // if ($accion === 'rechazar') {
+            //     // Acción para rechazar la solicitud
+            //     return rechazarSolicitud($data);
+            // }
+
+            // if ($accion === 'delete') {
+            //     // Acción para eliminar la solicitud
+            //     return eliminarSolicitudozavo($data);
+            // }
+            // break;
 
             default:
                 return ['status' => 405, 'result' => 'Método no permitido'];
@@ -38,88 +111,10 @@ function validateRoutes($path, $method)
     return ['status' => 404, 'result' => 'Ruta no encontrada'];
 }
 
-function handleGetRequest($controller)
-{
-    $params = $_GET;
-
-    if (!isset($params['id_ejercicio'])) {
-        return ['status' => 400, 'result' => 'Falta el id del ejercicio'];
-    }
-
-    $dataRequest = [];
-    if (isset($params['id'])) {
-        $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id'], 'id_ejercicio' => $params['id_ejercicio']];
-        $resultado = $controller->consultarSolicitudPorId($dataRequest);
-    } elseif (isset($params['mes'])) {
-        $dataRequest = ['accion' => 'consulta_mes', 'mes' => $params['mes'], 'id_ejercicio' => $params['id_ejercicio']];
-        $resultado = $controller->consultarSolicitudPorMes($dataRequest);
-    } else {
-        $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $params['id_ejercicio']];
-        $resultado = $controller->consultarSolicitudes($dataRequest);
-    }
-
-    return processResult($resultado);
-}
-
-function handlePostRequest($controller)
-{
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if (!isset($data['accion'])) {
-        return ['status' => 400, 'result' => 'Falta la acción'];
-    }
-
-    switch ($data['accion']) {
-        case 'gestionar':
-            if (!isset($data['id'], $data['accion_gestion'])) {
-                return ['status' => 400, 'result' => 'Faltan parámetros para gestionar'];
-            }
-            return $controller->gestionarSolicitudDozavos2($data['id'], $data['accion_gestion'], $data['codigo'] ?? '');
-
-        case 'registrar':
-            return $controller->registrarSolicitudozavo($data);
-
-        case 'update':
-            return $controller->actualizarSolicitudozavo($data);
-
-        default:
-            return ['status' => 400, 'result' => 'Acción no válida'];
-    }
-}
-
-function handleDeleteRequest($controller)
-{
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if (!isset($data['accion'])) {
-        return ['status' => 400, 'result' => 'Falta la acción'];
-    }
-
-    switch ($data['accion']) {
-        case 'rechazar':
-            return $controller->rechazarSolicitud($data);
-
-        case 'delete':
-            return $controller->eliminarSolicitudozavo($data);
-
-        default:
-            return ['status' => 400, 'result' => 'Acción no válida'];
-    }
-}
-
-function processResult($resultado)
-{
-    if (isset($resultado['error'])) {
-        return ['status' => 400, 'result' => $resultado['error']];
-    }
-
-    return ['status' => 200, 'result' => $resultado];
-}
 
 $json = validateRoutes($path, $method);
 
 echo json_encode($json, http_response_code($json['status']));
-
 
 // if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['REQUEST_URI'])) {
 //     $uri = $_SERVER['REQUEST_URI'];
