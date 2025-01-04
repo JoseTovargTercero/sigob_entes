@@ -1,71 +1,90 @@
 <?php
 
-$path = explode(separator: '/', string: $_SERVER['REQUEST_URI']);
+$path = explode('/', $_SERVER['REQUEST_URI']);
 $path = array_filter($path);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 function validateRoutes($path, $method)
 {
-
-    if (count($path) == 1) {
-        return $json = ['status' => 404, 'result' => 'No encontrado'];
+    if (count($path) < 2) {
+        return ['status' => 404, 'result' => 'No encontrado'];
     }
 
-
-    // MODIFICAR RESULTADO A MEDIDA DE QUE SE OBTENGAN LOS DATOS
     $json = ['status' => 200, 'result' => ''];
 
+    // Obtener los datos de la solicitud
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (isset($data['accion'])) {
-        return $json = ['status' => 500, 'result' => 'Acción no especificada'];
+    if (!isset($data['accion'])) {
+        return ['status' => 500, 'result' => 'Acción no especificada'];
     }
 
     $accion = $data['accion'];
 
-    if ($path) {
-        if ($path[2] == 'solicitudes') {
+    if ($path[2] == 'solicitudes') {
 
-            $dataRequest = [];
+        // Variables para las solicitudes
+        $dataRequest = [];
 
-            switch ($method) {
-                case $method == 'GET':
-                    $dataRequest = isset($data['id']) ? json_encode(['accion' => 'consulta_id', 'id' => $data['id']]) : json_encode(['accion' => 'consulta']);
+        switch ($method) {
+            case 'GET':
+                if (isset($data['id'])) {
+                    // Acción para consultar un registro por ID
+                    $dataRequest = ['accion' => 'consulta_id', 'id' => $data['id']];
+                    return consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por ID
+                } elseif (isset($data['mes'])) {
+                    // Acción para consultar registros por mes
+                    $dataRequest = ['accion' => 'consulta_mes', 'mes' => $data['mes']];
+                    return consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
+                } else {
+                    // Acción para consultar todos los registros
+                    $dataRequest = ['accion' => 'consulta'];
+                    return consultarSolicitudes($dataRequest); // Llamar a la función de consulta general
+                }
 
-                    // FUNCIONES PARA CONSULTAR SOLICITUDES
-
-                    break;
-                case $method == 'POST':
-
-                    if ($accion === 'gestionar') {
-                        $dataRequest = json_encode(['accion' => $accion, 'accion_gestion' => $data['accion_gestion'], 'id' => $data['id']]);
-
-                        // FUNCIÓN PARA GESTIONAR
+            case 'POST':
+                if ($accion === 'gestionar') {
+                    // Acción para gestionar la solicitud
+                    if (!isset($data['id']) || !isset($data['accion_gestion'])) {
+                        return ['status' => 400, 'result' => 'Faltan parámetros para gestionar'];
                     }
+                    return gestionarSolicitudDozavos2($data['id'], $data['accion_gestion'], $data['codigo'] ?? '');
 
-                    if ($accion === 'registrar') {
-                        $dataRequest = json_encode(['accion' => $accion]);
+                }
 
-                        // FUNCIÓN PARA REGISTRAR
-                    }
+                if ($accion === 'registrar') {
+                    // Acción para registrar una nueva solicitud
+                    return registrarSolicitudozavo($data);
+                }
 
+                if ($accion === 'update') {
+                    // Acción para actualizar un registro
+                    return actualizarSolicitudozavo($data);
+                }
 
+                break;
 
+            case 'DELETE':
+                if ($accion === 'rechazar') {
+                    // Acción para rechazar la solicitud
+                    return rechazarSolicitud($data);
+                }
 
+                if ($accion === 'delete') {
+                    // Acción para eliminar la solicitud
+                    return eliminarSolicitudozavo($data);
+                }
+                break;
 
-                    $json['result'] = 'POST';
-                    break;
-                // case $method == 'DELETE':
-                //     $json['result'] = 'DELETE';
-                //     break;
-            }
+            default:
+                return ['status' => 405, 'result' => 'Método no permitido'];
         }
     }
 
-
-    return $json;
+    return ['status' => 404, 'result' => 'Ruta no encontrada'];
 }
+
 
 $json = validateRoutes($path, $method);
 
