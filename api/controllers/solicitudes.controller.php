@@ -5,6 +5,9 @@
 header('Content-Type: application/json');
 // require_once '../../back/modulo_entes/pre_compromisos.php';
 
+
+
+
 class SolicitudesController
 {
     public function __construct($conexion)
@@ -14,74 +17,96 @@ class SolicitudesController
 
     private $conexion;
 
-   // Función para consultar todas las solicitudes
-public function consultarSolicitudes($data)
-{
-    if (!isset($data['id_ejercicio'])) {
-        return ["error" => "No se ha especificado el ID del ejercicio."];
-    }
+    // Función para consultar todas las solicitudes
+    public function consultarSolicitudes($data)
+    {
+        if (!isset($data['id_ejercicio'])) {
+            return ["error" => "No se ha especificado el ID del ejercicio."];
+        }
 
-    $idEjercicio = $data['id_ejercicio'];
+        $idEjercicio = $data['id_ejercicio'];
 
-    try {
-        // Consulta principal con detalles básicos de solicitud_dozavos
-        $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
+        try {
+            // Consulta principal con detalles básicos de solicitud_dozavos
+            $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
                        s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
                        e.ente_nombre, e.tipo_ente
                 FROM solicitud_dozavos s
                 JOIN entes e ON s.id_ente = e.id
                 WHERE s.id_ejercicio = ?";
-        $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("i", $idEjercicio);
-        $stmt->execute();
-        $result = $stmt->get_result();
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("i", $idEjercicio);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $solicitudes = [];
+            if ($result->num_rows > 0) {
+                $solicitudes = [];
 
-            while ($row = $result->fetch_assoc()) {
-                // Verificar si numero_compromiso es 0 y establecerlo como null
-                $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
+                while ($row = $result->fetch_assoc()) {
+                    // Verificar si numero_compromiso es 0 y establecerlo como null
+                    $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
 
-                // Procesar las partidas asociadas
-                $partidasArray = json_decode($row['partidas'], true);
+                    // Procesar las partidas asociadas
+                    $partidasArray = json_decode($row['partidas'], true);
 
-                foreach ($partidasArray as &$partida) {
-                    $idDistribucion = $partida['id'];
+                    foreach ($partidasArray as &$partida) {
+                        $idDistribucion = $partida['id'];
 
-                    // Consulta consolidada para obtener datos de partidas_presupuestarias
-                    $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
+                        // Consulta consolidada para obtener datos de partidas_presupuestarias
+                        $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
                                    FROM distribucion_presupuestaria dp
                                    JOIN partidas_presupuestarias p ON dp.id_partida = p.id
                                    WHERE dp.id = ?";
-                    $stmtPartida = $this->conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $idDistribucion);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
+                        $stmtPartida = $this->conexion->prepare($sqlPartida);
+                        $stmtPartida->bind_param("i", $idDistribucion);
+                        $stmtPartida->execute();
+                        $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                        $stmtPartida->fetch();
+                        $stmtPartida->close();
 
-                    // Agregar datos a la partida
-                    $partida['partida'] = $partidaCod;
-                    $partida['nombre'] = $nombre;
-                    $partida['descripcion'] = $descripcion;
+                        // Agregar datos a la partida
+                        $partida['partida'] = $partidaCod;
+                        $partida['nombre'] = $nombre;
+                        $partida['descripcion'] = $descripcion;
+                    }
+
+                    // Agregar las partidas procesadas al registro
+                    $row['partidas'] = $partidasArray;
+
+                    // Añadir la solicitud completa a la lista de solicitudes
+                    $solicitudes[] = $row;
                 }
 
-                // Agregar las partidas procesadas al registro
-                $row['partidas'] = $partidasArray;
-
-                // Añadir la solicitud completa a la lista de solicitudes
-                $solicitudes[] = $row;
+                return ["success" => $solicitudes];
+            } else {
+                return ["success" => "No se encontraron registros en solicitud_dozavos."];
             }
-
-            return ["success" => $solicitudes];
-        } else {
-            return ["success" => "No se encontraron registros en solicitud_dozavos."];
+        } catch (Exception $e) {
+            return ["error" => "Error: " . $e->getMessage()];
         }
-    } catch (Exception $e) {
-        return ["error" => "Error: " . $e->getMessage()];
     }
-}
+
+    public function registrarError($descripcion)
+    {
+
+        try {
+            $fechaHora = date('Y-m-d H:i:s');
+            $sql = "INSERT INTO error_log (descripcion, fecha) VALUES (?, ?)";
+
+            // Verificar si la consulta SQL se prepara correctamente
+            if ($stmt = $this->conexion->prepare($sql)) {
+                $stmt->bind_param("ss", $descripcion, $fechaHora);
+                $stmt->execute();
+                $stmt->close();
+            } else {
+                // Mostrar el error si la preparación falla
+                echo "Error en la consulta SQL: " . $this->conexion->error;
+            }
+        } catch (Exception $e) {
+            // Manejo de error si el registro de errores falla
+            echo "Error al registrar el error: " . $e->getMessage();
+        }
+    }
 
 
     // Función para consultar una solicitud por ID
@@ -93,14 +118,14 @@ public function consultarSolicitudes($data)
 
         $id = $data['id'];
         $idEjercicio = $data['id_ejercicio'];
-        $idEnte = $data["id_ente"];
+
 
         // Consultar la solicitud principal
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
                 FROM solicitud_dozavos 
-                WHERE id = ? AND id_ente = ? AND id_ejercicio = ?";
+                WHERE id = ? AND id_ejercicio = ?";
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("iii", $id, $idEnte, $idEjercicio);
+        $stmt->bind_param("ii", $id, $idEjercicio);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -245,7 +270,7 @@ public function consultarSolicitudes($data)
     {
         try {
             if (!isset($data['descripcion']) || !isset($data['monto']) || !isset($data['tipo']) || !isset($data['partidas']) || !isset($data['id_ente']) || !isset($data['id_ejercicio']) || !isset($data['mes'])) {
-                return json_encode(["error" => "Faltan datos obligatorios para registrar la solicitud."]);
+                return ["error" => "Faltan datos obligatorios para registrar la solicitud."];
             }
 
             // Iniciar una transacción
@@ -266,7 +291,7 @@ public function consultarSolicitudes($data)
 
             if ($filaPendiente['total'] > 0) {
                 $this->conexion->rollback();
-                return json_encode(["error" => "No se puede registrar la solicitud porque hay una pendiente."]);
+                return ["error" => "No se puede registrar la solicitud porque hay una pendiente."];
             }
 
             // Verificar la existencia de solicitudes para el mes actual
@@ -288,7 +313,7 @@ public function consultarSolicitudes($data)
                 // Permitido registrar para el siguiente mes si el mes actual ya existe
             } else {
                 $this->conexion->rollback();
-                return json_encode(["error" => "No se puede registrar la solicitud. Condiciones no cumplidas."]);
+                return ["error" => "No se puede registrar la solicitud. Condiciones no cumplidas."];
             }
 
             // Generar el numero_orden automáticamente
@@ -298,23 +323,23 @@ public function consultarSolicitudes($data)
             // Insertar en solicitud_dozavos (numero_compromiso siempre será 0 inicialmente)
             $sqlInsertar = "INSERT INTO solicitud_dozavos (numero_orden, numero_compromiso, descripcion, tipo, monto, fecha, partidas, id_ente, status, id_ejercicio, mes) VALUES (?, 0, ?, ?, ?, ?, ?, ?, 1, ?, ?)";
             $stmtInsertar = $this->conexion->prepare($sqlInsertar);
-            $partidasJson = json_encode($data['partidas']); // Convertir partidas a formato JSON
+            $partidasJson = json_encode($data['partidas']); // Convertir partidas a formato JSN
             $stmtInsertar->bind_param("sssssssss", $numero_orden, $data['descripcion'], $data['tipo'], $data['monto'], $fecha, $partidasJson, $idEnte, $idEjercicio, $mesSolicitado);
             $stmtInsertar->execute();
 
             if ($stmtInsertar->affected_rows > 0) {
                 // Confirmar la transacción
                 $this->conexion->commit();
-                return json_encode(["success" => "Registro exitoso"]);
+                return ["success" => "Registro exitoso"];
             } else {
                 $this->conexion->rollback();
-                return json_encode(["error" => "No se pudo registrar la solicitud."]);
+                return ["error" => "No se pudo registrar la solicitud."];
             }
         } catch (Exception $e) {
             // Revertir transacción en caso de error
             $this->conexion->rollback();
-            registrarError($e->getMessage());
-            return json_encode(["error" => $e->getMessage()]);
+            // $this->registrarError($e->getMessage());
+            return ["error" => $e->getMessage()];
         }
     }
 
@@ -455,13 +480,13 @@ public function consultarSolicitudes($data)
                         // Confirmar la transacción
                         $this->conexion->commit();
 
-                        return json_encode([
+                        return [
                             "success" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
                             "compromiso" => [
                                 "correlativo" => $resultadoCompromiso['correlativo'],
                                 "id_compromiso" => $resultadoCompromiso['id_compromiso']
                             ]
-                        ]);
+                        ];
                     } else {
                         throw new Exception("No se pudo registrar el compromiso");
                     }
@@ -479,7 +504,7 @@ public function consultarSolicitudes($data)
                     // Confirmar la transacción
                     $this->conexion->commit();
 
-                    return json_encode(["success" => "La solicitud ha sido rechazada"]);
+                    return ["success" => "La solicitud ha sido rechazada"];
                 } else {
                     throw new Exception("No se pudo rechazar la solicitud");
                 }
@@ -489,8 +514,8 @@ public function consultarSolicitudes($data)
         } catch (Exception $e) {
             // Si ocurre algún error, deshacer todas las operaciones anteriores
             $this->conexion->rollback();
-            registrarError($e->getMessage());
-            return json_encode(['error' => $e->getMessage()]);
+            // $this->registrarError($e->getMessage());
+            return ['error' => $e->getMessage()];
         }
     }
 

@@ -42,11 +42,12 @@ function validateRoutes($path, $method)
                     $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id'], 'id_ejercicio' => $params['id_ejercicio']];
                     $resultado = $solicutudesController->consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por mes
                 }
-                if (isset($params['mes'])) {
-                    // Acción para consultar registros por mes
-                    $dataRequest = ['accion' => 'consulta_mes', 'mes' => $params['mes'], 'id_ejercicio' => $params['id_ejercicio']];
-                    $resultado = $solicutudesController->consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
-                } else {
+                // if (isset($params['mes'])) {
+                //     // Acción para consultar registros por mes
+                //     $dataRequest = ['accion' => 'consulta_mes', 'mes' => $params['mes'], 'id_ejercicio' => $params['id_ejercicio']];
+                //     $resultado = $solicutudesController->consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
+                // } 
+                else {
                     // Acción para consultar todos los registros
                     $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $params['id_ejercicio']];
                     $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
@@ -62,11 +63,12 @@ function validateRoutes($path, $method)
 
             case 'POST':
 
+                $resultado = [];
                 $data = json_decode(file_get_contents('php://input'), true);
 
 
                 if (!isset($data['accion'])) {
-                    return ['status' => 400, 'result' => 'Falta la acción'];
+                    return ['status' => 400, 'error' => 'No se ha enviado la acción'];
                 }
                 $accion = $data['accion'];
 
@@ -75,21 +77,32 @@ function validateRoutes($path, $method)
                     if (!isset($data['id']) || !isset($data['accion_gestion'])) {
                         return ['status' => 400, 'result' => 'Faltan parámetros para gestionar'];
                     }
-                    return gestionarSolicitudDozavos2($data['id'], $data['accion_gestion'], $data['codigo'] ?? '');
+                    $dataRequest = $data;
+                    $resultado = $solicutudesController->gestionarSolicitudDozavos2($dataRequest["id"], $dataRequest["accion_gestion"], $data['codigo'] ?? ''); // Llamar a la función de consulta por mes
+
 
                 }
 
                 if ($accion === 'registrar') {
                     // Acción para registrar una nueva solicitud
-                    return registrarSolicitudozavo($data);
+                    $dataRequest = array_merge(['id_ejercicio' => $data['id_ejercicio']], $data);
+                    $resultado = $solicutudesController->registrarSolicitudozavo($dataRequest); // Llamar a la función de consulta por mes
+
                 }
 
-                if ($accion === 'update') {
-                    // Acción para actualizar un registro
-                    return actualizarSolicitudozavo($data);
+                if (empty($resultado)) {
+                    return ['status' => 200, 'error' => 'Accion no permitida'];
                 }
 
-                break;
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
+
+
+
 
             case 'DELETE':
             // if ($accion === 'rechazar') {
