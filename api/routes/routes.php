@@ -4,7 +4,6 @@ $path = explode('/', $_SERVER['REQUEST_URI']);
 $path = array_filter($path);
 
 $method = $_SERVER['REQUEST_METHOD'];
-
 function validateRoutes($path, $method)
 {
     if (count($path) < 2) {
@@ -13,37 +12,64 @@ function validateRoutes($path, $method)
 
     $json = ['status' => 200, 'result' => ''];
 
-    // Obtener los datos de la solicitud
-    $data = json_decode(file_get_contents('php://input'), true);
+    $path = explode('?', $path[2]);
 
-    if (!isset($data['accion'])) {
-        return ['status' => 500, 'result' => 'Acción no especificada'];
-    }
+    if (
+        $path[0] === 'solicitudes'
+    ) {
 
-    $accion = $data['accion'];
+        require_once '.../../config/conexion.php';
+        require_once '.../../controllers/solicitudes.controller.php';
 
-    if ($path[2] == 'solicitudes') {
+        $solicutudesController = new SolicitudesController($conexion);
 
         // Variables para las solicitudes
         $dataRequest = [];
 
         switch ($method) {
             case 'GET':
-                if (isset($data['id'])) {
-                    // Acción para consultar un registro por ID
-                    $dataRequest = ['accion' => 'consulta_id', 'id' => $data['id']];
-                    return consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por ID
-                } elseif (isset($data['mes'])) {
-                    // Acción para consultar registros por mes
-                    $dataRequest = ['accion' => 'consulta_mes', 'mes' => $data['mes']];
-                    return consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
-                } else {
-                    // Acción para consultar todos los registros
-                    $dataRequest = ['accion' => 'consulta'];
-                    return consultarSolicitudes($dataRequest); // Llamar a la función de consulta general
+
+                $resultado = [];
+
+                $params = $_GET;
+
+                if (!isset($params['id_ejercicio'])) {
+                    return ['status' => 400, 'result' => 'Falta el id del ejercicio'];
                 }
 
+                if (isset($params['id'])) {
+                    // Acción para consultar un registro por ID
+                    $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id'], 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por mes
+                }
+                if (isset($params['mes'])) {
+                    // Acción para consultar registros por mes
+                    $dataRequest = ['accion' => 'consulta_mes', 'mes' => $params['mes'], 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudPorMes($dataRequest); // Llamar a la función de consulta por mes
+                } else {
+                    // Acción para consultar todos los registros
+                    $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $params['id_ejercicio']];
+                    $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
+
+                }
+
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
+
             case 'POST':
+
+                $data = json_decode(file_get_contents('php://input'), true);
+
+
+                if (!isset($data['accion'])) {
+                    return ['status' => 400, 'result' => 'Falta la acción'];
+                }
+                $accion = $data['accion'];
+
                 if ($accion === 'gestionar') {
                     // Acción para gestionar la solicitud
                     if (!isset($data['id']) || !isset($data['accion_gestion'])) {
@@ -66,16 +92,16 @@ function validateRoutes($path, $method)
                 break;
 
             case 'DELETE':
-                if ($accion === 'rechazar') {
-                    // Acción para rechazar la solicitud
-                    return rechazarSolicitud($data);
-                }
+            // if ($accion === 'rechazar') {
+            //     // Acción para rechazar la solicitud
+            //     return rechazarSolicitud($data);
+            // }
 
-                if ($accion === 'delete') {
-                    // Acción para eliminar la solicitud
-                    return eliminarSolicitudozavo($data);
-                }
-                break;
+            // if ($accion === 'delete') {
+            //     // Acción para eliminar la solicitud
+            //     return eliminarSolicitudozavo($data);
+            // }
+            // break;
 
             default:
                 return ['status' => 405, 'result' => 'Método no permitido'];

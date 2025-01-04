@@ -3,7 +3,6 @@ function validateUrl() {
   let protocol = url.protocol
   let host = url.host
   let pathname = url.pathname
-  console.log(url)
 
   return `${protocol}//${host}/`
 }
