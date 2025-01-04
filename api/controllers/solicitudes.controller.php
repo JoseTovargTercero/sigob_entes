@@ -14,75 +14,75 @@ class SolicitudesController
 
     private $conexion;
 
-    // Función para consultar todas las solicitudes
-    public function consultarSolicitudes($data)
-    {
-        if (!isset($data['id_ejercicio'])) {
-            return ["error" => "No se ha especificado el ID del ejercicio."];
-        }
+   // Función para consultar todas las solicitudes
+public function consultarSolicitudes($data)
+{
+    if (!isset($data['id_ejercicio'])) {
+        return ["error" => "No se ha especificado el ID del ejercicio."];
+    }
 
-        $idEnte = $_SESSION["id_ente"];
-        $idEjercicio = $data['id_ejercicio'];
+    $idEjercicio = $data['id_ejercicio'];
 
-        try {
-            // Consulta principal con detalles básicos de solicitud_dozavos
-            $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
-                           s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
-                           e.ente_nombre, e.tipo_ente
-                    FROM solicitud_dozavos s
-                    JOIN entes e ON s.id_ente = e.id
-                    WHERE s.id_ente = ? AND s.id_ejercicio = ?";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("ii", $idEnte, $idEjercicio);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    try {
+        // Consulta principal con detalles básicos de solicitud_dozavos
+        $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
+                       s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
+                       e.ente_nombre, e.tipo_ente
+                FROM solicitud_dozavos s
+                JOIN entes e ON s.id_ente = e.id
+                WHERE s.id_ejercicio = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $idEjercicio);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                $solicitudes = [];
+        if ($result->num_rows > 0) {
+            $solicitudes = [];
 
-                while ($row = $result->fetch_assoc()) {
-                    // Verificar si numero_compromiso es 0 y establecerlo como null
-                    $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
+            while ($row = $result->fetch_assoc()) {
+                // Verificar si numero_compromiso es 0 y establecerlo como null
+                $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
 
-                    // Procesar las partidas asociadas
-                    $partidasArray = json_decode($row['partidas'], true);
+                // Procesar las partidas asociadas
+                $partidasArray = json_decode($row['partidas'], true);
 
-                    foreach ($partidasArray as &$partida) {
-                        $idDistribucion = $partida['id'];
+                foreach ($partidasArray as &$partida) {
+                    $idDistribucion = $partida['id'];
 
-                        // Consulta consolidada para obtener datos de partidas_presupuestarias
-                        $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
-                                       FROM distribucion_presupuestaria dp
-                                       JOIN partidas_presupuestarias p ON dp.id_partida = p.id
-                                       WHERE dp.id = ?";
-                        $stmtPartida = $this->conexion->prepare($sqlPartida);
-                        $stmtPartida->bind_param("i", $idDistribucion);
-                        $stmtPartida->execute();
-                        $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                        $stmtPartida->fetch();
-                        $stmtPartida->close();
+                    // Consulta consolidada para obtener datos de partidas_presupuestarias
+                    $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
+                                   FROM distribucion_presupuestaria dp
+                                   JOIN partidas_presupuestarias p ON dp.id_partida = p.id
+                                   WHERE dp.id = ?";
+                    $stmtPartida = $this->conexion->prepare($sqlPartida);
+                    $stmtPartida->bind_param("i", $idDistribucion);
+                    $stmtPartida->execute();
+                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                    $stmtPartida->fetch();
+                    $stmtPartida->close();
 
-                        // Agregar datos a la partida
-                        $partida['partida'] = $partidaCod;
-                        $partida['nombre'] = $nombre;
-                        $partida['descripcion'] = $descripcion;
-                    }
-
-                    // Agregar las partidas procesadas al registro
-                    $row['partidas'] = $partidasArray;
-
-                    // Añadir la solicitud completa a la lista de solicitudes
-                    $solicitudes[] = $row;
+                    // Agregar datos a la partida
+                    $partida['partida'] = $partidaCod;
+                    $partida['nombre'] = $nombre;
+                    $partida['descripcion'] = $descripcion;
                 }
 
-                return ["success" => $solicitudes];
-            } else {
-                return ["success" => "No se encontraron registros en solicitud_dozavos."];
+                // Agregar las partidas procesadas al registro
+                $row['partidas'] = $partidasArray;
+
+                // Añadir la solicitud completa a la lista de solicitudes
+                $solicitudes[] = $row;
             }
-        } catch (Exception $e) {
-            return ["error" => "Error: " . $e->getMessage()];
+
+            return ["success" => $solicitudes];
+        } else {
+            return ["success" => "No se encontraron registros en solicitud_dozavos."];
         }
+    } catch (Exception $e) {
+        return ["error" => "Error: " . $e->getMessage()];
     }
+}
+
 
     // Función para consultar una solicitud por ID
     public function consultarSolicitudPorId($data)
@@ -93,7 +93,7 @@ class SolicitudesController
 
         $id = $data['id'];
         $idEjercicio = $data['id_ejercicio'];
-        $idEnte = $_SESSION["id_ente"];
+        $idEnte = $data["id_ente"];
 
         // Consultar la solicitud principal
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
@@ -170,7 +170,7 @@ class SolicitudesController
         }
 
         $idEjercicio = $data['id_ejercicio'];
-        $idEnte = $_SESSION["id_ente"] ?? null;
+        $idEnte = $data["id_ente"] ?? null;
 
         if (!$idEnte) {
             return ["error" => "El ID del ente no está definido en la sesión."];
@@ -244,7 +244,7 @@ class SolicitudesController
     public function registrarSolicitudozavo($data)
     {
         try {
-            if (!isset($data['descripcion']) || !isset($data['monto']) || !isset($data['tipo']) || !isset($data['partidas']) || !isset($_SESSION['id_ente']) || !isset($data['id_ejercicio']) || !isset($data['mes'])) {
+            if (!isset($data['descripcion']) || !isset($data['monto']) || !isset($data['tipo']) || !isset($data['partidas']) || !isset($data['id_ente']) || !isset($data['id_ejercicio']) || !isset($data['mes'])) {
                 return json_encode(["error" => "Faltan datos obligatorios para registrar la solicitud."]);
             }
 
@@ -253,7 +253,7 @@ class SolicitudesController
 
             $mesActual = (date("n") - 1); // Mes actual (0-11)
             $mesSolicitado = $data['mes']; // Mes solicitado (0-11)
-            $idEnte = $_SESSION['id_ente'];
+            $idEnte = $data['id_ente'];
             $idEjercicio = $data['id_ejercicio'];
 
             // Verificar si ya existe una solicitud pendiente (status = 1)
@@ -354,12 +354,11 @@ class SolicitudesController
 
             // Iniciar la transacción
             $this->conexion->begin_transaction();
-            $id_ente = $_SESSION['id_ente'];
 
             // Consultar los detalles de la solicitud, incluyendo el campo partidas
-            $sqlSolicitud = "SELECT numero_orden, numero_compromiso, descripcion, tipo, monto, id_ente, partidas, status, id_ejercicio FROM solicitud_dozavos WHERE id = ? AND id_ente = ?";
+            $sqlSolicitud = "SELECT numero_orden, numero_compromiso, descripcion, tipo, monto, id_ente, partidas, status, id_ejercicio FROM solicitud_dozavos WHERE id = ?";
             $stmtSolicitud = $this->conexion->prepare($sqlSolicitud);
-            $stmtSolicitud->bind_param("ii", $idSolicitud, $id_ente);
+            $stmtSolicitud->bind_param("i", $idSolicitud);
             $stmtSolicitud->execute();
             $resultadoSolicitud = $stmtSolicitud->get_result();
 
@@ -375,6 +374,7 @@ class SolicitudesController
             $montoTotal = $filaSolicitud['monto'];
             $status = $filaSolicitud['status'];
             $id_ejercicio = $filaSolicitud['id_ejercicio'];
+            $id_ente = $filaSolicitud['id_ente'];
 
             // Decodificar el campo `partidas` como un array
             $partidas = json_decode($filaSolicitud['partidas'], true);
