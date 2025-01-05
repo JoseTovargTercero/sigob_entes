@@ -1,18 +1,5 @@
-import { getPartidas } from '../api/partidas.js'
-import {
-  aceptarDozavo,
-  deleteSolicitudDozavo,
-  rechazarDozavo,
-} from '../api/pre_solicitudesDozavos.js'
-import { deleteSolicitudDozeavoRow } from '../controllers/pre_solicitudesDozavosTable.js'
-import {
-  confirmNotification,
-  separadorLocal,
-  tableLanguage,
-  toastNotification,
-} from '../helpers/helpers.js'
-import { NOTIFICATIONS_TYPES, meses } from '../helpers/types.js'
-import { pre_identificarCompromiso } from './pre_identificarCompromiso.js'
+import { separadorLocal, tableLanguage } from '../helpers/helpers.js'
+import { meses } from '../helpers/types.js'
 
 const d = document
 export const entes_solicitudDozavo_card = async ({
@@ -117,10 +104,16 @@ export const entes_solicitudDozavo_card = async ({
               </div>
 
               <div class='row'>
+
+                 <div class='col-sm'>
+                  <b>Mes: </b>
+                  <p> ${meses[data.mes]}</p>
+                </div>
+
                 <div class='col-sm'>
-                  <b>Fecha de orden / Mes: </b>
+                  <b>Fecha de orden: </b>
                   <p>
-                    ${data.fecha} - ${meses[data.mes]}
+                    ${data.fecha}
                   </p>
                 </div>
                 <div class='col-sm'>
@@ -131,10 +124,7 @@ export const entes_solicitudDozavo_card = async ({
                   <b>Tipo: </b>
                   <p>${data.tipo == 'A' ? 'Aumenta' : 'Disminuye'}</p>
                 </div>
-                <div class='col-sm'>
-                  <b>Compromiso: </b>
-                  <p>${data.numero_compromiso || 'No registrado'}</p>
-                </div>
+             
               </div>
             </div>
             <div class='w-100'>
@@ -153,7 +143,7 @@ export const entes_solicitudDozavo_card = async ({
             </div>
             <div class='card-footer d-flex align-items-center justify-content-center gap-2 py-0'>
               ${
-                data.status === 0
+                data.status === 4
                   ? ` <span class='p-2 rounded text-white bg-green-600 text-bold'>
               Comprometido
             </span>`

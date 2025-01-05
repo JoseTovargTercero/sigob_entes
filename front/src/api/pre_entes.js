@@ -6,9 +6,9 @@ import {
   toastNotification,
 } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
+import { APP_URL, config } from './urlConfig.js'
 
-const entesDistribucionUrl =
-  '../../../../sigob/back/modulo_ejecucion_presupuestaria/pre_asignacion_entes.php'
+const entesDistribucionUrl = `${APP_URL}${config.MODULE_NAMES.EJECUCION}pre_asignacion_entes.php`
 
 const getPreAsignacionEntes = async () => {
   showLoader()

@@ -3,7 +3,6 @@ function validateUrl() {
   let protocol = url.protocol
   let host = url.host
   let pathname = url.pathname
-  console.log(url)
 
   return `${protocol}//${host}/`
 }
@@ -20,6 +19,7 @@ const config = {
     ENTES: 'modulo_entes/',
     GLOBAL: 'sistema_global/',
     FORMULACION: 'modulo_pl_formulacion/',
+    EJECUCION: 'modulo_ejecucion_presupuestaria/',
   },
 }
 
