@@ -4,8 +4,9 @@ class RoutesController
 {
     public function index()
     {
+
         // Cargar las variables del archivo .env
-        $this->loadEnv(__DIR__ . '/.env');
+        $this->loadEnv(dirname(__DIR__) . DIRECTORY_SEPARATOR . ".env");
 
         // Obtener la API key desde el archivo .env
         $apiKeyEnv = $_ENV['API_KEY'] ?? null;
