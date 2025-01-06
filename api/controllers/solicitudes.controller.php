@@ -189,7 +189,7 @@ class SolicitudesController
         }
 
         $id = $data['id'];
-        print_r($id);
+
 
 
         // Consultar la solicitud principal
