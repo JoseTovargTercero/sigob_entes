@@ -18,7 +18,7 @@ function validateRoutes($path, $method)
         $path[0] === 'solicitudes'
     ) {
 
-        require_once '.../../config/conexion.php';
+        require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "back" . DIRECTORY_SEPARATOR . "sistema_global" . DIRECTORY_SEPARATOR . "conexion.php";
         require_once '.../../controllers/solicitudes.controller.php';
 
         $solicutudesController = new SolicitudesController($conexion);
