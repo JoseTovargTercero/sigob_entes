@@ -33,13 +33,13 @@ function validateRoutes($path, $method)
 
                 $params = $_GET;
 
-                if (!isset($params['id_ejercicio'])) {
-                    return ['status' => 400, 'error' => 'Falta el id del ejercicio'];
-                }
+                // if (!isset($params['id_ejercicio'])) {
+                //     return ['status' => 400, 'error' => 'Falta el id del ejercicio'];
+                // }
 
                 if (isset($params['id'])) {
                     // Acción para consultar un registro por ID
-                    $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id'], 'id_ejercicio' => $params['id_ejercicio']];
+                    $dataRequest = ['accion' => 'consulta_id', 'id' => $params['id']];
                     $resultado = $solicutudesController->consultarSolicitudPorId($dataRequest); // Llamar a la función de consulta por mes
                 }
                 // if (isset($params['mes'])) {
@@ -49,7 +49,7 @@ function validateRoutes($path, $method)
                 // } 
                 else {
                     // Acción para consultar todos los registros
-                    $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $params['id_ejercicio']];
+                    $dataRequest = ['accion' => 'consulta'];
                     $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
 
                 }
