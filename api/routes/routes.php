@@ -7,10 +7,10 @@ $method = $_SERVER['REQUEST_METHOD'];
 function validateRoutes($path, $method)
 {
     if (count($path) < 2) {
-        return ['status' => 404, 'result' => 'No encontrado'];
+        return ['status' => 404, 'error' => 'No encontrado'];
     }
 
-    $json = ['status' => 200, 'result' => ''];
+    $json = ['status' => 200, 'success' => ''];
 
     $path = explode('?', $path[2]);
 
@@ -34,7 +34,7 @@ function validateRoutes($path, $method)
                 $params = $_GET;
 
                 if (!isset($params['id_ejercicio'])) {
-                    return ['status' => 400, 'result' => 'Falta el id del ejercicio'];
+                    return ['status' => 400, 'error' => 'Falta el id del ejercicio'];
                 }
 
                 if (isset($params['id'])) {
@@ -75,7 +75,7 @@ function validateRoutes($path, $method)
                 if ($accion === 'gestionar') {
                     // Acción para gestionar la solicitud
                     if (!isset($data['id']) || !isset($data['accion_gestion'])) {
-                        return ['status' => 400, 'result' => 'Faltan parámetros para gestionar'];
+                        return ['status' => 400, 'error' => 'Faltan parámetros para gestionar'];
                     }
                     $dataRequest = $data;
                     $resultado = $solicutudesController->gestionarSolicitudDozavos2($dataRequest["id"], $dataRequest["accion_gestion"], $data['codigo'] ?? ''); // Llamar a la función de consulta por mes
@@ -119,11 +119,11 @@ function validateRoutes($path, $method)
             // break;
 
             default:
-                return ['status' => 405, 'result' => 'Método no permitido'];
+                return ['status' => 405, 'error' => 'Método no permitido'];
         }
     }
 
-    return ['status' => 404, 'result' => 'Ruta no encontrada'];
+    return ['status' => 404, 'error' => 'Ruta no encontrada'];
 }
 
 
