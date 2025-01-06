@@ -203,12 +203,12 @@ class SolicitudesController
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-
+            $idEnte = $row['id_ente'];
 
 
             // Verificar y ajustar el valor de numero_compromiso
             $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
-
+            
             // Procesar las partidas asociadas
             $partidasArray = json_decode($row['partidas'], true);
 
