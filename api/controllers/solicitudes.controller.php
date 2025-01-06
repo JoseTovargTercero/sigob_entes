@@ -20,11 +20,11 @@ class SolicitudesController
     // Función para consultar todas las solicitudes
     public function consultarSolicitudes($data)
     {
-        if (!isset($data['id_ejercicio'])) {
-            return ["error" => "No se ha especificado el ID del ejercicio."];
-        }
+        // if (!isset($data['id_ejercicio'])) {
+        //     return ["error" => "No se ha especificado el ID del ejercicio."];
+        // }
 
-        $idEjercicio = $data['id_ejercicio'];
+        // $idEjercicio = $data['id_ejercicio'];
 
         try {
             // Consulta principal con detalles básicos de solicitud_dozavos
@@ -32,10 +32,8 @@ class SolicitudesController
                        s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
                        e.ente_nombre, e.tipo_ente
                 FROM solicitud_dozavos s
-                JOIN entes e ON s.id_ente = e.id
-                WHERE s.id_ejercicio = ?";
+                JOIN entes e ON s.id_ente = e.id";
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("i", $idEjercicio);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -186,12 +184,11 @@ class SolicitudesController
     // Función para consultar una solicitud por ID
     public function consultarSolicitudPorId($data)
     {
-        if (!isset($data['id']) || !isset($data['id_ejercicio'])) {
-            return ["error" => "No se ha especificado ID o ID del ejercicio para la consulta."];
+        if (!isset($data['id'])) {
+            return ["error" => "No se ha especificado ID para la consulta."];
         }
 
         $id = $data['id'];
-        $idEjercicio = $data['id_ejercicio'];
 
 
         // Consultar la solicitud principal
@@ -199,7 +196,7 @@ class SolicitudesController
                 FROM solicitud_dozavos 
                 WHERE id = ? AND id_ejercicio = ?";
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("ii", $id, $idEjercicio);
+        $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
 
