@@ -1,6 +1,13 @@
 Options All -Indexes
 Options -MultiViews
 
-RewriteEngine on
+RewriteEngine On
 
+# EXCLUIR las solicitudes OPTIONS (¡¡¡ESTO DEBE ESTAR PRIMERO!!!)
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^ - [L]
+
+# Redirigir todas las demás solicitudes a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
