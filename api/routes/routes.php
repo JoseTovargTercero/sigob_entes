@@ -123,6 +123,96 @@ function validateRoutes($path, $method)
         }
     }
 
+    if (
+        $path[0] === 'asignaciones'
+    ) {
+
+        require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "back" . DIRECTORY_SEPARATOR . "sistema_global" . DIRECTORY_SEPARATOR . "conexion.php";
+        require_once '.../../controllers/asignacion.controller.php';
+
+        $asignacionController = new AsignacionController($conexion);
+
+        // Variables para las asignaciones
+        $dataRequest = [];
+
+        switch ($method) {
+            case 'GET':
+
+                $resultado = [];
+
+                $params = $_GET;
+
+                if (isset($params['id'])) {
+                    // Acción para consultar un registro por ID
+                    $dataRequest = $params['id'];
+                    $resultado = $asignacionController->consultarAsignacionPorId($dataRequest);
+                } else {
+                    // Acción para consultar todos los registros
+                    $dataRequest = ['accion' => 'consultar'];
+                    $resultado = $asignacionController->consultarTodasAsignaciones();
+                }
+
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
+
+            case 'POST':
+
+            // $resultado = [];
+            // $data = json_decode(file_get_contents('php://input'), true);
+
+            // if (!isset($data['accion'])) {
+            //     return ['status' => 200, 'error' => 'No se ha enviado la acción'];
+            // }
+            // $accion = $data['accion'];
+
+            // if ($accion === 'insert' && isset($data['id_ente']) && isset($data['monto_total']) && isset($data['id_ejercicio'])) {
+            //     // Acción para insertar una asignación
+            //     $dataRequest = $data;
+            //     $resultado = $asignacionController->insertarAsignacionEnte($dataRequest);
+            // } elseif ($accion === 'update' && isset($data['id']) && isset($data['id_ente']) && isset($data['monto_total']) && isset($data['id_ejercicio'])) {
+            //     // Acción para actualizar una asignación
+            //     $dataRequest = $data;
+            //     $resultado = $asignacionController->actualizarAsignacionEnte($dataRequest);
+            // } else {
+            //     $resultado = ['status' => 200, 'error' => 'Acción no válida o faltan datos'];
+            // }
+
+            // if (array_key_exists('error', $resultado)) {
+            //     $resultado = ['status' => 200, 'error' => $resultado['error']];
+            // } else {
+            //     $resultado = ['status' => 200, 'success' => $resultado['success']];
+            // }
+            // return $resultado;
+
+            case 'DELETE':
+
+            // $resultado = [];
+            // $data = json_decode(file_get_contents('php://input'), true);
+
+            // if (isset($data['id'])) {
+            //     // Acción para eliminar una asignación
+            //     $dataRequest = ['id' => $data['id']];
+            //     $resultado = $asignacionController->eliminarAsignacionEnte($dataRequest);
+            // } else {
+            //     $resultado = ['status' => 200, 'error' => 'Faltan datos para eliminar'];
+            // }
+
+            // if (array_key_exists('error', $resultado)) {
+            //     $resultado = ['status' => 200, 'error' => $resultado['error']];
+            // } else {
+            //     $resultado = ['status' => 200, 'success' => $resultado['success']];
+            // }
+            // return $resultado;
+
+            default:
+                return ['status' => 200, 'error' => 'Método no permitido'];
+        }
+    }
+
     return ['status' => 200, 'error' => 'Ruta no encontrada'];
 }
 
