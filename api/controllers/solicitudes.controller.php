@@ -191,10 +191,11 @@ class SolicitudesController
         $id = $data['id'];
 
 
+
         // Consultar la solicitud principal
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
                 FROM solicitud_dozavos 
-                WHERE id = ? AND id_ejercicio = ?";
+                WHERE id = ?";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -202,6 +203,8 @@ class SolicitudesController
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
+            $idEnte = $row['id_ente'];
+
 
             // Verificar y ajustar el valor de numero_compromiso
             $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
@@ -254,7 +257,7 @@ class SolicitudesController
 
             return ["success" => $row];
         } else {
-            return ["error" => "No se encontró el registro con el ID especificado o el ejercicio no coincide."];
+            return ["error" => "No se encontró el registro con el ID especificado"];
         }
     }
 
@@ -552,10 +555,12 @@ class SolicitudesController
                         $this->conexion->commit();
 
                         return [
-                            "success" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
-                            "compromiso" => [
-                                "correlativo" => $resultadoCompromiso['correlativo'],
-                                "id_compromiso" => $resultadoCompromiso['id_compromiso']
+                            "success" => [
+                                "mensaje" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
+                                "compromiso" => [
+                                    "correlativo" => $resultadoCompromiso['correlativo'],
+                                    "id_compromiso" => $resultadoCompromiso['id_compromiso']
+                                ]
                             ]
                         ];
                     } else {

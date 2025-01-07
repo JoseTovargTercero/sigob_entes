@@ -55,7 +55,7 @@ function validateRoutes($path, $method)
                 }
 
                 if (array_key_exists('error', $resultado)) {
-                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
                 } else {
                     $resultado = ['status' => 200, 'success' => $resultado['success']];
                 }
@@ -68,14 +68,14 @@ function validateRoutes($path, $method)
 
 
                 if (!isset($data['accion'])) {
-                    return ['status' => 400, 'error' => 'No se ha enviado la acción'];
+                    return ['status' => 200, 'error' => 'No se ha enviado la acción'];
                 }
                 $accion = $data['accion'];
 
                 if ($accion === 'gestionar') {
                     // Acción para gestionar la solicitud
                     if (!isset($data['id']) || !isset($data['accion_gestion'])) {
-                        return ['status' => 400, 'error' => 'Faltan parámetros para gestionar'];
+                        return ['status' => 200, 'error' => 'Faltan parámetros para gestionar'];
                     }
                     $dataRequest = $data;
                     $resultado = $solicutudesController->gestionarSolicitudDozavos2($dataRequest["id"], $dataRequest["accion_gestion"], $data['codigo'] ?? ''); // Llamar a la función de consulta por mes
@@ -97,7 +97,7 @@ function validateRoutes($path, $method)
                 }
 
                 if (array_key_exists('error', $resultado)) {
-                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
                 } else {
                     $resultado = ['status' => 200, 'success' => $resultado['success']];
                 }
@@ -119,11 +119,11 @@ function validateRoutes($path, $method)
             // break;
 
             default:
-                return ['status' => 405, 'error' => 'Método no permitido'];
+                return ['status' => 200, 'error' => 'Método no permitido'];
         }
     }
 
-    return ['status' => 404, 'error' => 'Ruta no encontrada'];
+    return ['status' => 200, 'error' => 'Ruta no encontrada'];
 }
 
 
