@@ -208,7 +208,7 @@ class SolicitudesController
 
             // Verificar y ajustar el valor de numero_compromiso
             $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
-            
+
             // Procesar las partidas asociadas
             $partidasArray = json_decode($row['partidas'], true);
 
@@ -555,10 +555,12 @@ class SolicitudesController
                         $this->conexion->commit();
 
                         return [
-                            "success" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
-                            "compromiso" => [
-                                "correlativo" => $resultadoCompromiso['correlativo'],
-                                "id_compromiso" => $resultadoCompromiso['id_compromiso']
+                            "success" => [
+                                "mensaje" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
+                                "compromiso" => [
+                                    "correlativo" => $resultadoCompromiso['correlativo'],
+                                    "id_compromiso" => $resultadoCompromiso['id_compromiso']
+                                ]
                             ]
                         ];
                     } else {
