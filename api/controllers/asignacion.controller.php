@@ -300,31 +300,46 @@ class AsignacionController
 
 
     // Función para consultar todos los registros en asignacion_ente
-    function consultarTodasAsignaciones()
-    {
-
-
-        try {
-            $sql = "SELECT a.*, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad, se.sector AS se_denominacion, prg.programa AS prg_denominacion, pr.proyecto_id AS pr_denominacion 
+function consultarTodasAsignaciones($id_ejercicio)
+{
+    try {
+        // Construir la consulta SQL
+        $sql = "SELECT a.*, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad, 
+                    se.sector AS se_denominacion, prg.programa AS prg_denominacion, pr.proyecto_id AS pr_denominacion 
                 FROM asignacion_ente a
                 JOIN entes e ON a.id_ente = e.id
                 LEFT JOIN pl_sectores se ON e.sector = se.id
                 LEFT JOIN pl_programas prg ON e.programa = prg.id
-                LEFT JOIN pl_proyectos pr ON e.proyecto = pr.id
-                ";
-            $result = $this->conexion->query($sql);
+                LEFT JOIN pl_proyectos pr ON e.proyecto = pr.id";
 
-            $asignaciones = [];
-            while ($row = $result->fetch_assoc()) {
-                $asignaciones[] = $row;
-            }
-
-            return ["success" => $asignaciones];
-        } catch (Exception $e) {
-            registrarError($e->getMessage());
-            return ['error' => $e->getMessage()];
+        // Agregar filtro por id_ejercicio si se proporciona
+        if ($id_ejercicio !== '') {
+            $sql .= " WHERE a.id_ejercicio = ?";
         }
+
+        $stmt = $this->conexion->prepare($sql);
+
+        // Vincular parámetro si existe
+        if ($id_ejercicio !== '') {
+            $stmt->bind_param("i", $id_ejercicio);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $asignaciones = [];
+        while ($row = $result->fetch_assoc()) {
+            $asignaciones[] = $row;
+        }
+
+        return ["success" => $asignaciones];
+    } catch (Exception $e) {
+        registrarError($e->getMessage());
+        return ['error' => $e->getMessage()];
     }
+}
+
+
 
 
 }

@@ -149,7 +149,8 @@ function validateRoutes($path, $method)
                 } else {
                     // Acción para consultar todos los registros
                     $dataRequest = ['accion' => 'consultar'];
-                    $resultado = $asignacionController->consultarTodasAsignaciones();
+                    $dataRequest = $params['id_ejercicio'];
+                    $resultado = $asignacionController->consultarTodasAsignaciones($dataRequest);
                 }
 
                 if (array_key_exists('error', $resultado)) {
