@@ -44,7 +44,7 @@ function validateRoutes($path, $method)
                 }
 
                 if (array_key_exists('error', $resultado)) {
-                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
                 } else {
                     $resultado = ['status' => 200, 'success' => $resultado['success']];
                 }
@@ -56,7 +56,7 @@ function validateRoutes($path, $method)
                 $data = json_decode(file_get_contents('php://input'), true);
 
                 if (!isset($data['accion'])) {
-                    return ['status' => 400, 'error' => 'No se ha enviado la acción'];
+                    return ['status' => 200, 'error' => 'No se ha enviado la acción'];
                 }
                 $accion = $data['accion'];
 
@@ -69,11 +69,11 @@ function validateRoutes($path, $method)
                     $dataRequest = $data;
                     $resultado = $asignacionController->actualizarAsignacionEnte($dataRequest);
                 } else {
-                    $resultado = ['status' => 400, 'error' => 'Acción no válida o faltan datos'];
+                    $resultado = ['status' => 200, 'error' => 'Acción no válida o faltan datos'];
                 }
 
                 if (array_key_exists('error', $resultado)) {
-                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
                 } else {
                     $resultado = ['status' => 200, 'success' => $resultado['success']];
                 }
@@ -89,22 +89,22 @@ function validateRoutes($path, $method)
                     $dataRequest = ['id' => $data['id']];
                     $resultado = $asignacionController->eliminarAsignacionEnte($dataRequest);
                 } else {
-                    $resultado = ['status' => 400, 'error' => 'Faltan datos para eliminar'];
+                    $resultado = ['status' => 200, 'error' => 'Faltan datos para eliminar'];
                 }
 
                 if (array_key_exists('error', $resultado)) {
-                    $resultado = ['status' => 400, 'error' => $resultado['error']];
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
                 } else {
                     $resultado = ['status' => 200, 'success' => $resultado['success']];
                 }
                 return $resultado;
 
             default:
-                return ['status' => 405, 'error' => 'Método no permitido'];
+                return ['status' => 200, 'error' => 'Método no permitido'];
         }
     }
 
-    return ['status' => 404, 'error' => 'Ruta no encontrada'];
+    return ['status' => 200, 'error' => 'Ruta no encontrada'];
 }
 
 $json = validateRoutes($path, $method);
