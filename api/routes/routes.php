@@ -119,11 +119,11 @@ function validateRoutes($path, $method)
             // break;
 
             default:
-                return ['status' => 405, 'error' => 'Método no permitido'];
+                return ['status' => 200, 'error' => 'Método no permitido'];
         }
     }
 
-    return ['status' => 404, 'error' => 'Ruta no encontrada'];
+    return ['status' => 200, 'error' => 'Ruta no encontrada'];
 }
 
 
