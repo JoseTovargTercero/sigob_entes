@@ -562,7 +562,7 @@ class SolicitudesController
                 $stmtUpdateSolicitud->execute();
 
                 if ($stmtUpdateSolicitud->affected_rows > 0) {
-                 
+                    return json_encode(["success" => "Solicitud Aceptada con éxito."]);
                 } else {
                     throw new Exception("No se pudo actualizar la solicitud a aceptada");
                 }
