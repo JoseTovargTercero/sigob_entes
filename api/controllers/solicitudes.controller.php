@@ -181,17 +181,15 @@ class SolicitudesController
     }
 
 
-    // Función para consultar una solicitud por ID
-    public function consultarSolicitudPorId($data)
-    {
-        if (!isset($data['id'])) {
-            return ["error" => "No se ha especificado ID para la consulta."];
-        }
+   public function consultarSolicitudPorId($data)
+{
+    if (!isset($data['id'])) {
+        return ["error" => "No se ha especificado ID para la consulta."];
+    }
 
-        $id = $data['id'];
+    $id = $data['id'];
 
-
-
+    try {
         // Consultar la solicitud principal
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
                 FROM solicitud_dozavos 
@@ -204,7 +202,6 @@ class SolicitudesController
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $idEnte = $row['id_ente'];
-
 
             // Verificar y ajustar el valor de numero_compromiso
             $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
@@ -255,11 +252,27 @@ class SolicitudesController
             // Agregar la información del ente como un ítem más
             $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
 
+            // Consultar la información del compromiso asociado
+            $sqlCompromiso = "SELECT * FROM compromisos WHERE id_registro = ? AND tabla_registro = 'solicitud_dozavos'";
+            $stmtCompromiso = $this->conexion->prepare($sqlCompromiso);
+            $stmtCompromiso->bind_param("i", $id);
+            $stmtCompromiso->execute();
+            $resultCompromiso = $stmtCompromiso->get_result();
+            $informacionCompromiso = $resultCompromiso->fetch_assoc();
+            $stmtCompromiso->close();
+
+            // Agregar la información del compromiso
+            $row['informacion_compromiso'] = $informacionCompromiso ?: null; // Si no se encuentra, se asigna como null
+
             return ["success" => $row];
         } else {
             return ["error" => "No se encontró el registro con el ID especificado"];
         }
+    } catch (Exception $e) {
+        return ["error" => "Ocurrió un error al consultar la solicitud: " . $e->getMessage()];
     }
+}
+
 
     // Función para consultar las solicitudes por mes
     public function consultarSolicitudPorMes($data)
