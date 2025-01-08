@@ -142,14 +142,18 @@ function validateRoutes($path, $method)
 
                 $params = $_GET;
 
+                if (!isset($params['id_ejercicio'])) {
+                    return ["status" => 200, "error" => "No se ha especificado el ejercicio fiscal"];
+                }
+
                 if (isset($params['id'])) {
                     // Acción para consultar un registro por ID
                     $dataRequest = $params['id'];
                     $resultado = $asignacionController->consultarAsignacionPorId($dataRequest);
                 } else {
                     // Acción para consultar todos los registros
-                    $dataRequest = ['accion' => 'consultar'];
-                    $dataRequest = $params['id_ejercicio'];
+                    $dataRequest = $params["id_ejercicio"];
+
                     $resultado = $asignacionController->consultarTodasAsignaciones($dataRequest);
                 }
 
