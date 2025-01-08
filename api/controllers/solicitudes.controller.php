@@ -562,23 +562,7 @@ class SolicitudesController
                 $stmtUpdateSolicitud->execute();
 
                 if ($stmtUpdateSolicitud->affected_rows > 0) {
-                    $resultadoCompromiso = $this->registrarCompromiso($idSolicitud, 'solicitud_dozavos', $descripcion, $id_ejercicio, $codigo);
-                    if (isset($resultadoCompromiso['success']) && $resultadoCompromiso['success']) {
-                        // Confirmar la transacción
-                        $this->conexion->commit();
-
-                        return [
-                            "success" => [
-                                "mensaje" => "La solicitud ha sido aceptada, el compromiso se ha registrado y el presupuesto actualizado",
-                                "compromiso" => [
-                                    "correlativo" => $resultadoCompromiso['correlativo'],
-                                    "id_compromiso" => $resultadoCompromiso['id_compromiso']
-                                ]
-                            ]
-                        ];
-                    } else {
-                        throw new Exception($resultadoCompromiso['error']);
-                    }
+                 
                 } else {
                     throw new Exception("No se pudo actualizar la solicitud a aceptada");
                 }
