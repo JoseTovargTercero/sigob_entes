@@ -90,9 +90,9 @@ function validateRoutes($path, $method)
 
                 }
 
-                 if ($accion === 'update_status') {
+                if ($accion === 'entregar') {
                     // Acción para actualizar el estado de la solicitud
-                    $dataRequest = array_merge(['idSolicitud' => $data['idSolicitud']], $data);
+                    $dataRequest = ['id' => $data['id']];
                     $resultado = $solicutudesController->actualizarStatusSolicitud($dataRequest); // Llamar a la función de update status
 
                 }

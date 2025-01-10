@@ -670,38 +670,38 @@ class SolicitudesController
     }
 
 
-    function actualizarStatusSolicitud($data)
-{
+    function actualizarStatusSolicitud($id)
+    {
 
 
-    if (!$idSolicitud) {
-        return json_encode(["error" => "No se ha especificado el ID de la solicitud."]);
-    }
-
-    try {
-        // Preparar la consulta para actualizar el status
-        $sql = "UPDATE solicitud_dozavos SET status = 4 WHERE id = ?";
-        $stmt = $this->$conexion->prepare($sql);
-
-        if (!$stmt) {
-            throw new Exception("Error al preparar la consulta: " . $this->$conexion->error);
+        if (!$id) {
+            return json_encode(["error" => "No se ha especificado el ID de la solicitud."]);
         }
 
-        $stmt->bind_param("i", $idSolicitud);
-        $stmt->execute();
+        try {
+            // Preparar la consulta para actualizar el status
+            $sql = "UPDATE solicitud_dozavos SET status = 4 WHERE id = ?";
+            $stmt = $this->conexion->prepare($sql);
 
-        // Verificar si se actualizó algún registro
-        if ($stmt->affected_rows > 0) {
-            $stmt->close();
-            return json_encode(["success" => "El status de la solicitud se actualizó correctamente."]);
-        } else {
-            $stmt->close();
-            return json_encode(["error" => "No se encontró la solicitud con el ID proporcionado o ya tenía el status 4."]);
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+            }
+
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            // Verificar si se actualizó algún registro
+            if ($stmt->affected_rows > 0) {
+                $stmt->close();
+                return ["success" => "La solicitud fue entregada con éxito."];
+            } else {
+                $stmt->close();
+                return ["error" => "No se encontró la solicitud o ya fue entregada."];
+            }
+        } catch (Exception $e) {
+            return ["error" => "Error: " . $e->getMessage()];
         }
-    } catch (Exception $e) {
-        return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
-}
 }
 
 

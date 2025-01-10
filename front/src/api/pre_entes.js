@@ -46,7 +46,7 @@ const getPreAsignacionEntes = async () => {
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener distribucion de partidas',
+      message: 'Error al obtener asignaciones y distribuciones de los entes',
     })
   } finally {
     hideLoader()
@@ -83,7 +83,7 @@ const getPreAsignacionEnte = async (id) => {
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener distribucion de partidas',
+      message: 'Error al obtener asignacion y distribuciones del ente',
     })
   } finally {
     hideLoader()
