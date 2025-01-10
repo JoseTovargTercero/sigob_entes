@@ -696,7 +696,7 @@ class SolicitudesController
                 return ["success" => "La solicitud fue entregada con éxito."];
             } else {
                 $stmt->close();
-                return ["error" => "No se encontró la solicitud o ya fue entregada."];
+                return ["error" => "No se encontró la solicitud o ya fue entregada.  $id"];
             }
         } catch (Exception $e) {
             return ["error" => "Error: " . $e->getMessage()];
