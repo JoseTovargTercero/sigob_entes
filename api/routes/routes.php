@@ -90,6 +90,13 @@ function validateRoutes($path, $method)
 
                 }
 
+                 if ($accion === 'update_status') {
+                    // Acción para actualizar el estado de la solicitud
+                    $dataRequest = array_merge(['idSolicitud' => $data['idSolicitud']], $data);
+                    $resultado = $solicutudesController->actualizarStatusSolicitud($dataRequest); // Llamar a la función de update status
+
+                }
+
                 if (empty($resultado)) {
                     return ['status' => 200, 'error' => 'Accion no permitida'];
                 }
