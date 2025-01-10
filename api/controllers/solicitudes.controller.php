@@ -556,9 +556,9 @@ class SolicitudesController
                 }
 
                 // Actualizar el estado de la solicitud a aceptado
-                $sqlUpdateSolicitud = "UPDATE solicitud_dozavos SET status = 0 WHERE id = ?";
+                $sqlUpdateSolicitud = "UPDATE solicitud_dozavos SET status = 0, numero_compromiso = ? WHERE id = ?";
                 $stmtUpdateSolicitud = $this->conexion->prepare($sqlUpdateSolicitud);
-                $stmtUpdateSolicitud->bind_param("i", $idSolicitud);
+                $stmtUpdateSolicitud->bind_param("si", $codigo, $idSolicitud);
                 $stmtUpdateSolicitud->execute();
 
                 if ($stmtUpdateSolicitud->affected_rows > 0) {
