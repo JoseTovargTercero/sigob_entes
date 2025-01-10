@@ -675,7 +675,7 @@ class SolicitudesController
 
 
         if (!$id) {
-            return json_encode(["error" => "No se ha especificado el ID de la solicitud."]);
+            return ["error" => "No se ha especificado el ID de la solicitud."];
         }
 
         try {
