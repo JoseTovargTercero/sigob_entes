@@ -1,52 +1,55 @@
-import { getAsignacionesEntes, getEntes } from "../api/form_entes.js";
-import { confirmNotification, toastNotification } from "../helpers/helpers.js";
-import { NOTIFICATIONS_TYPES } from "../helpers/types.js";
-import { form_asignacion_entes_monto_card } from "./form_asignacion_entes_monto_card.js";
-const d = document;
+import { getAsignacionesEntes, getEntes } from '../api/form_entes.js'
+import { confirmNotification, toastNotification } from '../helpers/helpers.js'
+import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
+import { form_asignacion_entes_monto_card } from './form_asignacion_entes_monto_card.js'
+const d = document
 const tableLanguage = {
-  decimal: "",
-  emptyTable: "No hay datos disponibles en la tabla",
-  info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
-  infoEmpty: "Mostrando 0 a 0 de 0 entradas",
-  infoFiltered: "(filtrado de _MAX_ entradas totales)",
-  infoPostFix: "",
-  thousands: ",",
-  lengthMenu: "Mostrar _MENU_",
-  loadingRecords: "Cargando...",
-  processing: "",
-  search: "Buscar:",
-  zeroRecords: "No se encontraron registros coincidentes",
+  decimal: '',
+  emptyTable: 'No hay datos disponibles en la tabla',
+  info: 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+  infoEmpty: 'Mostrando 0 a 0 de 0 entradas',
+  infoFiltered: '(filtrado de _MAX_ entradas totales)',
+  infoPostFix: '',
+  thousands: ',',
+  lengthMenu: 'Mostrar _MENU_',
+  loadingRecords: 'Cargando...',
+  processing: '',
+  search: 'Buscar:',
+  zeroRecords: 'No se encontraron registros coincidentes',
   paginate: {
-    first: "Primera",
-    last: "Última",
-    next: "Siguiente",
-    previous: "Anterior",
+    first: 'Primera',
+    last: 'Última',
+    next: 'Siguiente',
+    previous: 'Anterior',
   },
   aria: {
-    orderable: "Ordenar por esta columna",
-    orderableReverse: "Orden inverso de esta columna",
+    orderable: 'Ordenar por esta columna',
+    orderableReverse: 'Orden inverso de esta columna',
   },
-};
+}
 
 export const form_asignacion_entes_card = async ({
   elementToInset,
   ejercicioFiscal,
 }) => {
-  let fieldList = { ejemplo: "" };
+  let fieldList = { ejemplo: '' }
   let fieldListErrors = {
     ejemplo: {
       value: true,
-      message: "mensaje de error",
-      type: "text",
+      message: 'mensaje de error',
+      type: 'text',
     },
-  };
-  const oldCardElement = d.getElementById("asignacion-entes-form-card");
-  if (oldCardElement) oldCardElement.remove();
+  }
+  const oldCardElement = d.getElementById('asignacion-entes-form-card')
+  if (oldCardElement) oldCardElement.remove()
 
-  let entes = await getEntes();
-  let asignacionesEntes = await getAsignacionesEntes();
+  let entes = await getEntes()
 
-  console.log(asignacionesEntes);
+  console.log(entes)
+
+  let asignacionesEntes = await getAsignacionesEntes()
+
+  // console.log(asignacionesEntes)
 
   const crearFilas = () => {
     // console.log(entes.fullInfo)
@@ -67,30 +70,30 @@ export const form_asignacion_entes_card = async ({
       //     )
       // )
       .map((ente) => {
-        console.log(ente);
+        // console.log(ente);
         return `  <tr>
               <td>${ente.ente_nombre}</td>
               <td>${
-                ente.tipo_ente === "J" ? "Jurídico" : "Descentralizado"
+                ente.tipo_ente === 'J' ? 'Jurídico' : 'Descentralizado'
               }</td>
               <td>${
                 ente.sector_informacion.sector +
-                "." +
+                '.' +
                 ente.programa_informacion.programa +
-                "." +
-                (ente.proyecto == "0" ? "00" : ente.proyecto)
+                '.' +
+                (ente.proyecto == '0' ? '00' : ente.proyecto)
               }</td>
               <td>
                 <button class='btn btn-secondary btn-sm' data-asignarid="${
                   ente.id
                 }">Asignar</button>
               </td>
-            </tr>`;
-      });
+            </tr>`
+      })
     // console.log(fila)
 
-    return fila.join("");
-  };
+    return fila.join('')
+  }
 
   let card = `<div class='card slide-up-animation' id='asignacion-entes-form-card'>
       <div class='card-header d-flex justify-content-between'>
@@ -118,30 +121,30 @@ export const form_asignacion_entes_card = async ({
         </div>
       </div>
   
-    </div>`;
+    </div>`
 
-  d.getElementById(elementToInset).insertAdjacentHTML("afterbegin", card);
+  d.getElementById(elementToInset).insertAdjacentHTML('afterbegin', card)
 
-  validarEntesTabla();
-  let cardElement = d.getElementById("asignacion-entes-form-card");
-  let formElement = d.getElementById("asignacion-entes-form");
+  validarEntesTabla()
+  let cardElement = d.getElementById('asignacion-entes-form-card')
+  let formElement = d.getElementById('asignacion-entes-form')
 
   const closeCard = () => {
     // validateEditButtons()
-    cardElement.remove();
-    cardElement.removeEventListener("click", validateClick);
-    cardElement.removeEventListener("input", validateInputFunction);
+    cardElement.remove()
+    cardElement.removeEventListener('click', validateClick)
+    cardElement.removeEventListener('input', validateInputFunction)
 
-    return false;
-  };
+    return false
+  }
 
   function validateClick(e) {
     if (e.target.dataset.close) {
-      closeCard();
+      closeCard()
     }
 
     if (e.target.dataset.asignarid) {
-      closeCard();
+      closeCard()
     }
   }
 
@@ -160,31 +163,31 @@ export const form_asignacion_entes_card = async ({
 
   // formElement.addEventListener('submit', (e) => e.preventDefault())
 
-  cardElement.addEventListener("input", validateInputFunction);
-  cardElement.addEventListener("click", validateClick);
-};
+  cardElement.addEventListener('input', validateInputFunction)
+  cardElement.addEventListener('click', validateClick)
+}
 
-let entesTable;
+let entesTable
 function validarEntesTabla() {
-  entesTable = new DataTable("#asignacion-entes-table", {
+  entesTable = new DataTable('#asignacion-entes-table', {
     colums: [
-      { data: "entes_nombre" },
-      { data: "entes_tipo" },
-      { data: "spp" },
-      { data: "acciones" },
+      { data: 'entes_nombre' },
+      { data: 'entes_tipo' },
+      { data: 'spp' },
+      { data: 'acciones' },
     ],
     language: tableLanguage,
     layout: {
       topStart: function () {
-        let toolbar = document.createElement("div");
+        let toolbar = document.createElement('div')
         toolbar.innerHTML = `
                 <h5 class="text-center mb-0">Lista de entes pendientes por asignación anual:</h5>
-                          `;
-        return toolbar;
+                          `
+        return toolbar
       },
-      topEnd: { search: { placeholder: "Buscar..." } },
-      bottomStart: "info",
-      bottomEnd: "paging",
+      topEnd: { search: { placeholder: 'Buscar...' } },
+      bottomStart: 'info',
+      bottomEnd: 'paging',
     },
-  });
+  })
 }

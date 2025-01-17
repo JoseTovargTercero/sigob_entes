@@ -34,7 +34,7 @@ require_once '../../back/sistema_global/session.php';
               <div class=" d-flex justify-content-between">
 
                 <h4 class="fw-bold py-3 mb-4">
-                  <span class="text-muted fw-light">Formulación /</span> Presupuesto de unidades y dependencias
+                  <span class="text-muted fw-light">Entes /</span> Presupuesto de unidades y dependencias
                 </h4>
 
                 <div class="row" id="ejercicios-fiscales">
@@ -49,7 +49,7 @@ require_once '../../back/sistema_global/session.php';
       <!-- [ Main Content ] start -->
       <div class="row mb3">
 
-        <div class="col-lg-12 mb-3" id="asignacion-entes-view">
+        <div class="col-lg-12 mb-3" id="entes-asignacion-view">
           <div class="card">
             <div class="card-header d-flex justify-content-between">
               <div class="">

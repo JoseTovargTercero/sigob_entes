@@ -73,6 +73,7 @@ d.addEventListener('DOMContentLoaded', (e) => {
 
   // ENTES
   const solicitudEntesView = d.getElementById('solicitudes-entes-dozavos-view')
+  const entesAsignacionView = d.getElementById('entes-asignacion-view')
 
   // NOMINA
 
@@ -238,8 +239,13 @@ d.addEventListener('DOMContentLoaded', (e) => {
     validateUserLogs()
   }
 
+  // ENTES
+
   if (solicitudEntesView) {
     validateSolicitudEntesView()
+  }
+  if (entesAsignacionView) {
+    validateEntesAsignacionView()
   }
 
   // if (payNomForm) {
