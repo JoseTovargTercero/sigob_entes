@@ -192,20 +192,19 @@ class SolicitudesController
 
     public function consultarSolicitudPorId($data)
     {
-        if (!isset($data['id']) || !isset($data['id_ejercicio'])) {
-            return ["error" => "No se ha especificado ID o un Ejercicio Fiscal para la consulta."];
+        if (!isset($data['id'])) {
+            return ["error" => "No se ha especificado ID para la consulta."];
         }
 
         $id = $data['id'];
-        $id_ejercicio = $data['id_ejercicio'];
 
         try {
             // Consultar la solicitud principal
             $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
                 FROM solicitud_dozavos 
-                WHERE id = ? AND id_ejercicio = ?";
+                WHERE id = ?";
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("ii", $id, $id_ejercicio);
+            $stmt->bind_param("i", $id);
             $stmt->execute();
             $result = $stmt->get_result();
 
