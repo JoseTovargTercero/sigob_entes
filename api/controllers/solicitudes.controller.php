@@ -18,79 +18,79 @@ class SolicitudesController
     private $conexion;
 
     // Función para consultar todas las solicitudes
-   public function consultarSolicitudes($data)
-{
-    try {
-        // Validar si se especifica el ID del ejercicio
-        $whereClause = "";
-        if (isset($data['id_ejercicio'])) {
-            $idEjercicio = $data['id_ejercicio'];
-            $whereClause = " WHERE s.id_ejercicio = ?";
-        }
+    public function consultarSolicitudes($data)
+    {
+        try {
+            // Validar si se especifica el ID del ejercicio
+            $whereClause = "";
+            if (isset($data['id_ejercicio'])) {
+                $idEjercicio = $data['id_ejercicio'];
+                $whereClause = " WHERE s.id_ejercicio = ?";
+            }
 
-        // Consulta principal con detalles básicos de solicitud_dozavos
-        $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
+            // Consulta principal con detalles básicos de solicitud_dozavos
+            $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
                        s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
                        e.ente_nombre, e.tipo_ente
                 FROM solicitud_dozavos s
                 JOIN entes e ON s.id_ente = e.id" . $whereClause;
 
-        $stmt = $this->conexion->prepare($sql);
+            $stmt = $this->conexion->prepare($sql);
 
-        // Si hay filtro por id_ejercicio, enlazar parámetro
-        if ($whereClause) {
-            $stmt->bind_param("i", $idEjercicio);
-        }
+            // Si hay filtro por id_ejercicio, enlazar parámetro
+            if ($whereClause) {
+                $stmt->bind_param("i", $idEjercicio);
+            }
 
-        $stmt->execute();
-        $result = $stmt->get_result();
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $solicitudes = [];
+            if ($result->num_rows > 0) {
+                $solicitudes = [];
 
-            while ($row = $result->fetch_assoc()) {
-                // Verificar si numero_compromiso es 0 y establecerlo como null
-                $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
+                while ($row = $result->fetch_assoc()) {
+                    // Verificar si numero_compromiso es 0 y establecerlo como null
+                    $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
 
-                // Procesar las partidas asociadas
-                $partidasArray = json_decode($row['partidas'], true);
+                    // Procesar las partidas asociadas
+                    $partidasArray = json_decode($row['partidas'], true);
 
-                foreach ($partidasArray as &$partida) {
-                    $idDistribucion = $partida['id'];
+                    foreach ($partidasArray as &$partida) {
+                        $idDistribucion = $partida['id'];
 
-                    // Consulta consolidada para obtener datos de partidas_presupuestarias
-                    $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
+                        // Consulta consolidada para obtener datos de partidas_presupuestarias
+                        $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
                                    FROM distribucion_presupuestaria dp
                                    JOIN partidas_presupuestarias p ON dp.id_partida = p.id
                                    WHERE dp.id = ?";
-                    $stmtPartida = $this->conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $idDistribucion);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
+                        $stmtPartida = $this->conexion->prepare($sqlPartida);
+                        $stmtPartida->bind_param("i", $idDistribucion);
+                        $stmtPartida->execute();
+                        $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                        $stmtPartida->fetch();
+                        $stmtPartida->close();
 
-                    // Agregar datos a la partida
-                    $partida['partida'] = $partidaCod;
-                    $partida['nombre'] = $nombre;
-                    $partida['descripcion'] = $descripcion;
+                        // Agregar datos a la partida
+                        $partida['partida'] = $partidaCod;
+                        $partida['nombre'] = $nombre;
+                        $partida['descripcion'] = $descripcion;
+                    }
+
+                    // Agregar las partidas procesadas al registro
+                    $row['partidas'] = $partidasArray;
+
+                    // Añadir la solicitud completa a la lista de solicitudes
+                    $solicitudes[] = $row;
                 }
 
-                // Agregar las partidas procesadas al registro
-                $row['partidas'] = $partidasArray;
-
-                // Añadir la solicitud completa a la lista de solicitudes
-                $solicitudes[] = $row;
+                return ["success" => $solicitudes];
+            } else {
+                return ["success" => []];
             }
-
-            return ["success" => $solicitudes];
-        } else {
-            return ["success" => "No se encontraron registros en solicitud_dozavos."];
+        } catch (Exception $e) {
+            return ["error" => "Error: " . $e->getMessage()];
         }
-    } catch (Exception $e) {
-        return ["error" => "Error: " . $e->getMessage()];
     }
-}
 
 
     public function registrarError($descripcion)
