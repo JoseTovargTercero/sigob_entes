@@ -18,71 +18,80 @@ class SolicitudesController
     private $conexion;
 
     // Función para consultar todas las solicitudes
-    public function consultarSolicitudes($data)
-    {
-        // if (!isset($data['id_ejercicio'])) {
-        //     return ["error" => "No se ha especificado el ID del ejercicio."];
-        // }
+   public function consultarSolicitudes($data)
+{
+    try {
+        // Validar si se especifica el ID del ejercicio
+        $whereClause = "";
+        if (isset($data['id_ejercicio'])) {
+            $idEjercicio = $data['id_ejercicio'];
+            $whereClause = " WHERE s.id_ejercicio = ?";
+        }
 
-        // $idEjercicio = $data['id_ejercicio'];
-
-        try {
-            // Consulta principal con detalles básicos de solicitud_dozavos
-            $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
+        // Consulta principal con detalles básicos de solicitud_dozavos
+        $sql = "SELECT s.id, s.numero_orden, s.numero_compromiso, s.descripcion, s.monto, 
                        s.fecha, s.partidas, s.tipo, s.mes, s.status, s.id_ejercicio,
                        e.ente_nombre, e.tipo_ente
                 FROM solicitud_dozavos s
-                JOIN entes e ON s.id_ente = e.id";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                JOIN entes e ON s.id_ente = e.id" . $whereClause;
 
-            if ($result->num_rows > 0) {
-                $solicitudes = [];
+        $stmt = $this->conexion->prepare($sql);
 
-                while ($row = $result->fetch_assoc()) {
-                    // Verificar si numero_compromiso es 0 y establecerlo como null
-                    $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
+        // Si hay filtro por id_ejercicio, enlazar parámetro
+        if ($whereClause) {
+            $stmt->bind_param("i", $idEjercicio);
+        }
 
-                    // Procesar las partidas asociadas
-                    $partidasArray = json_decode($row['partidas'], true);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-                    foreach ($partidasArray as &$partida) {
-                        $idDistribucion = $partida['id'];
+        if ($result->num_rows > 0) {
+            $solicitudes = [];
 
-                        // Consulta consolidada para obtener datos de partidas_presupuestarias
-                        $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
+            while ($row = $result->fetch_assoc()) {
+                // Verificar si numero_compromiso es 0 y establecerlo como null
+                $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
+
+                // Procesar las partidas asociadas
+                $partidasArray = json_decode($row['partidas'], true);
+
+                foreach ($partidasArray as &$partida) {
+                    $idDistribucion = $partida['id'];
+
+                    // Consulta consolidada para obtener datos de partidas_presupuestarias
+                    $sqlPartida = "SELECT p.partida, p.nombre, p.descripcion 
                                    FROM distribucion_presupuestaria dp
                                    JOIN partidas_presupuestarias p ON dp.id_partida = p.id
                                    WHERE dp.id = ?";
-                        $stmtPartida = $this->conexion->prepare($sqlPartida);
-                        $stmtPartida->bind_param("i", $idDistribucion);
-                        $stmtPartida->execute();
-                        $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                        $stmtPartida->fetch();
-                        $stmtPartida->close();
+                    $stmtPartida = $this->conexion->prepare($sqlPartida);
+                    $stmtPartida->bind_param("i", $idDistribucion);
+                    $stmtPartida->execute();
+                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                    $stmtPartida->fetch();
+                    $stmtPartida->close();
 
-                        // Agregar datos a la partida
-                        $partida['partida'] = $partidaCod;
-                        $partida['nombre'] = $nombre;
-                        $partida['descripcion'] = $descripcion;
-                    }
-
-                    // Agregar las partidas procesadas al registro
-                    $row['partidas'] = $partidasArray;
-
-                    // Añadir la solicitud completa a la lista de solicitudes
-                    $solicitudes[] = $row;
+                    // Agregar datos a la partida
+                    $partida['partida'] = $partidaCod;
+                    $partida['nombre'] = $nombre;
+                    $partida['descripcion'] = $descripcion;
                 }
 
-                return ["success" => $solicitudes];
-            } else {
-                return ["success" => "No se encontraron registros en solicitud_dozavos."];
+                // Agregar las partidas procesadas al registro
+                $row['partidas'] = $partidasArray;
+
+                // Añadir la solicitud completa a la lista de solicitudes
+                $solicitudes[] = $row;
             }
-        } catch (Exception $e) {
-            return ["error" => "Error: " . $e->getMessage()];
+
+            return ["success" => $solicitudes];
+        } else {
+            return ["success" => "No se encontraron registros en solicitud_dozavos."];
         }
+    } catch (Exception $e) {
+        return ["error" => "Error: " . $e->getMessage()];
     }
+}
+
 
     public function registrarError($descripcion)
     {
@@ -183,19 +192,20 @@ class SolicitudesController
 
     public function consultarSolicitudPorId($data)
     {
-        if (!isset($data['id'])) {
-            return ["error" => "No se ha especificado ID para la consulta."];
+        if (!isset($data['id']) || !isset($data['id_ejercicio'])) {
+            return ["error" => "No se ha especificado ID o un Ejercicio Fiscal para la consulta."];
         }
 
         $id = $data['id'];
+        $id_ejercicio = $data['id_ejercicio'];
 
         try {
             // Consultar la solicitud principal
             $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
                 FROM solicitud_dozavos 
-                WHERE id = ?";
+                WHERE id = ? AND id_ejercicio = ?";
             $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("i", $id);
+            $stmt->bind_param("ii", $id, $id_ejercicio);
             $stmt->execute();
             $result = $stmt->get_result();
 
