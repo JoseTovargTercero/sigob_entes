@@ -49,7 +49,8 @@ function validateRoutes($path, $method)
                 // } 
                 else {
                     // Acción para consultar todos los registros
-                    $dataRequest = ['accion' => 'consulta'];
+                    $paramsIdEjercicio = isset($params['id_ejercicio']) ? $params['id_ejercicio'] : null;
+                    $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $paramsIdEjercicio];
                     $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
 
                 }
