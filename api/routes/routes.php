@@ -172,32 +172,37 @@ function validateRoutes($path, $method)
 
             case 'POST':
 
-            // $resultado = [];
-            // $data = json_decode(file_get_contents('php://input'), true);
+                $resultado = [];
+                $data = json_decode(file_get_contents('php://input'), true);
 
-            // if (!isset($data['accion'])) {
-            //     return ['status' => 200, 'error' => 'No se ha enviado la acción'];
-            // }
-            // $accion = $data['accion'];
+                if (!isset($data['accion'])) {
+                    return ['status' => 200, 'error' => 'No se ha enviado la acción'];
+                }
+                $accion = $data['accion'];
 
-            // if ($accion === 'insert' && isset($data['id_ente']) && isset($data['monto_total']) && isset($data['id_ejercicio'])) {
-            //     // Acción para insertar una asignación
-            //     $dataRequest = $data;
-            //     $resultado = $asignacionController->insertarAsignacionEnte($dataRequest);
-            // } elseif ($accion === 'update' && isset($data['id']) && isset($data['id_ente']) && isset($data['monto_total']) && isset($data['id_ejercicio'])) {
-            //     // Acción para actualizar una asignación
-            //     $dataRequest = $data;
-            //     $resultado = $asignacionController->actualizarAsignacionEnte($dataRequest);
-            // } else {
-            //     $resultado = ['status' => 200, 'error' => 'Acción no válida o faltan datos'];
-            // }
+                if ($accion === 'consultar_secretarias' && isset($data['id_ejercicio'])) {
+                    // Acción para insertar una asignación
+                    $dataRequest = $data["id_ejercicio"];
+                    $resultado = $asignacionController->consultarAsignacionesSecretaria($dataRequest);
+                }
 
-            // if (array_key_exists('error', $resultado)) {
-            //     $resultado = ['status' => 200, 'error' => $resultado['error']];
-            // } else {
-            //     $resultado = ['status' => 200, 'success' => $resultado['success']];
-            // }
-            // return $resultado;
+                if (empty($resultado)) {
+                    return ['status' => 200, 'error' => 'Accion no permitida'];
+                }
+                // } elseif ($accion === 'update' && isset($data['id']) && isset($data['id_ente']) && isset($data['monto_total']) && isset($data['id_ejercicio'])) {
+                //     // Acción para actualizar una asignación
+                //     $dataRequest = $data;
+                //     $resultado = $asignacionController->actualizarAsignacionEnte($dataRequest);
+                // } else {
+                //     $resultado = ['status' => 200, 'error' => 'Acción no válida o faltan datos'];
+                // }
+
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
 
             case 'DELETE':
 
