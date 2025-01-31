@@ -314,12 +314,14 @@ class AsignacionController
                 }
 
                 $disponible = false;
+
                 while ($fila = $resultado->fetch_assoc()) {
                     $distribucion_json = json_decode($fila['distribucion'], true);
 
                     foreach ($distribucion_json as $item) {
                         if ($item['id_distribucion'] == $id_distribucion && $item['monto'] >= $monto_solicitado) {
                             $disponible = true;
+                            $distribucionSinMonto = $id_distribucion;
                             break 2; // Salir de ambos bucles si se encuentra disponibilidad suficiente
                         }
                     }
@@ -327,7 +329,7 @@ class AsignacionController
 
                 if (!$disponible) {
                     $this->conexion->rollback();
-                    return ["error" => "Si alguna distribución no tiene suficiente monto, retornamos false"];
+                    return ["error" => "Si alguna distribución no tiene suficiente monto, retornamos false $distribucionSinMonto"];
                     // Si alguna distribución no tiene suficiente monto, retornamos false
                 }
             }
