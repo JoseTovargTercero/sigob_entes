@@ -293,51 +293,61 @@ class AsignacionController
 
     public function consultarDisponibilidad($distribuciones, $id_ejercicio)
     {
-    $this->conexion->begin_transaction();
+        $this->conexion->begin_transaction();
 
-    try {
-        foreach ($distribuciones as $distribucion) {
-            $id_distribucion = $distribucion['id_distribucion'];
-            $monto_solicitado = $distribucion['monto'];
+        try {
+            foreach ($distribuciones as $distribucion) {
+                $id_distribucion = $distribucion['id_distribucion'];
+                $monto_solicitado = $distribucion['monto'];
 
-            // Consultar el campo 'distribucion' en la tabla 'distribucion_entes' filtrando por id_distribucion e id_ejercicio
-            $sql = "SELECT distribucion FROM distribucion_entes WHERE distribucion LIKE '%\"id_distribucion\":\"$id_distribucion\"%' AND id_ejercicio = ?";
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->bind_param("i", $id_ejercicio);
-            $stmt->execute();
-            $resultado = $stmt->get_result();
+                // Consultar el campo 'distribucion' en la tabla 'distribucion_entes' filtrando por id_distribucion e id_ejercicio
+                $sql = "SELECT distribucion FROM distribucion_entes WHERE distribucion LIKE '%\"id_distribucion\":\"$id_distribucion\"%' AND id_ejercicio = ?";
+                $stmt = $this->conexion->prepare($sql);
+                $stmt->bind_param("i", $id_ejercicio);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
 
-            if ($resultado->num_rows === 0) {
-                $this->conexion->rollback();
-                return false; // No se encontró la distribución para el id_distribucion dado
-            }
+                if ($resultado->num_rows === 0) {
+                    $this->conexion->rollback();
+                    return [
+                        "error" => "No se encontró la distribución para el id_distribucion dado"
+                    ];
+                    ; // No se encontró la distribución para el id_distribucion dado
+                }
 
-            $disponible = false;
-            while ($fila = $resultado->fetch_assoc()) {
-                $distribucion_json = json_decode($fila['distribucion'], true);
+                $disponible = false;
+                while ($fila = $resultado->fetch_assoc()) {
+                    $distribucion_json = json_decode($fila['distribucion'], true);
 
-                foreach ($distribucion_json as $item) {
-                    if ($item['id_distribucion'] == $id_distribucion && $item['monto'] >= $monto_solicitado) {
-                        $disponible = true;
-                        break 2; // Salir de ambos bucles si se encuentra disponibilidad suficiente
+                    foreach ($distribucion_json as $item) {
+                        if ($item['id_distribucion'] == $id_distribucion && $item['monto'] >= $monto_solicitado) {
+                            $disponible = true;
+                            break 2; // Salir de ambos bucles si se encuentra disponibilidad suficiente
+                        }
                     }
+                }
+
+                if (!$disponible) {
+                    $this->conexion->rollback();
+                    return [
+                        "error" => "Si alguna distribución no tiene suficiente monto, retornamos false"
+                    ];
+                    ; // Si alguna distribución no tiene suficiente monto, retornamos false
                 }
             }
 
-            if (!$disponible) {
-                $this->conexion->rollback();
-                return false; // Si alguna distribución no tiene suficiente monto, retornamos false
-            }
+            $this->conexion->commit();
+            return [
+                "success" => true
+            ]; // Todas las distribuciones tienen suficiente monto disponible
+        } catch (Exception $e) {
+            $this->conexion->rollback();
+            registrarError($e->getMessage());
+            return [
+                "error" => false
+            ];
         }
-
-        $this->conexion->commit();
-        return true; // Todas las distribuciones tienen suficiente monto disponible
-    } catch (Exception $e) {
-        $this->conexion->rollback();
-        registrarError($e->getMessage());
-        return false;
     }
-}
 
 
     public function consultarAsignacionesSecretaria($idEjercicio)

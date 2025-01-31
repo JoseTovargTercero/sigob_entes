@@ -98,6 +98,8 @@ function validateRoutes($path, $method)
 
                 }
 
+
+
                 if (empty($resultado)) {
                     return ['status' => 200, 'error' => 'Accion no permitida'];
                 }
@@ -181,9 +183,15 @@ function validateRoutes($path, $method)
                 $accion = $data['accion'];
 
                 if ($accion === 'consultar_secretarias' && isset($data['id_ejercicio'])) {
-                    // Acción para insertar una asignación
+
                     $dataRequest = $data["id_ejercicio"];
                     $resultado = $asignacionController->consultarAsignacionesSecretaria($dataRequest);
+                }
+
+                if ($accion === 'consultar_disponibilidad') {
+
+                    $resultado = $asignacionController->consultarDisponibilidad($data['distribuciones'], $data['id_ejercicio']);
+
                 }
 
                 if (empty($resultado)) {
