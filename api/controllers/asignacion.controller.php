@@ -301,7 +301,7 @@ class AsignacionController
             $monto_solicitado = $distribucion['monto'];
 
             // Consultar el campo 'distribucion' en la tabla 'distribucion_entes' filtrando por id_distribucion e id_ejercicio
-            $sql = "SELECT distribucion FROM distribucion_entes WHERE JSON_CONTAINS(distribucion, '{\"id_distribucion\": $id_distribucion}', '$') AND id_ejercicio = ?";
+            $sql = "SELECT distribucion FROM distribucion_entes WHERE distribucion LIKE '%\"id_distribucion\":\"$id_distribucion\"%' AND id_ejercicio = ?";
             $stmt = $this->conexion->prepare($sql);
             $stmt->bind_param("i", $id_ejercicio);
             $stmt->execute();
