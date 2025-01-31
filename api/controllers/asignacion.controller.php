@@ -69,6 +69,7 @@ class AsignacionController
         }
     }
 
+
     // Función para actualizar un registro en asignacion_ente
     public function actualizarAsignacionEnte($id, $id_ente, $monto_total, $id_ejercicio)
     {
@@ -288,6 +289,56 @@ class AsignacionController
             return ['error' => $e->getMessage()];
         }
     }
+
+
+    public function consultarDisponibilidad($distribuciones, $id_ejercicio)
+    {
+    $this->conexion->begin_transaction();
+
+    try {
+        foreach ($distribuciones as $distribucion) {
+            $id_distribucion = $distribucion['id_distribucion'];
+            $monto_solicitado = $distribucion['monto'];
+
+            // Consultar el campo 'distribucion' en la tabla 'distribucion_entes' filtrando por id_distribucion e id_ejercicio
+            $sql = "SELECT distribucion FROM distribucion_entes WHERE JSON_CONTAINS(distribucion, '{\"id_distribucion\": $id_distribucion}', '$') AND id_ejercicio = ?";
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->bind_param("i", $id_ejercicio);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+
+            if ($resultado->num_rows === 0) {
+                $this->conexion->rollback();
+                return false; // No se encontró la distribución para el id_distribucion dado
+            }
+
+            $disponible = false;
+            while ($fila = $resultado->fetch_assoc()) {
+                $distribucion_json = json_decode($fila['distribucion'], true);
+
+                foreach ($distribucion_json as $item) {
+                    if ($item['id_distribucion'] == $id_distribucion && $item['monto'] >= $monto_solicitado) {
+                        $disponible = true;
+                        break 2; // Salir de ambos bucles si se encuentra disponibilidad suficiente
+                    }
+                }
+            }
+
+            if (!$disponible) {
+                $this->conexion->rollback();
+                return false; // Si alguna distribución no tiene suficiente monto, retornamos false
+            }
+        }
+
+        $this->conexion->commit();
+        return true; // Todas las distribuciones tienen suficiente monto disponible
+    } catch (Exception $e) {
+        $this->conexion->rollback();
+        registrarError($e->getMessage());
+        return false;
+    }
+}
+
 
     public function consultarAsignacionesSecretaria($idEjercicio)
     {
