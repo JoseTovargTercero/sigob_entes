@@ -314,7 +314,7 @@ class AsignacionController
                 }
 
                 $disponible = false;
-
+                $distribucionSinMonto = null;
                 while ($fila = $resultado->fetch_assoc()) {
                     $distribucion_json = json_decode($fila['distribucion'], true);
 
@@ -329,7 +329,7 @@ class AsignacionController
 
                 if (!$disponible) {
                     $this->conexion->rollback();
-                    return ["error" => "Si alguna distribución no tiene suficiente monto, retornamos false $distribucionSinMonto"];
+                    return ["error" => "Alguna de las distribuciones no posee monto suficiente para registrar el gasto."];
                     // Si alguna distribución no tiene suficiente monto, retornamos false
                 }
             }
