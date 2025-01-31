@@ -309,7 +309,7 @@ class AsignacionController
 
                 if ($resultado->num_rows === 0) {
                     $this->conexion->rollback();
-                    return ["error" => "No se encontró la distribución para el id_distribucion dado"];
+                    return ["error" => "No se hallaron las distribuciones indicadas"];
                     // No se encontró la distribución para el id_distribucion dado
                 }
 
