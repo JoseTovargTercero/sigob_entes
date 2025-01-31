@@ -309,10 +309,8 @@ class AsignacionController
 
                 if ($resultado->num_rows === 0) {
                     $this->conexion->rollback();
-                    return [
-                        "error" => "No se encontró la distribución para el id_distribucion dado"
-                    ];
-                    ; // No se encontró la distribución para el id_distribucion dado
+                    return ["error" => "No se encontró la distribución para el id_distribucion dado"];
+                    // No se encontró la distribución para el id_distribucion dado
                 }
 
                 $disponible = false;
@@ -329,23 +327,17 @@ class AsignacionController
 
                 if (!$disponible) {
                     $this->conexion->rollback();
-                    return [
-                        "error" => "Si alguna distribución no tiene suficiente monto, retornamos false"
-                    ];
-                    ; // Si alguna distribución no tiene suficiente monto, retornamos false
+                    return ["error" => "Si alguna distribución no tiene suficiente monto, retornamos false"];
+                    // Si alguna distribución no tiene suficiente monto, retornamos false
                 }
             }
 
             $this->conexion->commit();
-            return [
-                "success" => true
-            ]; // Todas las distribuciones tienen suficiente monto disponible
+            return ["success" => true]; // Todas las distribuciones tienen suficiente monto disponible
         } catch (Exception $e) {
             $this->conexion->rollback();
             registrarError($e->getMessage());
-            return [
-                "error" => false
-            ];
+            return ["error" => false];
         }
     }
 
