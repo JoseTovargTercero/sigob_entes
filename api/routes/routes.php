@@ -195,7 +195,6 @@ function validateRoutes($path, $method)
 
                 if ($accion === 'actualizar_distribucion') {
                     $resultado = $asignacionController->actualizarDistribucion($data['distribuciones'], $data['id_ejercicio']);
-
                 }
 
 
@@ -237,6 +236,52 @@ function validateRoutes($path, $method)
             //     $resultado = ['status' => 200, 'success' => $resultado['success']];
             // }
             // return $resultado;
+
+            default:
+                return ['status' => 200, 'error' => 'Método no permitido'];
+        }
+    }
+
+    if (
+        $path[0] === 'sistema'
+    ) {
+
+        require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "back" . DIRECTORY_SEPARATOR . "sistema_global" . DIRECTORY_SEPARATOR . "conexion.php";
+        require_once dirname(__DIR__, 1) . DIRECTORY_SEPARATOR . "controllers" . DIRECTORY_SEPARATOR . "sistema.controller.php";
+
+        $sistemaController = new SistemaController($conexion);
+
+        switch ($method) {
+            case 'POST';
+                $resultado = [];
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                if (!isset($data['accion'])) {
+                    return ['status' => 200, 'error' => 'No se ha enviado la acción'];
+                }
+                $accion = $data['accion'];
+
+                if ($accion === 'actualizar_tablas') {
+
+                    if (!isset($data['informacion'])) {
+                        return ['status' => 200, 'error' => 'No se ha enviado la información correctamente'];
+                    }
+
+                    $resultado = $sistemaController->actualizarTablas($data['informacion']);
+                }
+
+                if (empty($resultado)) {
+                    return ['status' => 200, 'error' => 'Accion no permitida'];
+                }
+
+                if (array_key_exists('error', $resultado)) {
+                    $resultado = ['status' => 200, 'error' => $resultado['error']];
+                } else {
+                    $resultado = ['status' => 200, 'success' => $resultado['success']];
+                }
+                return $resultado;
+
+
 
             default:
                 return ['status' => 200, 'error' => 'Método no permitido'];
