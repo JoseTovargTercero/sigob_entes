@@ -345,7 +345,7 @@ class AsignacionController
 
     public function actualizarDistribucion($distribuciones, $id_ejercicio)
     {
-        var_dump($distribuciones);
+
         $this->conexion->begin_transaction();
 
         try {
@@ -407,7 +407,7 @@ class AsignacionController
         } catch (Exception $e) {
             $this->conexion->rollback();
             registrarError($e->getMessage());
-            return ["error" => false];
+            return ["error" => $e->getMessage()];
         }
     }
 
