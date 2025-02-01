@@ -189,10 +189,16 @@ function validateRoutes($path, $method)
                 }
 
                 if ($accion === 'consultar_disponibilidad') {
-
                     $resultado = $asignacionController->consultarDisponibilidad($data['distribuciones'], $data['id_ejercicio']);
 
                 }
+
+                if ($accion === 'actualizar_distribucion') {
+                    $resultado = $asignacionController->actualizarDistribucion($data['distribuciones'], $data['id_ejercicio']);
+
+                }
+
+
 
                 if (empty($resultado)) {
                     return ['status' => 200, 'error' => 'Accion no permitida'];
