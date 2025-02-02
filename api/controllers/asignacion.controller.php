@@ -178,6 +178,7 @@ class AsignacionController
 
     public function consultarAsignacionPorId($id)
     {
+
         try {
             // Consulta principal para obtener los datos de asignacion_ente y sus detalles del ente
             $sql = "SELECT a.*, e.partida, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad, e.juridico 
@@ -194,7 +195,7 @@ class AsignacionController
 
                 // Consulta para obtener los detalles de actividades_entes asociados al id_asignacion y id_ejercicio
                 $sqlActividades = "SELECT de.id AS actividad_id, de.id_ente, de.distribucion, de.monto_total, de.status, de.id_ejercicio,
-                                      ed.actividad, ed.ente_nombre, ed.juridico,
+                                      ed.actividad, ed.ente_nombre, ed.juridico
                                FROM distribucion_entes de
                                LEFT JOIN entes_dependencias ed ON de.actividad_id = ed.id
                                WHERE de.id_asignacion = ? AND de.id_ejercicio = ?";
