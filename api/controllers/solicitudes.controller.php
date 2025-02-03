@@ -230,6 +230,8 @@ class SolicitudesController
                     $stmtPartida->fetch();
                     $stmtPartida->close();
 
+
+
                     $id_partida = $id_partida2;
 
                     // Obtener información de la partida presupuestaria
@@ -261,17 +263,17 @@ class SolicitudesController
                 // Agregar la información del ente como un ítem más
                 $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
 
-                // Consultar la información del compromiso asociado
-                $sqlCompromiso = "SELECT * FROM compromisos WHERE id_registro = ? AND tabla_registro = 'solicitud_dozavos'";
-                $stmtCompromiso = $this->conexion->prepare($sqlCompromiso);
-                $stmtCompromiso->bind_param("i", $id);
-                $stmtCompromiso->execute();
-                $resultCompromiso = $stmtCompromiso->get_result();
-                $informacionCompromiso = $resultCompromiso->fetch_assoc();
-                $stmtCompromiso->close();
+                // // Consultar la información del compromiso asociado
+                // $sqlCompromiso = "SELECT * FROM compromisos WHERE id_registro = ? AND tabla_registro = 'solicitud_dozavos'";
+                // $stmtCompromiso = $this->conexion->prepare($sqlCompromiso);
+                // $stmtCompromiso->bind_param("i", $id);
+                // $stmtCompromiso->execute();
+                // $resultCompromiso = $stmtCompromiso->get_result();
+                // $informacionCompromiso = $resultCompromiso->fetch_assoc();
+                // $stmtCompromiso->close();
 
-                // Agregar la información del compromiso
-                $row['informacion_compromiso'] = $informacionCompromiso ?: null; // Si no se encuentra, se asigna como null
+                // // Agregar la información del compromiso
+                // $row['informacion_compromiso'] = $informacionCompromiso ?: null; // Si no se encuentra, se asigna como null
 
                 return ["success" => $row];
             } else {
