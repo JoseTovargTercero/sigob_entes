@@ -178,6 +178,7 @@ class AsignacionController
 
     public function consultarAsignacionPorId($id)
     {
+
         try {
             // Consulta principal para obtener los datos de asignacion_ente y sus detalles del ente
             $sql = "SELECT a.*, e.partida, e.ente_nombre, e.tipo_ente, e.sector, e.programa, e.proyecto, e.actividad, e.juridico 
@@ -194,7 +195,7 @@ class AsignacionController
 
                 // Consulta para obtener los detalles de actividades_entes asociados al id_asignacion y id_ejercicio
                 $sqlActividades = "SELECT de.id AS actividad_id, de.id_ente, de.distribucion, de.monto_total, de.status, de.id_ejercicio,
-                                      ed.actividad, ed.ente_nombre, ed.juridico,
+                                      ed.actividad, ed.ente_nombre, ed.juridico
                                FROM distribucion_entes de
                                LEFT JOIN entes_dependencias ed ON de.actividad_id = ed.id
                                WHERE de.id_asignacion = ? AND de.id_ejercicio = ?";
@@ -342,6 +343,75 @@ class AsignacionController
             return ["error" => false];
         }
     }
+
+    public function actualizarDistribucion($distribuciones, $id_ejercicio)
+    {
+
+        $this->conexion->begin_transaction();
+
+        try {
+            foreach ($distribuciones as $distribucion) {
+                $id_distribucion = $distribucion['id_distribucion'];
+                $monto_solicitado = $distribucion['monto'];
+
+                // Consultar el campo 'distribucion' en la tabla 'distribucion_entes'
+                $sql = "SELECT id, distribucion FROM distribucion_entes WHERE distribucion LIKE '%\"id_distribucion\":\"$id_distribucion\"%' AND id_ejercicio = ?";
+                $stmt = $this->conexion->prepare($sql);
+                $stmt->bind_param("i", $id_ejercicio);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+
+                if ($resultado->num_rows === 0) {
+                    $this->conexion->rollback();
+                    return ["error" => "No se hallaron las distribuciones indicadas"];
+                }
+
+                $fila = $resultado->fetch_assoc();
+                $id_distribucion_entes = $fila['id'];
+                $distribucion_json = json_decode($fila['distribucion'], true);
+
+                $disponible = false;
+
+                // Restar el monto de la distribución
+                foreach ($distribucion_json as &$item) {
+                    if ($item['id_distribucion'] == $id_distribucion) {
+                        if ($item['monto'] >= $monto_solicitado) {
+                            $item['monto'] -= $monto_solicitado;
+                            $disponible = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$disponible) {
+                    $this->conexion->rollback();
+                    return ["error" => "Alguna de las distribuciones no posee monto suficiente para registrar el gasto."];
+                }
+
+                // Convertir el JSON actualizado a string
+                $distribucion_actualizada = json_encode($distribucion_json, JSON_UNESCAPED_UNICODE);
+
+                // Actualizar la distribución en la base de datos
+                $sql_update = "UPDATE distribucion_entes SET distribucion = ? WHERE id = ?";
+                $stmt_update = $this->conexion->prepare($sql_update);
+                $stmt_update->bind_param("si", $distribucion_actualizada, $id_distribucion_entes);
+                $stmt_update->execute();
+
+                if ($stmt_update->affected_rows === 0) {
+                    $this->conexion->rollback();
+                    return ["error" => "No se pudo actualizar la distribución."];
+                }
+            }
+
+            $this->conexion->commit();
+            return ["success" => true];
+        } catch (Exception $e) {
+            $this->conexion->rollback();
+            registrarError($e->getMessage());
+            return ["error" => $e->getMessage()];
+        }
+    }
+
 
 
     public function consultarAsignacionesSecretaria($idEjercicio)
