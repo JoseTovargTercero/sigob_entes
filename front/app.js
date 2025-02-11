@@ -2,6 +2,7 @@ import { validateCategoriaForm } from './src/controllers/categoriasForm.js'
 import { loadCategoriasTable } from './src/controllers/categoriasTable.js'
 import { validateDependenciaForm } from './src/controllers/dependenciasForm.js'
 import { loadDependenciaTable } from './src/controllers/dependenciasTable.js'
+import { validatePlanOperativoView } from './src/controllers/entes_planOperativoView.js'
 import { validateSolicitudEntesView } from './src/controllers/entes_solicitudView.js'
 // import { validateEmployeeForm } from './src/controllers/empleadosForm - no usar.js'
 // import { validateEmployeeTable } from './src/controllers/empleadosTable.js'
@@ -74,6 +75,7 @@ d.addEventListener('DOMContentLoaded', (e) => {
   // ENTES
   const solicitudEntesView = d.getElementById('solicitudes-entes-dozavos-view')
   const entesAsignacionView = d.getElementById('entes-asignacion-view')
+  const planOperativoView = d.getElementById('plan-operativo-view')
 
   // NOMINA
 
@@ -247,7 +249,9 @@ d.addEventListener('DOMContentLoaded', (e) => {
   if (entesAsignacionView) {
     validateAsignacionEntesView()
   }
-
+  if (planOperativoView) {
+    validatePlanOperativoView()
+  }
   // if (payNomForm) {
   //   validatePayNomForm({
   //     selectId: 'select-correlativo',
