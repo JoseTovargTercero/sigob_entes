@@ -468,7 +468,7 @@ class AsignacionController
                                     'programa_denominacion' => $detalles['programa_denominacion'],
                                     'proyecto_denominacion' => $detalles['proyecto_denominacion'],
                                     'ente_nombre' => $ente['ente_nombre'],
-                                    'monto' => $distribucion['monto_total'],
+                                    'monto' => $distribucionItem['monto'],
                                 ];
                             }
                         }

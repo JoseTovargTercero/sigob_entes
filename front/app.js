@@ -245,7 +245,7 @@ d.addEventListener('DOMContentLoaded', (e) => {
     validateSolicitudEntesView()
   }
   if (entesAsignacionView) {
-    validateEntesAsignacionView()
+    validateAsignacionEntesView()
   }
 
   // if (payNomForm) {
