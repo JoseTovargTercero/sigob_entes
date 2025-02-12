@@ -150,11 +150,9 @@ function consultarPlanesOperativos($data)
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $planes = [];
             while ($row = $result->fetch_assoc()) {
                 // Decodificar JSON de dimensiones
                 $row['dimensiones'] = json_decode($row['dimensiones'], true);
-                $planes[] = $row;
             }
         } else {
             $conexion->rollback();
@@ -171,7 +169,7 @@ function consultarPlanesOperativos($data)
         $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => ["planes" => $planes, "ente" => $ente ?: null]]);
+        return json_encode(["success" => $row]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
@@ -218,7 +216,7 @@ function consultarPlanOperativoPorId($data)
         $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => ["plan" => $row, "ente" => $ente ?: null]]);
+        return json_encode(["success" => $row]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
