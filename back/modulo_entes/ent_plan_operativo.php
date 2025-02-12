@@ -228,7 +228,7 @@ function actualizarPlanOperativo($data)
 {
     global $conexion;
 
-    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['codigo'])) {
+    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['codigo'], $data['status'])) {
         return json_encode(["error" => "Faltan datos o el ID para actualizar el plan operativo."]);
     }
 
@@ -262,9 +262,9 @@ function actualizarPlanOperativo($data)
 
         $conexion->begin_transaction();
 
-        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, codigo = ? WHERE id = ? AND id_ente = ?";
+        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, codigo = ?, status = ? WHERE id = ? AND id_ente = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssisi", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['codigo'], $data['id'], $idEnte);
+        $stmt->bind_param("ssssssissi", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['codigo'], $data['status'], $data['id'], $idEnte);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
