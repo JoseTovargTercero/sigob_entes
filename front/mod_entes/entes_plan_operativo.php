@@ -5,7 +5,7 @@
 <head>
     <link rel="stylesheet" href="../src/styles/style.css">
 
-    <title>Solicitudes Dozavos</title>
+    <title>Plan Operativo</title>
 </head>
 
 <body>
@@ -49,9 +49,8 @@
 
                         <div class="card-header d-flex justify-content-between">
                             <div class="">
-                                <h5 class="mb-0">Historial de solicitudes de dozavos</h5>
-                                <small class="mt-0 text-muted">Visualice las peticiones de dozavo gestionadas
-                                    anteriormente</small>
+                                <h5 class="mb-0">Historial de planes operativos</h5>
+                                <small class="mt-0 text-muted">Visualice los planes operativos anteriores</small>
                             </div>
 
                         </div>
