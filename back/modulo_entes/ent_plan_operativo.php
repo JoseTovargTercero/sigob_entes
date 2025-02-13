@@ -50,7 +50,7 @@ function registrarPlanOperativo($data) {
     global $conexion;
     
     try {
-        if (!isset($data['objetivo_general']) || !isset($data['codigo']) || !isset($data['id_ejercicio']) || !isset($_SESSION['id_ente'])) {
+        if (!isset($data['objetivo_general']) || !isset($data['id_ejercicio']) || !isset($_SESSION['id_ente'])) {
             return json_encode(["error" => "Faltan datos obligatorios para registrar el plan operativo."]);
         }
         
@@ -82,7 +82,6 @@ function registrarPlanOperativo($data) {
         }
         
         $ano = $filaEjercicio['ano'];
-        $fechaElaboracion = "$ano-01-01";
         
         // Validación de dimensiones
         $dimensionesPermitidas = ['politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios', 'ambiente'];
@@ -99,8 +98,8 @@ function registrarPlanOperativo($data) {
         $conexion->begin_transaction();
         
         // Insertar en plan_operativo
-        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, fecha_elaboracion, codigo, status) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, status) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
         
         $stmtInsertar = $conexion->prepare($sqlInsertar);
         
@@ -110,7 +109,7 @@ function registrarPlanOperativo($data) {
         $accciones = json_encode($data['accciones']);
         $dimensiones = json_encode($data['dimensiones']);
         
-        $stmtInsertar->bind_param("issssssis", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio, $fechaElaboracion, $data['codigo']);
+        $stmtInsertar->bind_param("issssssi", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio);
         $stmtInsertar->execute();
         
         if ($stmtInsertar->affected_rows > 0) {
@@ -228,7 +227,7 @@ function actualizarPlanOperativo($data)
 {
     global $conexion;
 
-    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['codigo'], $data['status'])) {
+    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['status'])) {
         return json_encode(["error" => "Faltan datos o el ID para actualizar el plan operativo."]);
     }
 
@@ -262,9 +261,9 @@ function actualizarPlanOperativo($data)
 
         $conexion->begin_transaction();
 
-        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, codigo = ?, status = ? WHERE id = ? AND id_ente = ?";
+        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, status = ? WHERE id = ? AND id_ente = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssissi", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['codigo'], $data['status'], $data['id'], $idEnte);
+        $stmt->bind_param("sssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {

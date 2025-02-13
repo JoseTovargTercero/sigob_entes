@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-02-2025 a las 15:09:15
+-- Tiempo de generación: 13-02-2025 a las 15:10:25
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 7.4.33
 
@@ -36,8 +36,6 @@ CREATE TABLE `plan_operativo` (
   `accciones` longtext NOT NULL,
   `dimensiones` longtext NOT NULL,
   `id_ejercicio` int(255) NOT NULL,
-  `fecha_elaboracion` date NOT NULL,
-  `codigo` varchar(255) NOT NULL,
   `status` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
