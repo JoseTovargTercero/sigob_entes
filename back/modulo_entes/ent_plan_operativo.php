@@ -99,8 +99,8 @@ function registrarPlanOperativo($data) {
         $conexion->begin_transaction();
         
         // Insertar en plan_operativo
-        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, fecha_elaboracion, codigo) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, fecha_elaboracion, codigo, status) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
         
         $stmtInsertar = $conexion->prepare($sqlInsertar);
         
@@ -150,11 +150,9 @@ function consultarPlanesOperativos($data)
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $planes = [];
             while ($row = $result->fetch_assoc()) {
                 // Decodificar JSON de dimensiones
                 $row['dimensiones'] = json_decode($row['dimensiones'], true);
-                $planes[] = $row;
             }
         } else {
             $conexion->rollback();
@@ -171,7 +169,7 @@ function consultarPlanesOperativos($data)
         $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => ["planes" => $planes, "ente" => $ente ?: null]]);
+        return json_encode(["success" => $row]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
@@ -218,7 +216,7 @@ function consultarPlanOperativoPorId($data)
         $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => ["plan" => $row, "ente" => $ente ?: null]]);
+        return json_encode(["success" => $row]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
@@ -230,18 +228,43 @@ function actualizarPlanOperativo($data)
 {
     global $conexion;
 
-    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['codigo'])) {
+    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['accciones'], $data['dimensiones'], $data['id_ejercicio'], $data['codigo'], $data['status'])) {
         return json_encode(["error" => "Faltan datos o el ID para actualizar el plan operativo."]);
     }
 
     $idEnte = $_SESSION['id_ente'];
+    $idPlan = $data['id'];
 
     try {
+        // Verificar el estado del plan operativo
+        $sqlVerificar = "SELECT status FROM plan_operativo WHERE id = ? AND id_ente = ?";
+        $stmtVerificar = $conexion->prepare($sqlVerificar);
+        $stmtVerificar->bind_param("ii", $idPlan, $idEnte);
+        $stmtVerificar->execute();
+        $resultadoVerificar = $stmtVerificar->get_result();
+        $filaVerificar = $resultadoVerificar->fetch_assoc();
+
+        if (!$filaVerificar) {
+            return json_encode(["error" => "El plan operativo no existe."]);
+        }
+
+        if ($filaVerificar['status'] == 1) {
+            return json_encode(["error" => "No se puede modificar el plan operativo porque está en estado aprobado (status = 1)."]);
+        }
+
+        // Validación de dimensiones
+        $dimensionesPermitidas = ['politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios', 'ambiente'];
+        foreach ($data['dimensiones'] as $dimension) {
+            if (!in_array(strtolower($dimension['nombre']), $dimensionesPermitidas)) {
+                return json_encode(["error" => "Las dimensiones deben contener los textos válidos: 'politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios' y 'ambiente'."]);
+            }
+        }
+
         $conexion->begin_transaction();
 
-        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, codigo = ? WHERE id = ? AND id_ente = ?";
+        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, codigo = ?, status = ? WHERE id = ? AND id_ente = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssisi", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['codigo'], $data['id'], $idEnte);
+        $stmt->bind_param("ssssssissi", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['codigo'], $data['status'], $data['id'], $idEnte);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
@@ -269,6 +292,22 @@ function eliminarPlanOperativo($data)
     $idPlan = $data['id'];
 
     try {
+        // Verificar el estado del plan operativo
+        $sqlVerificar = "SELECT status FROM plan_operativo WHERE id = ? AND id_ente = ?";
+        $stmtVerificar = $conexion->prepare($sqlVerificar);
+        $stmtVerificar->bind_param("ii", $idPlan, $idEnte);
+        $stmtVerificar->execute();
+        $resultadoVerificar = $stmtVerificar->get_result();
+        $filaVerificar = $resultadoVerificar->fetch_assoc();
+
+        if (!$filaVerificar) {
+            return json_encode(["error" => "El plan operativo no existe."]);
+        }
+
+        if ($filaVerificar['status'] == 1) {
+            return json_encode(["error" => "No se puede eliminar el plan operativo porque está en estado aprobado (status = 1)."]);
+        }
+
         $conexion->begin_transaction();
 
         $sql = "DELETE FROM plan_operativo WHERE id = ? AND id_ente = ?";
@@ -288,6 +327,7 @@ function eliminarPlanOperativo($data)
         return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
+
 
 
 
