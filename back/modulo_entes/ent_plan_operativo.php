@@ -83,16 +83,7 @@ function registrarPlanOperativo($data) {
         
         $ano = $filaEjercicio['ano'];
         
-        // Validación de dimensiones
-        $dimensionesPermitidas = ['politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios', 'ambiente'];
-        if (isset($data['dimensiones'])) {
-            foreach ($data['dimensiones'] as $dimension) {
-                // Verificar si el nombre de la dimensión es uno de los permitidos
-                if (!in_array(strtolower($dimension['nombre']), $dimensionesPermitidas)) {
-                    return json_encode(["error" => "Las dimensiones deben contener los textos válidos: 'politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios' y 'ambiente'."]);
-                }
-            }
-        }
+
         
         // Iniciar transacción
         $conexion->begin_transaction();
@@ -252,13 +243,6 @@ function actualizarPlanOperativo($data)
             return json_encode(["error" => "No se puede modificar el plan operativo porque está en estado aprobado (status = 1)."]);
         }
 
-        // Validación de dimensiones
-        $dimensionesPermitidas = ['politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios', 'ambiente'];
-        foreach ($data['dimensiones'] as $dimension) {
-            if (!in_array(strtolower($dimension['nombre']), $dimensionesPermitidas)) {
-                return json_encode(["error" => "Las dimensiones deben contener los textos válidos: 'politica', 'cultura', 'socio_productivo', 'social_educativa', 'salud', 'seguridad', 'servicios' y 'ambiente'."]);
-            }
-        }
 
         $conexion->begin_transaction();
 
