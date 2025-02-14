@@ -33,7 +33,7 @@ CREATE TABLE `plan_operativo` (
   `objetivo_general` longtext NOT NULL,
   `objetivos_especificos` longtext NOT NULL,
   `estrategias` longtext NOT NULL,
-  `accciones` longtext NOT NULL,
+  `acciones` longtext NOT NULL,
   `dimensiones` longtext NOT NULL,
   `id_ejercicio` int(255) NOT NULL,
   `status` int(255) NOT NULL,
