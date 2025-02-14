@@ -37,7 +37,7 @@ CREATE TABLE `plan_operativo` (
   `dimensiones` longtext NOT NULL,
   `id_ejercicio` int(255) NOT NULL,
   `status` int(255) NOT NULL,
-  `responsable` varchar(255) NOT NULL
+  `metas_actividades` longtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

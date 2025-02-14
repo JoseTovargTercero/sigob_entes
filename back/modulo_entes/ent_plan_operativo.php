@@ -89,7 +89,7 @@ function registrarPlanOperativo($data) {
         $conexion->begin_transaction();
         
         // Insertar en plan_operativo
-        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, status, responsable) 
+        $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, status, metas_actividades) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)";
         
         $stmtInsertar = $conexion->prepare($sqlInsertar);
@@ -99,9 +99,9 @@ function registrarPlanOperativo($data) {
         $estrategias = json_encode($data['estrategias']);
         $accciones = json_encode($data['accciones']);
         $dimensiones = json_encode($data['dimensiones']);
-        $responsable = json_encode($data['responsable']);
+        $metas_actividades = json_encode($data['metas_actividades']);
         
-        $stmtInsertar->bind_param("issssssis", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio, $responsable);
+        $stmtInsertar->bind_param("issssssis", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio, $metas_actividades);
         $stmtInsertar->execute();
         
         if ($stmtInsertar->affected_rows > 0) {
@@ -246,9 +246,9 @@ function actualizarPlanOperativo($data)
 
         $conexion->begin_transaction();
 
-        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, status = ?, responsable = ? WHERE id = ? AND id_ente = ?";
+        $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, status = ?, metas_actividades = ? WHERE id = ? AND id_ente = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $data['responsable'] );
+        $stmt->bind_param("ssssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $data['metas_actividades'] );
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
