@@ -1,3 +1,4 @@
+import { getEntePlanOperativo } from '../api/entes_planOperativo.js'
 import {
   getEntesAsignacion,
   getEnteSolicitudDozavos,
@@ -36,9 +37,11 @@ export const validatePlanOperativoView = async () => {
     return
   }
 
+  let data = await getEntePlanOperativo(ejercicioFiscal.id)
+
   entes_planOperativo_card({
     elementToInsert: 'plan-operativo-view',
-    data: null,
+    data,
     closed: false,
   })
 
@@ -51,7 +54,20 @@ export const validatePlanOperativoView = async () => {
         })
         return
       }
-      entes_planOperativo_form_card({ elementToInsert: 'plan-operativo-view' })
+
+      entes_planOperativo_form_card({
+        elementToInsert: 'plan-operativo-view',
+        ejercicioId: ejercicioFiscal ? ejercicioFiscal.id : null,
+        reset: function () {
+          getEntePlanOperativo(ejercicioFiscal.id).then((data) => {
+            entes_planOperativo_card({
+              elementToInsert: 'plan-operativo-view',
+              data,
+              closed: false,
+            })
+          })
+        },
+      })
     }
 
     if (e.target.dataset.detalleid) {

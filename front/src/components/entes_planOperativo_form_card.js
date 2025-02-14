@@ -1,3 +1,4 @@
+import { registrarPlanOperativo } from '../api/entes_planOperativo.js'
 import {
   confirmNotification,
   hideLoader,
@@ -8,7 +9,11 @@ import {
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
 const d = document
 
-export const entes_planOperativo_form_card = ({ elementToInsert }) => {
+export const entes_planOperativo_form_card = ({
+  elementToInsert,
+  ejercicioId,
+  reset,
+}) => {
   let fieldList = { objetivo_general: '', codigo: '', fecha_elaboracion: '' }
   let fieldListErrors = {
     objetivo_general: {
@@ -16,19 +21,22 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
       message: 'mensaje de error',
       type: 'textarea',
     },
-    codigo: {
-      value: true,
-      message: 'Código inválido',
-      type: 'Number',
-    },
-    fecha_elaboracion: {
-      value: true,
-      message: 'Fecha inválida',
-      type: 'text',
-    },
+    // codigo: {
+    //   value: true,
+    //   message: 'Código inválido',
+    //   type: 'Number',
+    // },
+    // fecha_elaboracion: {
+    //   value: true,
+    //   message: 'Fecha inválida',
+    //   type: 'text',
+    // },
   }
   let fieldListOptions = {}
   let fieldListErrorsOptions = {}
+
+  let fieldListDimensiones = {}
+  let fieldListErrorsDimensiones = {}
 
   let nombreCard = 'plan-operativo'
 
@@ -38,8 +46,21 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
     closeCard(oldCardElement)
   }
 
-  const segundaVista = () => {
-    let div = `      <div id="card-body-part-2" class="slide-up-animation">
+  const primeraVista = () => {
+    let div = `      <div id="card-body-part-1" class="slide-up-animation">
+       <div class='row mb-4'>
+              <div class='form-group'>
+                <label class='form-label' for='objetivo_general'>
+                  Objetivo general
+                </label>
+                <input
+                  class='form-control plan-input'
+                  name='objetivo_general'
+                  id='objetivo_general'
+                  placeholder='Objetivo general'
+                />
+              </div>
+            </div>
         <div class='row mb-4'>
           <h5 class='text-center text-blue-600 mb-2'>Objetivos Específicos</h5>
           <div id='opciones-container-objetivo'></div>
@@ -53,6 +74,7 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
             </button>
           </div>
         </div>
+        <hr></hr>
         <div class='row mb-4'>
           <h5 class='text-center text-blue-600 mb-2'>Estrategias</h5>
           <div id='opciones-container-estrategia'></div>
@@ -66,6 +88,7 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
             </button>
           </div>
         </div>
+        <hr></hr>
         <div class='row mb-4'>
           <h5 class='text-center text-blue-600 mb-2'>Acciones</h5>
           <div id='opciones-container-accion'></div>
@@ -84,6 +107,23 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
   }
 
   let dimensionesView = () => {
+    let body = `  <div id='card-body-part-2'>
+        <div class='row mb-4'>
+          <h5 class='text-center text-blue-600 mb-2'>
+            Descripción de dimensiones
+          </h5>
+          <div id='opciones-container-dimension'></div>
+          <div class='text-center'>
+            <button
+              type='button'
+              class='btn btn-sm bg-brand-color-1 text-white'
+              data-add='dimension'
+            >
+              <i class='bx bx-plus'></i> AGREGAR DIMENSIÓN
+            </button>
+          </div>
+        </div>
+      </div>`
     let form = `<div id='card-body-part-3' class='slide-up-animation'>
         <form>
           <h5>DESCRIPCION DE LAS DIMENSIONES</h5>
@@ -209,10 +249,32 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
         </form>
       </div>`
 
-    return form
+    return body
   }
 
-  let card = `  <div class='card slide-up-animation' id='${nombreCard}-form-card'>
+  const terceraVista = () => {
+    let body = `  <div id='card-body-part-3'>
+        <div class='row mb-4'>
+          <h5 class='text-center text-blue-600 mb-2'>
+            Vinculación de plan de presupuesto
+          </h5>
+          <small>Añada las actividades y metas para el plan operativo</small>
+          <div id='opciones-container-metas'></div>
+          <div class='text-center'>
+            <button
+              type='button'
+              class='btn btn-sm bg-brand-color-1 text-white'
+              data-add='metas'
+            >
+              <i class='bx bx-plus'></i> AGREGAR ACTIVIDAD
+            </button>
+          </div>
+        </div>
+      </div>`
+    return body
+  }
+
+  let card = ` <div class='card slide-up-animation' id='${nombreCard}-form-card'>
       <div class='card-header d-flex justify-content-between'>
         <div class=''>
           <h5 class='mb-0'>Plan operativo</h5>
@@ -229,66 +291,20 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
           &times;
         </button>
       </div>
-      <div class='card-body' id="card-body">
-      <div id="card-body-part-1" class="slide-up-animation">
-        <form>
-          <div class='row'>
-            <div class='form-group'>
-              <label class='form-label' for='objetivo_general'>
-                Objetivo general
-              </label>
-              <input
-                class='form-control plan-input'
-                name='objetivo_general'
-                id='objetivo_general'
-                placeholder='Objetivo general'
-              />
-            </div>
-          </div>
-          <div class='row'>
-            <div class='col'>
-              <div class='form-group'>
-                <label class='form-label' for='codigo'>
-                  Objetivo general
-                </label>
-                <input
-                  class='form-control plan-input'
-                  name='codigo'
-                  id='codigo'
-                  placeholder='Código...'
-                />
-              </div>
-            </div>
-            <div class='col'>
-              <div class='form-group'>
-                <label class='form-label' for='fecha_elaboracion'>
-                  Fecha elaboración
-                </label>
-                <input
-                  class='form-control plan-input'
-                  name='fecha_elaboracion'
-                  id='fecha_elaboracion'
-                  placeholder='Fecha elaboración'
-                  type="date"
-                />
-              </div>
-            </div>
-          </div>
-        </form>
-        
+      <div class='card-body' id='card-body'>
+        <div id='card-body-part-1' class='slide-up-animation'>
+          <form>${primeraVista()}</form>
+        </div>
       </div>
-      
-    </div>
-    <div class='card-footer'>
-       <button class='btn btn-secondary' id='btn-previus'>
+      <div class='card-footer'>
+        <button class='btn btn-secondary' id='btn-previus'>
           Atrás
         </button>
         <button class='btn btn-primary' id='btn-next'>
           Siguiente
         </button>
       </div>
-      </div>
-    `
+    </div>`
 
   d.getElementById(elementToInsert).insertAdjacentHTML('afterbegin', card)
 
@@ -298,7 +314,7 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
 
   let formFocus = 1
 
-  let numsRows = {}
+  let numsRows = 0
 
   function closeCard(card) {
     // validateEditButtons()
@@ -338,7 +354,19 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
 
   // CARGAR LISTA DE PARTIDAS
 
-  function enviarInformacion(data) {}
+  function enviarInformacion(data) {
+    confirmNotification({
+      type: NOTIFICATIONS_TYPES.send,
+      message: '¿Está seguro de realizar esta solicitud de traspaso?',
+      successFunction: async function () {
+        let res = await registrarPlanOperativo(data)
+        if (res.success) {
+          reset()
+          closeCard(cardElement)
+        }
+      },
+    })
+  }
 
   //   formElement.addEventListener('submit', (e) => e.preventDefault())
 
@@ -380,7 +408,7 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
         if (cardBodyPart2) {
           cardBodyPart2.classList.remove('d-none')
         } else {
-          cardBody.insertAdjacentHTML('beforeend', segundaVista())
+          cardBody.insertAdjacentHTML('beforeend', dimensionesView())
         }
 
         if (btnPrevius.hasAttribute('disabled'))
@@ -415,7 +443,7 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
         if (cardBodyPart3) {
           cardBodyPart3.classList.remove('d-none')
         } else {
-          cardBody.insertAdjacentHTML('beforeend', dimensionesView())
+          cardBody.insertAdjacentHTML('beforeend', terceraVista())
         }
 
         formFocus++
@@ -423,15 +451,11 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
       }
 
       if (formFocus === 3) {
-        validarInformacion()
+        let data = validarInformacion()
 
-        confirmNotification({
-          type: NOTIFICATIONS_TYPES.send,
-          message: '¿Está seguro de realizar esta solicitud de traspaso?',
-          successFunction: function () {
-            enviarInformacion()
-          },
-        })
+        console.log(data)
+
+        enviarInformacion(data)
       }
     }
 
@@ -483,53 +507,83 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
 
   const validarInformacion = () => {
     let rowsPart1 = Array.from(d.querySelectorAll('.plan-input'))
-    let rowsPart2 = Array.from(d.querySelectorAll('.plan-input-option'))
-    let rowsPart3 = Array.from(d.querySelectorAll('.dimension-input'))
+    let rowsPart2 = Array.from(d.querySelectorAll('[data-row]'))
+    let rowsPart3 = Array.from(d.querySelectorAll('[data-row-dimension]'))
+    let rowsPart4 = Array.from(d.querySelectorAll('[data-row-metas]'))
 
     // estrategia, objetivo, accion
     let informacion = {
+      id_ejercicio: ejercicioId,
       objetivo_general: fieldList.objetivo_general,
       codigo: fieldList.codigo,
       fecha_elaboracion: fieldList.fecha_elaboracion,
       acciones: [],
       estrategias: [],
-      objetivos: [],
+      objetivos_especificos: [],
       dimensiones: [],
+      metas_actividades: [],
     }
 
-    rowsPart2.forEach((input) => {
-      console.log(input)
+    rowsPart2.forEach((row) => {
+      let input = row.querySelector('.plan-input-option')
 
-      if (input.dataset.accion) {
+      if (row.dataset.rowAccion) {
         informacion.acciones.push(input.value)
       }
 
-      if (input.dataset.estrategia) {
+      if (row.dataset.rowEstrategia) {
         informacion.estrategias.push(input.value)
       }
-      if (input.dataset.objetivo) {
-        informacion.objetivos.push(input.value)
+      if (row.dataset.rowObjetivo) {
+        informacion.objetivos_especificos.push(input.value)
       }
     })
 
-    rowsPart3.forEach((input) => {
+    rowsPart3.forEach((row) => {
+      let nombre = row.querySelector('.dimension-input-nombre')
+      let descripcion = row.querySelector('.dimension-input-descripcion')
+
       informacion.dimensiones.push({
-        nombre: input.name,
-        descripcion: input.value,
+        nombre: nombre.value,
+        descripcion: descripcion.value,
       })
     })
 
-    console.log(informacion)
+    rowsPart4.forEach((row) => {
+      let actividad = row.querySelector('.meta-input-actividad')
+      let responsable = row.querySelector('.meta-input-responsable')
+      let unidad = row.querySelector('.meta-input-unidad')
+
+      informacion.metas_actividades.push({
+        actividad: actividad.value,
+        responsable: responsable.value,
+        unidad: unidad.value,
+      })
+    })
+
+    return informacion
   }
 
   async function addRow(tipo) {
     let newNumRow = numsRows + 1
     numsRows++
 
-    d.getElementById(`opciones-container-${tipo}`).insertAdjacentHTML(
-      'beforeend',
-      optionRow(newNumRow, tipo)
-    )
+    if (tipo === 'dimension') {
+      d.getElementById(`opciones-container-${tipo}`).insertAdjacentHTML(
+        'beforeend',
+        dimensionesRow(newNumRow)
+      )
+    } else if (tipo === 'metas') {
+      d.getElementById(`opciones-container-${tipo}`).insertAdjacentHTML(
+        'beforeend',
+        metasRow(newNumRow)
+      )
+    } else {
+      d.getElementById(`opciones-container-${tipo}`).insertAdjacentHTML(
+        'beforeend',
+        optionRow(newNumRow, tipo)
+      )
+    }
 
     fieldListOptions[`plan-input-option-${newNumRow}`] = ''
     fieldListErrorsOptions[`plan-input-option-${newNumRow}`] = {
@@ -575,6 +629,121 @@ export const entes_planOperativo_form_card = ({ elementToInsert }) => {
                 />
               </div>
               <div class='col-2'>
+                <button
+                  type='button'
+                  class='btn btn-danger'
+                  data-delete-row='${optionNum}'
+                >
+                  ELIMINAR
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`
+
+    return row
+  }
+
+  function dimensionesRow(optionNum) {
+    let row = `<div class='row slide-up-animation' data-row="${optionNum}" data-row-dimension='${optionNum}'>
+        <div class='col-sm-3'>
+          <div class='form-group'>
+            <label for='dimension-input-nombre-${optionNum}' class='form-label'>
+              Nombre de dimension
+            </label>
+            <input
+              class='form-control dimension-input-option dimension-input-nombre'
+              type='text'
+              name='dimension-input-nombre-${optionNum}'
+              id='dimension-input-nombre-${optionNum}'
+              placeholder='Escribir...'
+            />
+          </div>
+        </div>
+        <div class='col-sm'>
+          <div class='form-group'>
+            <label
+              for='dimension-input-descripcion-${optionNum}'
+              class='form-label'
+            >
+              Descripcion de dimension
+            </label>
+            <div class='row'>
+              <div class='col'>
+                <input
+                  class='form-control dimension-input-option dimension-input-descripcion'
+                  type='text'
+                  name='dimension-input-descripcion-${optionNum}'
+                  id='dimension-input-descripcion-${optionNum}'
+                  placeholder='Escribir...'
+                />
+              </div>
+              <div class='col-3'>
+                <button
+                  type='button'
+                  class='btn btn-danger'
+                  data-delete-row='${optionNum}'
+                >
+                  ELIMINAR
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`
+
+    return row
+  }
+
+  function metasRow(optionNum) {
+    let row = `      <div class='row slide-up-animation' data-row="${optionNum}" data-row-metas='${optionNum}'>
+        <div class='col-sm-3'>
+          <div class='form-group'>
+            <label for='meta-input-actividad-${optionNum}' class='form-label'>
+             Actividad de meta
+            </label>
+            <input
+              class='form-control meta-input-option meta-input-actividad'
+              type='text'
+              name='meta-input-actividad-${optionNum}'
+              id='meta-input-actividad-${optionNum}'
+              placeholder='Escribir...'
+            />
+          </div>
+        </div>
+        <div class='col-sm-3'>
+          <div class='form-group'>
+            <label for='meta-input-responsable-${optionNum}' class='form-label'>
+              Responsable
+            </label>
+            <input
+              class='form-control meta-input-option meta-input-responsable'
+              type='text'
+              name='meta-input-responsable-${optionNum}'
+              id='meta-input-responsable-${optionNum}'
+              placeholder='Escribir...'
+            />
+          </div>
+        </div>
+        
+
+        <div class='col-sm-5'>
+          <div class='form-group'>
+            <div class='row'>
+              <label for='meta-input-unidad-${optionNum}' class='form-label'>
+                Unidad de medidad
+              </label>
+              <div class='col'>
+                <input
+                  class='form-control meta-input-option meta-input-unidad'
+                  type='text'
+                  name='meta-input-unidad-${optionNum}'
+                  id='meta-input-unidad-${optionNum}'
+                  placeholder='Escribir...'
+                />
+              </div>
+              <div class='col-3'>
                 <button
                   type='button'
                   class='btn btn-danger'

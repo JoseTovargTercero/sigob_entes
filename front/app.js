@@ -4,8 +4,7 @@ import { validateDependenciaForm } from './src/controllers/dependenciasForm.js'
 import { loadDependenciaTable } from './src/controllers/dependenciasTable.js'
 import { validatePlanOperativoView } from './src/controllers/entes_planOperativoView.js'
 import { validateSolicitudEntesView } from './src/controllers/entes_solicitudView.js'
-// import { validateEmployeeForm } from './src/controllers/empleadosForm - no usar.js'
-// import { validateEmployeeTable } from './src/controllers/empleadosTable.js'
+
 import { validateAsignacionEntesView } from './src/controllers/form_asignacionEntesView.js'
 import { validateDistribucionView } from './src/controllers/form_distribucionView.js'
 import {

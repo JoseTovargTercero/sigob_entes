@@ -1,4 +1,9 @@
 <?php
+
+require_once '../sistema_global/conexion.php';
+header('Content-Type: application/json');
+require_once '../sistema_global/session.php';
+require_once '../sistema_global/errores.php';
 function gestionarPlanOperativo($data)
 {
     global $conexion;
@@ -46,17 +51,18 @@ function gestionarPlanOperativo($data)
 
 
 
-function registrarPlanOperativo($data) {
+function registrarPlanOperativo($data)
+{
     global $conexion;
-    
+
     try {
         if (!isset($data['objetivo_general']) || !isset($data['id_ejercicio']) || !isset($_SESSION['id_ente'])) {
             return json_encode(["error" => "Faltan datos obligatorios para registrar el plan operativo."]);
         }
-        
+
         $idEnte = $_SESSION['id_ente'];
         $idEjercicio = $data['id_ejercicio'];
-        
+
         // Verificar si ya existe un registro para este id_ente y id_ejercicio
         $sqlVerificar = "SELECT COUNT(*) AS total FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ?";
         $stmtVerificar = $conexion->prepare($sqlVerificar);
@@ -64,11 +70,11 @@ function registrarPlanOperativo($data) {
         $stmtVerificar->execute();
         $resultadoVerificar = $stmtVerificar->get_result();
         $filaVerificar = $resultadoVerificar->fetch_assoc();
-        
+
         if ($filaVerificar['total'] > 0) {
             return json_encode(["error" => "Ya existe un plan operativo registrado para este ente en el ejercicio fiscal indicado."]);
         }
-        
+
         // Obtener el año del ejercicio fiscal
         $sqlEjercicio = "SELECT ano FROM ejercicio_fiscal WHERE id = ?";
         $stmtEjercicio = $conexion->prepare($sqlEjercicio);
@@ -76,34 +82,34 @@ function registrarPlanOperativo($data) {
         $stmtEjercicio->execute();
         $resultadoEjercicio = $stmtEjercicio->get_result();
         $filaEjercicio = $resultadoEjercicio->fetch_assoc();
-        
+
         if (!$filaEjercicio) {
             return json_encode(["error" => "El id_ejercicio proporcionado no es válido."]);
         }
-        
-        $ano = $filaEjercicio['ano'];
-        
 
-        
+        $ano = $filaEjercicio['ano'];
+
+
+
         // Iniciar transacción
         $conexion->begin_transaction();
-        
+
         // Insertar en plan_operativo
         $sqlInsertar = "INSERT INTO plan_operativo (id_ente, objetivo_general, objetivos_especificos, estrategias, accciones, dimensiones, id_ejercicio, status, metas_actividades) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)";
-        
+
         $stmtInsertar = $conexion->prepare($sqlInsertar);
-        
+
         // Convertir arrays a JSON
         $objetivosEspecificos = json_encode($data['objetivos_especificos']);
         $estrategias = json_encode($data['estrategias']);
-        $accciones = json_encode($data['accciones']);
+        $accciones = json_encode($data['acciones']);
         $dimensiones = json_encode($data['dimensiones']);
         $metas_actividades = json_encode($data['metas_actividades']);
-        
-        $stmtInsertar->bind_param("issssssis", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio, $metas_actividades);
+
+        $stmtInsertar->bind_param("isssssis", $idEnte, $data['objetivo_general'], $objetivosEspecificos, $estrategias, $accciones, $dimensiones, $idEjercicio, $metas_actividades);
         $stmtInsertar->execute();
-        
+
         if ($stmtInsertar->affected_rows > 0) {
             $conexion->commit();
             return json_encode(["success" => "Registro exitoso"]);
@@ -147,7 +153,7 @@ function consultarPlanesOperativos($data)
             }
         } else {
             $conexion->rollback();
-            return json_encode(["success" => "No se encontraron registros en plan_operativo."]);
+            return json_encode(["success" => null]);
         }
 
         // Consultar la información del ente
@@ -248,7 +254,7 @@ function actualizarPlanOperativo($data)
 
         $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, accciones = ?, dimensiones = ?, id_ejercicio = ?, status = ?, metas_actividades = ? WHERE id = ? AND id_ente = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $data['metas_actividades'] );
+        $stmt->bind_param("ssssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['accciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $data['metas_actividades']);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
@@ -318,4 +324,4 @@ function eliminarPlanOperativo($data)
 $data = json_decode(file_get_contents("php://input"), true);
 echo gestionarPlanOperativo($data);
 
- ?>
+?>
