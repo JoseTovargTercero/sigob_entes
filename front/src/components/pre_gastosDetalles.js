@@ -94,9 +94,9 @@ export const pre_gastosDetalles = ({
                                         <th class="">Monto</th>
                                         
                                     </thead>
-<tbody>
-${distribucionLista()}
-</tbody>
+                                    <tbody>
+                                    ${distribucionLista()}
+                                    </tbody>
                                 </table>
                             </div>
         

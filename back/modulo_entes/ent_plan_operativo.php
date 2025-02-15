@@ -140,21 +140,32 @@ function consultarPlanesOperativos($data)
     try {
         $conexion->begin_transaction();
 
-        $sql = "SELECT * FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ?";
+        $sql = "SELECT * FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ? LIMIT 1";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $idEnte, $idEjercicio);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                // Decodificar JSON de dimensiones
-                $row['dimensiones'] = json_decode($row['dimensiones'], true);
-            }
-        } else {
+        $informacion = [];
+
+        if ($result->num_rows < 1) {
             $conexion->rollback();
             return json_encode(["success" => null]);
         }
+
+        $result = $result->fetch_assoc();
+
+        $result['dimensiones'] = json_decode($result['dimensiones']);
+        $result['acciones'] = json_decode($result['acciones']);
+        $result['estrategias'] = json_decode($result['estrategias']);
+        $result['objetivos_especificos'] = json_decode($result['objetivos_especificos']);
+        $result['metas_actividades'] = json_decode($result['metas_actividades']);
+
+        $informacion['plan_operativo'] = $result;
+
+
+
+
 
         // Consultar la información del ente
         $sqlEnte = "SELECT * FROM entes WHERE id = ?";
@@ -163,10 +174,10 @@ function consultarPlanesOperativos($data)
         $stmtEnte->execute();
         $resultEnte = $stmtEnte->get_result();
         $ente = $resultEnte->fetch_assoc();
-        $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
+        $informacion['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => $row]);
+        return json_encode(["success" => $informacion]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
@@ -194,14 +205,26 @@ function consultarPlanOperativoPorId($data)
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            // Decodificar JSON de dimensiones
-            $row['dimensiones'] = json_decode($row['dimensiones'], true);
-        } else {
+        $informacion = [];
+
+        if ($result->num_rows < 1) {
             $conexion->rollback();
-            return json_encode(["error" => "No se encontró el registro con el ID especificado o el ejercicio no coincide."]);
+            return json_encode(["success" => null]);
         }
+
+        $result = $result->fetch_assoc();
+
+        $result['dimensiones'] = json_decode($result['dimensiones']);
+        $result['acciones'] = json_decode($result['acciones']);
+        $result['estrategias'] = json_decode($result['estrategias']);
+        $result['objetivos_especificos'] = json_decode($result['objetivos_especificos']);
+        $result['metas_actividades'] = json_decode($result['metas_actividades']);
+
+        $informacion['plan_operativo'] = $result;
+
+
+
+
 
         // Consultar la información del ente
         $sqlEnte = "SELECT * FROM entes WHERE id = ?";
@@ -210,10 +233,10 @@ function consultarPlanOperativoPorId($data)
         $stmtEnte->execute();
         $resultEnte = $stmtEnte->get_result();
         $ente = $resultEnte->fetch_assoc();
-        $row['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
+        $informacion['ente'] = $ente ?: null; // Si no se encuentra, se asigna como null
 
         $conexion->commit();
-        return json_encode(["success" => $row]);
+        return json_encode(["success" => $informacion]);
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);
@@ -225,7 +248,7 @@ function actualizarPlanOperativo($data)
 {
     global $conexion;
 
-    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['acciones'], $data['dimensiones'], $data['id_ejercicio'], $data['status'])) {
+    if (!isset($data['id'], $data['objetivo_general'], $data['objetivos_especificos'], $data['estrategias'], $data['acciones'], $data['dimensiones'], $data['id_ejercicio'])) {
         return json_encode(["error" => "Faltan datos o el ID para actualizar el plan operativo."]);
     }
 
@@ -252,9 +275,17 @@ function actualizarPlanOperativo($data)
 
         $conexion->begin_transaction();
 
+        // Convertir arrays a JSON
+        $objetivosEspecificos = json_encode($data['objetivos_especificos']);
+        $estrategias = json_encode($data['estrategias']);
+        $acciones = json_encode($data['acciones']);
+        $dimensiones = json_encode($data['dimensiones']);
+        $metas_actividades = json_encode($data['metas_actividades']);
+
         $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, acciones = ?, dimensiones = ?, id_ejercicio = ?, status = ?, metas_actividades = ? WHERE id = ? AND id_ente = ?";
+
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssssss", $data['objetivo_general'], json_encode($data['objetivos_especificos']), json_encode($data['estrategias']), json_encode($data['acciones']), json_encode($data['dimensiones']), $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $data['metas_actividades']);
+        $stmt->bind_param("ssssssssss", $data['objetivo_general'], $objetivosEspecificos, $estrategias, $acciones, $dimensiones, $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $metas_actividades);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {

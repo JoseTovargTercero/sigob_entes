@@ -1,24 +1,28 @@
-import { registrarPlanOperativo } from '../api/entes_planOperativo.js'
+import {
+  actualizarPlanOperativo,
+  getEntePlanOperativoId,
+  registrarPlanOperativo,
+} from '../api/entes_planOperativo.js'
 import {
   confirmNotification,
   hideLoader,
-  insertOptions,
   toastNotification,
   validateInput,
 } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
 const d = document
 
-export const entes_planOperativo_form_card = ({
+export const entes_planOperativo_form_card = async ({
   elementToInsert,
   ejercicioId,
   reset,
+  id,
 }) => {
   let fieldList = { objetivo_general: '', codigo: '', fecha_elaboracion: '' }
   let fieldListErrors = {
     objetivo_general: {
       value: true,
-      message: 'mensaje de error',
+      message: 'Objetivo general inválido',
       type: 'textarea',
     },
     // codigo: {
@@ -44,6 +48,82 @@ export const entes_planOperativo_form_card = ({
 
   if (oldCardElement) {
     closeCard(oldCardElement)
+  }
+
+  if (id) {
+    let plan = await getEntePlanOperativoId(id, ejercicioId)
+
+    let {
+      objetivos_especificos,
+      metas_actividades,
+      estrategias,
+      acciones,
+      dimensiones,
+      status,
+    } = plan.plan_operativo
+
+    console.log(plan)
+
+    fieldList = {
+      ...fieldList,
+      status,
+      id_plan: plan.plan_operativo.id,
+      objetivo_general: plan.plan_operativo.objetivo_general,
+      objetivos_especificos,
+      estrategias,
+      acciones,
+      dimensiones,
+      metas_actividades,
+    }
+    // let plansito = {
+    //   plan_operativo: {
+    //     id: 1,
+    //     id_ente: 1,
+    //     objetivo_general: 'Objetivo general',
+    //     objetivos_especificos: ['Especifico1', 'Especifico2'],
+    //     estrategias: ['Estrategia1', 'ESTRATEGIA2'],
+    //     acciones: ['Accion1', 'Accion2'],
+    //     dimensiones: [
+    //       {
+    //         nombre: 'Dimension1',
+    //         descripcion: 'Dimension1 descripcion',
+    //       },
+    //       {
+    //         nombre: 'Dimension2',
+    //         descripcion: 'Dimension2 descripcion',
+    //       },
+    //       {
+    //         nombre: 'Dimension3',
+    //         descripcion: 'Dimension3 descripcion',
+    //       },
+    //     ],
+    //     id_ejercicio: 3,
+    //     status: 0,
+    //     metas_actividades: [
+    //       {
+    //         actividad: 'Meta1',
+    //         responsable: 'responsable1',
+    //         unidad: 'medida1',
+    //       },
+    //       {
+    //         actividad: 'META2',
+    //         responsable: 'RESPNSABLE2',
+    //         unidad: 'UNIDAD2',
+    //       },
+    //     ],
+    //   },
+    //   ente: {
+    //     id: 1,
+    //     partida: 1,
+    //     sector: '1',
+    //     programa: '1',
+    //     proyecto: '0',
+    //     actividad: '51',
+    //     ente_nombre: 'CONSEJO LEGISLATIVO',
+    //     tipo_ente: 'J',
+    //     juridico: 0,
+    //   },
+    // }
   }
 
   const primeraVista = () => {
@@ -296,7 +376,7 @@ export const entes_planOperativo_form_card = ({
           <form>${primeraVista()}</form>
         </div>
       </div>
-      <div class='card-footer'>
+      <div class='card-footer text-center'>
         <button class='btn btn-secondary' id='btn-previus'>
           Atrás
         </button>
@@ -315,6 +395,89 @@ export const entes_planOperativo_form_card = ({
   let formFocus = 1
 
   let numsRows = 0
+
+  if (id) {
+    let planInputs = d.querySelectorAll('.plan-input')
+
+    planInputs.forEach((input) => {
+      input.value = fieldList[input.name]
+    })
+
+    console.log(fieldList)
+    // CARGAR VISTAS DEL FORMULARIO
+    cardBody.insertAdjacentHTML('beforeend', dimensionesView())
+    cardBody.insertAdjacentHTML('beforeend', terceraVista())
+
+    let cardBodyPart2 = d.getElementById('card-body-part-2'),
+      cardBodyPart3 = d.getElementById('card-body-part-3')
+
+    cardBodyPart2.classList.add('d-none')
+    cardBodyPart3.classList.add('d-none')
+
+    // LLENAR CAMPOS DE OPCIONES DEL FORMULARIO
+    if (fieldList.objetivos_especificos.length > 0) {
+      fieldList.objetivos_especificos.forEach((objetivo) => {
+        addRow('objetivo')
+        let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+        row.querySelector(`#plan-input-option-${numsRows}`).value = objetivo
+      })
+    }
+
+    if (fieldList.estrategias.length > 0) {
+      fieldList.estrategias.forEach((estrategia) => {
+        addRow('estrategia')
+        let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+        row.querySelector(`#plan-input-option-${numsRows}`).value = estrategia
+      })
+    }
+
+    if (fieldList.acciones.length > 0) {
+      fieldList.estrategias.forEach((accion) => {
+        addRow('accion')
+        let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+        row.querySelector(`#plan-input-option-${numsRows}`).value = accion
+      })
+    }
+
+    if (fieldList.dimensiones.length > 0) {
+      fieldList.dimensiones.forEach((dimension) => {
+        addRow('dimension')
+        let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+        row.querySelector(`#dimension-input-nombre-${numsRows}`).value =
+          dimension.nombre
+        row.querySelector(`#dimension-input-descripcion-${numsRows}`).value =
+          dimension.descripcion
+      })
+    }
+
+    if (fieldList.metas_actividades.length > 0) {
+      fieldList.metas_actividades.forEach((meta) => {
+        addRow('metas')
+        let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+        row.querySelector(`#meta-input-actividad-${numsRows}`).value =
+          meta.actividad
+        row.querySelector(`#meta-input-responsable-${numsRows}`).value =
+          meta.responsable
+
+        row.querySelector(`#meta-input-unidad-${numsRows}`).value = meta.unidad
+      })
+    }
+
+    // if (fieldList.metas_actividades.length > 0) {
+    //   fieldList.distribuciones.forEach((distribucion) => {
+    //     addRow('metas')
+    //     let row = d.querySelector(`[data-row="${numsRows}"]`)
+
+    //     row.querySelector(`#distribucion-monto-${numsRows}`).value =
+    //       distribucion.monto
+    //   })
+    // }
+  }
 
   function closeCard(card) {
     // validateEditButtons()
@@ -355,17 +518,35 @@ export const entes_planOperativo_form_card = ({
   // CARGAR LISTA DE PARTIDAS
 
   function enviarInformacion(data) {
-    confirmNotification({
-      type: NOTIFICATIONS_TYPES.send,
-      message: '¿Está seguro de realizar esta solicitud de traspaso?',
-      successFunction: async function () {
-        let res = await registrarPlanOperativo(data)
-        if (res.success) {
-          reset()
-          closeCard(cardElement)
-        }
-      },
-    })
+    if (id) {
+      confirmNotification({
+        type: NOTIFICATIONS_TYPES.send,
+        message: '¿Desea realizar esta actualización?',
+        successFunction: async function () {
+          let res = await actualizarPlanOperativo({
+            id: fieldList.id_plan,
+            status: fieldList.status,
+            ...data,
+          })
+          if (res.success) {
+            reset()
+            closeCard(cardElement)
+          }
+        },
+      })
+    } else {
+      confirmNotification({
+        type: NOTIFICATIONS_TYPES.send,
+        message: '¿Está seguro de realizar esta solicitud de traspaso?',
+        successFunction: async function () {
+          let res = await registrarPlanOperativo(data)
+          if (res.success) {
+            reset()
+            closeCard(cardElement)
+          }
+        },
+      })
+    }
   }
 
   //   formElement.addEventListener('submit', (e) => e.preventDefault())
@@ -438,7 +619,12 @@ export const entes_planOperativo_form_card = ({
         // }
 
         cardBodyPart2.classList.add('d-none')
-        btnNext.textContent = 'Enviar'
+
+        if (id) {
+          btnNext.textContent = 'Actualizar'
+        } else {
+          btnNext.textContent = 'Enviar'
+        }
 
         if (cardBodyPart3) {
           cardBodyPart3.classList.remove('d-none')
