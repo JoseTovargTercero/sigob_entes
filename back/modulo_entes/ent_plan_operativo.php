@@ -285,7 +285,7 @@ function actualizarPlanOperativo($data)
         $sql = "UPDATE plan_operativo SET objetivo_general = ?, objetivos_especificos = ?, estrategias = ?, acciones = ?, dimensiones = ?, id_ejercicio = ?, status = ?, metas_actividades = ? WHERE id = ? AND id_ente = ?";
 
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ssssssssss", $data['objetivo_general'], $objetivosEspecificos, $estrategias, $acciones, $dimensiones, $data['id_ejercicio'], $data['status'], $data['id'], $idEnte, $metas_actividades);
+        $stmt->bind_param("ssssssssss", $data['objetivo_general'], $objetivosEspecificos, $estrategias, $acciones, $dimensiones, $data['id_ejercicio'], $data['status'], $metas_actividades, $data['id'], $idEnte);
         $stmt->execute();
 
         if ($stmt->affected_rows > 0) {
