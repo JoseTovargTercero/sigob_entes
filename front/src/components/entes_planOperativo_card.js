@@ -1,3 +1,4 @@
+import { getEntePlanOperativo } from '../api/entes_planOperativo.js'
 import {
   confirmNotification,
   hideLoader,
@@ -46,42 +47,42 @@ export const entes_planOperativo_card = ({
   }
 
   let cardBody = () => {
-    let obj = {
-      id: 1,
-      id_ente: 1,
-      objetivo_general: 'Objetivo general',
-      objetivos_especificos: ['Especifico1', 'Especifico2'],
-      estrategias: ['Estrategia1', 'ESTRATEGIA2'],
-      acciones: ['Accion1', 'Accion2'],
-      dimensiones: [
-        {
-          nombre: 'Dimension1',
-          descripcion: 'Dimension1 descripcion',
-        },
-        {
-          nombre: 'Dimension2',
-          descripcion: 'Dimension2 descripcion',
-        },
-        {
-          nombre: 'Dimension3',
-          descripcion: 'Dimension3 descripcion',
-        },
-      ],
-      id_ejercicio: 3,
-      status: 0,
-      metas_actividades: [
-        {
-          actividad: 'Meta1',
-          responsable: 'responsable1',
-          unidad: 'medida1',
-        },
-        {
-          actividad: 'META2',
-          responsable: 'RESPNSABLE2',
-          unidad: 'UNIDAD2',
-        },
-      ],
-    }
+    // let obj = {
+    //   id: 1,
+    //   id_ente: 1,
+    //   objetivo_general: 'Objetivo general',
+    //   objetivos_especificos: ['Especifico1', 'Especifico2'],
+    //   estrategias: ['Estrategia1', 'ESTRATEGIA2'],
+    //   acciones: ['Accion1', 'Accion2'],
+    //   dimensiones: [
+    //     {
+    //       nombre: 'Dimension1',
+    //       descripcion: 'Dimension1 descripcion',
+    //     },
+    //     {
+    //       nombre: 'Dimension2',
+    //       descripcion: 'Dimension2 descripcion',
+    //     },
+    //     {
+    //       nombre: 'Dimension3',
+    //       descripcion: 'Dimension3 descripcion',
+    //     },
+    //   ],
+    //   id_ejercicio: 3,
+    //   status: 0,
+    //   metas_actividades: [
+    //     {
+    //       actividad: 'Meta1',
+    //       responsable: 'responsable1',
+    //       unidad: 'medida1',
+    //     },
+    //     {
+    //       actividad: 'META2',
+    //       responsable: 'RESPNSABLE2',
+    //       unidad: 'UNIDAD2',
+    //     },
+    //   ],
+    // }
 
     let {
       objetivos_especificos,
@@ -130,7 +131,7 @@ export const entes_planOperativo_card = ({
 
     let div = `    <div class='card-body'>
     <div class="row mb-2">
-    ${objetivo_general}
+    <h3 class="text-center text-blue-800">${objetivo_general}</h3>
     </div>
         <div class='row mb-2'>
           <div class='col'>
@@ -223,6 +224,17 @@ export const entes_planOperativo_card = ({
         elementToInsert: 'plan-operativo-view',
         id: data.plan_operativo.id,
         ejercicioId: data.plan_operativo.id_ejercicio,
+        reset: async function () {
+          let plan = await getEntePlanOperativo(
+            data.plan_operativo.id_ejercicio
+          )
+
+          entes_planOperativo_card({
+            elementToInsert: 'plan-operativo-view',
+            data: plan,
+            closed: false,
+          })
+        },
       })
     }
   }

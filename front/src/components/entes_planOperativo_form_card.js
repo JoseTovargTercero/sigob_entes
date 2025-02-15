@@ -491,6 +491,7 @@ export const entes_planOperativo_form_card = async ({
   function validateClick(e) {
     if (e.target.dataset.close) {
       closeCard(cardElement)
+      reset()
     }
 
     if (e.target.dataset.add) {
