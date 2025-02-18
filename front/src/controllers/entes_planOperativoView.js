@@ -33,11 +33,11 @@ export const validatePlanOperativoView = async () => {
     elementToInsert: 'ejercicios-fiscales',
   })
 
-  validatePlanOperativoTable()
+  // validatePlanOperativoTable()
 
-  loadPlanOperativo({
-    id_ejercicio: ejercicioFiscal ? ejercicioFiscal.id : null,
-  })
+  // loadPlanOperativo({
+  //   id_ejercicio: ejercicioFiscal ? ejercicioFiscal.id : null,
+  // })
 
   if (!ejercicioFiscal) {
     toastNotification({

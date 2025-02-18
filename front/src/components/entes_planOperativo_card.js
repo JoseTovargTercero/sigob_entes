@@ -143,12 +143,12 @@ export const entes_planOperativo_card = ({
           <div class='col'>
             <h4 class='text-center'>Estrategias:</h4>${estrategiasLi.join('')}
           </div>
-        </div>
-
-        <div class='row mb-2'>
-          <div class='col'>
+            <div class='col'>
             <h4 class='text-center'>Acciones:</h4>${accionesLi.join('')}
           </div>
+        </div>
+
+        <div class='row mb-2'> 
           <div class='col'>
             <h4 class='text-center'>Dimensiones:</h4>${dimensionesLi.join('')}
           </div>

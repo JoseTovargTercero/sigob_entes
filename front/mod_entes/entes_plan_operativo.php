@@ -45,7 +45,7 @@
                 <div class="col-lg-12 mb-3" id="plan-operativo-view">
 
 
-                    <div class="card">
+                    <!-- <div class="card">
 
                         <div class="card-header d-flex justify-content-between">
                             <div class="">
@@ -59,16 +59,15 @@
                             <div class="table-responsive p-1">
                                 <table id="plan-operativo-table" class="table table-striped" style="width:100%">
                                     <thead class="w-100">
-                                        <!-- <th>Código</th> -->
+
                                         <th>Objetivo General</th>
-                                        <!-- <th>Fecha</th> -->
                                         <th>Accion</th>
 
                                     </thead>
                                 </table>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- [ worldLow section ] end -->
                 <!-- [ Recent Users ] end -->
