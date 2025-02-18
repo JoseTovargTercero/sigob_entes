@@ -48,11 +48,7 @@ export async function loadSolicitudEntesTable({ id_ejercicio }) {
 
   let datosOrdenados = [...solicitudes].sort((a, b) => a.id - b.id)
   let data = datosOrdenados
-    .filter(
-      (solicitud) =>
-        Number(solicitud.status) === 0 &&
-        Number(id_ejercicio) === Number(solicitud.id_ejercicio)
-    )
+    .filter((solicitud) => Number(solicitud.status) === 0)
     .map((solicitud) => {
       return {
         numero_orden: solicitud.numero_orden,

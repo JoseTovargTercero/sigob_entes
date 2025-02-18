@@ -19,6 +19,9 @@ function gestionarPlanOperativo($data)
         if ($accion === 'consulta') {
             return consultarPlanesOperativos($data);
         }
+        if ($accion === 'consulta_todos') {
+            return consultarTodosPlanesOperativos($data);
+        }
 
         // Acción: Consultar un registro por ID
         if ($accion === 'consulta_id') {
@@ -140,7 +143,7 @@ function consultarPlanesOperativos($data)
     try {
         $conexion->begin_transaction();
 
-        $sql = "SELECT * FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ? LIMIT 1";
+        $sql = "SELECT * FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("ii", $idEnte, $idEjercicio);
         $stmt->execute();
@@ -178,6 +181,61 @@ function consultarPlanesOperativos($data)
 
         $conexion->commit();
         return json_encode(["success" => $informacion]);
+    } catch (Exception $e) {
+        $conexion->rollback();
+        return json_encode(["error" => "Error: " . $e->getMessage()]);
+    }
+}
+
+function consultarTodosPlanesOperativos($data)
+{
+    global $conexion;
+
+    if (!isset($data['id_ejercicio'])) {
+        return json_encode(["error" => "No se ha especificado el ID del ejercicio."]);
+    }
+
+    $idEnte = $_SESSION["id_ente"];
+    $idEjercicio = $data['id_ejercicio'];
+
+    try {
+        $conexion->begin_transaction();
+
+        // Consultar la información del ente
+        $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+        $stmtEnte = $conexion->prepare($sqlEnte);
+        $stmtEnte->bind_param("i", $idEnte);
+        $stmtEnte->execute();
+        $resultEnte = $stmtEnte->get_result();
+        $ente = $resultEnte->fetch_assoc();
+
+        // Consultar los planes operativos, ordenados por id
+        $sql = "SELECT * FROM plan_operativo WHERE id_ente = ? AND id_ejercicio = ? ORDER BY id ASC"; // Se agrega ORDER BY
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("ii", $idEnte, $idEjercicio);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $planesOperativos = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $row['dimensiones'] = json_decode($row['dimensiones']);
+            $row['acciones'] = json_decode($row['acciones']);
+            $row['estrategias'] = json_decode($row['estrategias']);
+            $row['objetivos_especificos'] = json_decode($row['objetivos_especificos']);
+            $row['metas_actividades'] = json_decode($row['metas_actividades']);
+            $planesOperativos[] = $row;
+        }
+
+        $conexion->commit();
+
+        return json_encode([
+            "success" => [
+                "ente" => $ente ?: null,
+                "planes_operativos" => $planesOperativos
+            ]
+        ]);
+
     } catch (Exception $e) {
         $conexion->rollback();
         return json_encode(["error" => "Error: " . $e->getMessage()]);

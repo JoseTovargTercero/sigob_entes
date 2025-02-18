@@ -127,59 +127,61 @@ export const entes_planOperativo_form_card = async ({
   }
 
   const primeraVista = () => {
-    let div = `      <div id="card-body-part-1" class="slide-up-animation">
-       <div class='row mb-4'>
-              <div class='form-group'>
-                <label class='form-label' for='objetivo_general'>
-                  Objetivo general
-                </label>
-                <input
-                  class='form-control plan-input'
-                  name='objetivo_general'
-                  id='objetivo_general'
-                  placeholder='Objetivo general'
-                />
-              </div>
+    let div = `      <div id='card-body-part-1' class='slide-up-animation'>
+        <div class='row mb-4'>
+          <div class='form-group'>
+            <label class='form-label' for='objetivo_general'>
+              Objetivo general
+            </label>
+            <input
+              class='form-control plan-input'
+              name='objetivo_general'
+              id='objetivo_general'
+              placeholder='Objetivo general'
+            />
+          </div>
+        </div>
+        <div class='row'>
+          <div class=' mb-4 col-4 align-self-start'>
+            <h5 class='text-center text-blue-600 mb-2'>
+              Objetivos Específicos
+            </h5>
+            <div id='opciones-container-objetivo'></div>
+            <div class='text-center'>
+              <button
+                type='button'
+                class='btn btn-sm bg-brand-color-1 text-white'
+                data-add='objetivo'
+              >
+                <i class='bx bx-plus'></i> AGREGAR OBJETIVO
+              </button>
             </div>
-        <div class='row mb-4'>
-          <h5 class='text-center text-blue-600 mb-2'>Objetivos Específicos</h5>
-          <div id='opciones-container-objetivo'></div>
-          <div class='text-center'>
-            <button
-              type='button'
-              class='btn btn-sm bg-brand-color-1 text-white'
-              data-add='objetivo'
-            >
-              <i class='bx bx-plus'></i> AGREGAR OBJETIVO
-            </button>
           </div>
-        </div>
-        <hr></hr>
-        <div class='row mb-4'>
-          <h5 class='text-center text-blue-600 mb-2'>Estrategias</h5>
-          <div id='opciones-container-estrategia'></div>
-          <div class='text-center'>
-            <button
-              type='button'
-              class='btn btn-sm bg-brand-color-1 text-white'
-              data-add='estrategia'
-            >
-              <i class='bx bx-plus'></i> AGREGAR ESTRATEGIA
-            </button>
+          <div class='mb-4 col-4 align-self-start'>
+            <h5 class='text-center text-blue-600 mb-2'>Estrategias</h5>
+            <div id='opciones-container-estrategia'></div>
+            <div class='text-center'>
+              <button
+                type='button'
+                class='btn btn-sm bg-brand-color-1 text-white'
+                data-add='estrategia'
+              >
+                <i class='bx bx-plus'></i> AGREGAR ESTRATEGIA
+              </button>
+            </div>
           </div>
-        </div>
-        <hr></hr>
-        <div class='row mb-4'>
-          <h5 class='text-center text-blue-600 mb-2'>Acciones</h5>
-          <div id='opciones-container-accion'></div>
-          <div class='text-center'>
-            <button
-              type='button'
-              class='btn btn-sm bg-brand-color-1 text-white'
-              data-add='accion'
-            >
-              <i class='bx bx-plus'></i> AGREGAR ACCIÓN
-            </button>
+          <div class='mb-4 col-4 align-self-start'>
+            <h5 class='text-center text-blue-600 mb-2'>Acciones</h5>
+            <div id='opciones-container-accion'></div>
+            <div class='text-center'>
+              <button
+                type='button'
+                class='btn btn-sm bg-brand-color-1 text-white'
+                data-add='accion'
+              >
+                <i class='bx bx-plus'></i> AGREGAR ACCIÓN
+              </button>
+            </div>
           </div>
         </div>
       </div>`
@@ -799,150 +801,99 @@ export const entes_planOperativo_form_card = async ({
   }
 
   function optionRow(optionNum, tipo) {
-    let row = ` <div class='row slide-up-animation' data-row='${optionNum}' data-row-${tipo}="${optionNum}">
-        <div class='col-sm'>
-          <div class='form-group'>
-            <label for='plan-input-option' class='form-label'>
-              Campo para ${tipo}
-            </label>
-            <div class='row'>
-              <div class='col'>
-                <input
-                  class='form-control plan-input-option'
-                  type='text'
-                  name='plan-input-option-${optionNum}'
-                  id='plan-input-option-${optionNum}'
-                  placeholder='Escribir...'
-                />
-              </div>
-              <div class='col-2'>
-                <button
-                  type='button'
-                  class='btn btn-danger'
-                  data-delete-row='${optionNum}'
-                >
-                  ELIMINAR
-                </button>
-              </div>
-            </div>
-          </div>
+    let labelText =
+      tipo === 'objetivo'
+        ? 'Objetivo específico'
+        : tipo === 'accion'
+        ? 'Acción'
+        : tipo === 'estrategia'
+        ? 'Estrategia'
+        : 'No especificado'
+
+    let row = `<div class="row slide-up-animation mb-3" data-row='${optionNum}' data-row-${tipo}="${optionNum}">
+    <div class="col-md-11">
+        <div class="form-floating">
+            <input type="text" class="form-control plan-input-option" 
+                   name="plan-input-option-${optionNum}" id="plan-input-option-${optionNum}" 
+                   placeholder="Campo para ${tipo}">
+            <label for="plan-input-option-${optionNum}" class="form-label">${labelText}</label>
         </div>
-      </div>`
+    </div>
+    <div class="col-md-1 d-flex align-items-center justify-content-end">
+        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+            &times;
+        </button>
+    </div>
+</div>`
 
     return row
   }
 
   function dimensionesRow(optionNum) {
-    let row = `<div class='row slide-up-animation' data-row="${optionNum}" data-row-dimension='${optionNum}'>
-        <div class='col-sm-3'>
-          <div class='form-group'>
-            <label for='dimension-input-nombre-${optionNum}' class='form-label'>
-              Nombre de dimension
-            </label>
-            <input
-              class='form-control dimension-input-option dimension-input-nombre'
-              type='text'
-              name='dimension-input-nombre-${optionNum}'
-              id='dimension-input-nombre-${optionNum}'
-              placeholder='Escribir...'
-            />
-          </div>
+    let row = `<div class="row slide-up-animation mb-3" data-row="${optionNum}" data-row-dimension='${optionNum}'>
+    <div class="col-md-4">  <div class="form-floating">  <input type="text" class="form-control dimension-input-option dimension-input-nombre" 
+                   name="dimension-input-nombre-${optionNum}" id="dimension-input-nombre-${optionNum}" 
+                   placeholder="Nombre de dimensión">
+            <label for="dimension-input-nombre-${optionNum}" class="form-label">Nombre de dimensión</label>
         </div>
-        <div class='col-sm'>
-          <div class='form-group'>
-            <label
-              for='dimension-input-descripcion-${optionNum}'
-              class='form-label'
-            >
-              Descripcion de dimension
-            </label>
-            <div class='row'>
-              <div class='col'>
-                <input
-                  class='form-control dimension-input-option dimension-input-descripcion'
-                  type='text'
-                  name='dimension-input-descripcion-${optionNum}'
-                  id='dimension-input-descripcion-${optionNum}'
-                  placeholder='Escribir...'
-                />
-              </div>
-              <div class='col-3'>
-                <button
-                  type='button'
-                  class='btn btn-danger'
-                  data-delete-row='${optionNum}'
-                >
-                  ELIMINAR
-                </button>
-              </div>
-            </div>
-          </div>
+    </div>
+    <div class="col-md-7"> 
+    <div class="form-floating">
+            <input type="text" class="form-control dimension-input-option dimension-input-descripcion" 
+                   name="dimension-input-descripcion-${optionNum}" id="dimension-input-descripcion-${optionNum}" 
+                   placeholder="Descripción de dimensión">
+            <label for="dimension-input-descripcion-${optionNum}" class="form-label">Descripción de dimensión</label>
         </div>
-      </div>`
+    </div>
+    <div class="col-md-1 d-flex align-items-center justify-content-end"> <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+            &times;
+        </button>
+    </div>
+</div>`
 
     return row
   }
 
   function metasRow(optionNum) {
-    let row = `      <div class='row slide-up-animation' data-row="${optionNum}" data-row-metas='${optionNum}'>
-        <div class='col-sm-3'>
-          <div class='form-group'>
-            <label for='meta-input-actividad-${optionNum}' class='form-label'>
-             Actividad de meta
-            </label>
-            <input
-              class='form-control meta-input-option meta-input-actividad'
-              type='text'
-              name='meta-input-actividad-${optionNum}'
-              id='meta-input-actividad-${optionNum}'
-              placeholder='Escribir...'
-            />
-          </div>
+    let row = ` <div class="row slide-up-animation mb-3" data-row='${optionNum}' data-row-metas='${optionNum}'>
+    <div class="col-md-5">
+        <div class="form-floating">
+            <input type="text" class="form-control meta-input-option meta-input-actividad" 
+                   name="meta-input-actividad-${optionNum}" id="meta-input-actividad-${optionNum}" 
+                   placeholder="Actividad de meta">
+            <label for="meta-input-actividad-${optionNum}" class="form-label">Actividad de meta</label>
         </div>
-        <div class='col-sm-3'>
-          <div class='form-group'>
-            <label for='meta-input-responsable-${optionNum}' class='form-label'>
-              Responsable
-            </label>
-            <input
-              class='form-control meta-input-option meta-input-responsable'
-              type='text'
-              name='meta-input-responsable-${optionNum}'
-              id='meta-input-responsable-${optionNum}'
-              placeholder='Escribir...'
-            />
-          </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-floating">
+            <input type="text" class="form-control meta-input-option meta-input-responsable" 
+                   name="meta-input-responsable-${optionNum}" id="meta-input-responsable-${optionNum}" 
+                   placeholder="Responsable">
+            <label for="meta-input-responsable-${optionNum}" class="form-label">Responsable</label>
         </div>
-        
-
-        <div class='col-sm-5'>
-          <div class='form-group'>
-            <div class='row'>
-              <label for='meta-input-unidad-${optionNum}' class='form-label'>
-                Unidad de medidad
-              </label>
-              <div class='col'>
-                <input
-                  class='form-control meta-input-option meta-input-unidad'
-                  type='text'
-                  name='meta-input-unidad-${optionNum}'
-                  id='meta-input-unidad-${optionNum}'
-                  placeholder='Escribir...'
-                />
-              </div>
-              <div class='col-3'>
-                <button
-                  type='button'
-                  class='btn btn-danger'
-                  data-delete-row='${optionNum}'
-                >
-                  ELIMINAR
-                </button>
-              </div>
-            </div>
-          </div>
+    </div>
+    <div class="col-md-2">
+        <div class="form-floating">
+            <input type="text" class="form-control meta-input-option meta-input-unidad" 
+                   name="meta-input-unidad-${optionNum}" id="meta-input-unidad-${optionNum}" 
+                   placeholder="Unidad de medida">
+            <label for="meta-input-unidad-${optionNum}" class="form-label">Unidad de medida</label>
         </div>
-      </div>`
+    </div>
+     <div class="col-md-2">
+        <div class="form-floating">
+            <input type="text" class="form-control meta-input-option meta-input-total" 
+                   name="meta-input-total-${optionNum}" id="meta-input-total-${optionNum}" 
+                   placeholder="Unidad de medida">
+            <label for="meta-input-total-${optionNum}" class="form-label">Total</label>
+        </div>
+    </div>
+    <div class="col-md-1 d-flex align-items-center justify-content-end">
+        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+            &times;
+        </button>
+    </div>
+</div>`
 
     return row
   }

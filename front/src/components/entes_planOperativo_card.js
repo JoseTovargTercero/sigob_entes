@@ -35,7 +35,7 @@ export const entes_planOperativo_card = ({
 
   if (close) return
 
-  console.log(data)
+  // console.log(data)
 
   const alertSolicitud = () => {
     return `  <div class='card-body'>
@@ -113,7 +113,7 @@ export const entes_planOperativo_card = ({
 
     let metas = metas_actividades.map((meta) => {
       return `   <li class='list-group-item'>
-          <strong>${meta.actividad}</strong>
+          <strong>${meta.actividad}:</strong>
           <br />
           Responsable: ${meta.responsable}
           <br />
@@ -123,7 +123,7 @@ export const entes_planOperativo_card = ({
 
     let dimensionesLi = dimensiones.map((dimension) => {
       return `   <li class='list-group-item'>
-          <strong>${dimension.nombre}</strong>
+          <strong>${dimension.nombre}:</strong>
           <br />
           Responsable: ${dimension.descripcion}
         </li>`
@@ -131,28 +131,30 @@ export const entes_planOperativo_card = ({
 
     let div = `    <div class='card-body'>
     <div class="row mb-2">
+    <h6 class="text-center text-bold">OBJETIVO GENERAL:</h6>
+
     <h3 class="text-center text-blue-800">${objetivo_general}</h3>
     </div>
         <div class='row mb-2'>
           <div class='col'>
-            <h4 class='text-center'>Objetivos específicos</h4>
+            <h4 class='text-center'>Objetivos específicos:</h4>
             ${objetivos_especificosLi.join('')}
           </div>
           <div class='col'>
-            <h4 class='text-center'>Estrategias</h4>${estrategiasLi.join('')}
+            <h4 class='text-center'>Estrategias:</h4>${estrategiasLi.join('')}
           </div>
         </div>
 
         <div class='row mb-2'>
           <div class='col'>
-            <h4 class='text-center'>Acciones</h4>${accionesLi.join('')}
+            <h4 class='text-center'>Acciones:</h4>${accionesLi.join('')}
           </div>
           <div class='col'>
-            <h4 class='text-center'>Dimensiones</h4>${dimensionesLi.join('')}
+            <h4 class='text-center'>Dimensiones:</h4>${dimensionesLi.join('')}
           </div>
         </div>
         <div class='row mb-2'>
-          <h4 class='text-center'>Metas y Actividades</h4>${metas.join('')}
+          <h4 class='text-center'>Metas y Actividades:</h4>${metas.join('')}
         </div>
       </div>
      
@@ -161,12 +163,13 @@ export const entes_planOperativo_card = ({
     return div
   }
 
+  // <span class="btn btn-sm btn-success">ESTADO</span>
   const validarFooter = () => {
     return data === null
       ? ''
       : ` <div class="card-footer text-center">
-    <span class="btn btn-sm btn-success">ESTADO</span>
-    <button class="btn btn-sm btn-warning" data-editarid="${data.plan_operativo.id}">Editar</button>
+      <h4 class="text-blue-800">¿Desea editar la información?:</h4>
+    <button class="btn btn-secondary" data-editarid="${data.plan_operativo.id}">Editar</button>
     
     </div>`
   }

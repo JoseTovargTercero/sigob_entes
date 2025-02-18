@@ -17,6 +17,10 @@ import {
 import { toastNotification } from '../helpers/helpers.js'
 import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
 import {
+  loadPlanOperativo,
+  validatePlanOperativoTable,
+} from './entes_planOperativoTable.js'
+import {
   loadSolicitudEntesTable,
   validateSolicitudEntesTable,
 } from './entes_solicitudTable.js'
@@ -27,6 +31,12 @@ const w = window
 export const validatePlanOperativoView = async () => {
   let ejercicioFiscal = await ejerciciosLista({
     elementToInsert: 'ejercicios-fiscales',
+  })
+
+  validatePlanOperativoTable()
+
+  loadPlanOperativo({
+    id_ejercicio: ejercicioFiscal ? ejercicioFiscal.id : null,
   })
 
   if (!ejercicioFiscal) {

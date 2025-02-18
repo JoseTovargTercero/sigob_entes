@@ -48,6 +48,44 @@ const getEntePlanOperativo = async (id_ejercicio) => {
   }
 }
 
+const getEntePlanOperativos = async (id_ejercicio) => {
+  showLoader()
+  try {
+    let res = await fetch(entesPlanOperativoUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion: 'consulta_todos', id_ejercicio }),
+    })
+
+    // const clone = res.clone()
+
+    // let text = await clone.text()
+    // console.log(text)
+
+    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+
+    const json = await res.json()
+
+    console.log(json)
+    if (json.hasOwnProperty('success')) {
+      return json.success
+    }
+
+    if (json.error) {
+      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+      return json
+    }
+  } catch (e) {
+    console.log(e)
+
+    return confirmNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Error al planes operativos del ente',
+    })
+  } finally {
+    hideLoader()
+  }
+}
+
 const getEntePlanOperativoId = async (id, id_ejercicio) => {
   showLoader()
   try {
@@ -180,4 +218,5 @@ export {
   registrarPlanOperativo,
   getEntePlanOperativoId,
   actualizarPlanOperativo,
+  getEntePlanOperativos,
 }

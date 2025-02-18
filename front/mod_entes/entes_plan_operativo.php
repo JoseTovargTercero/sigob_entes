@@ -55,20 +55,18 @@
 
                         </div>
                         <div class="card-body">
-                            <!-- 
+
                             <div class="table-responsive p-1">
-                                <table id="solicitud-entes-table" class="table table-striped" style="width:100%">
+                                <table id="plan-operativo-table" class="table table-striped" style="width:100%">
                                     <thead class="w-100">
-                                        <th>N° ORDEN</th>
-                                        <th>N° COMPROMISO</th>
-                                        <th>MESES</th>
-                                        <th>TIPO</th>
-                                        <th>MONTO</th>
-                                        <th>FECHA</th>
-                                        <th>ACCIONES</th>
+                                        <!-- <th>Código</th> -->
+                                        <th>Objetivo General</th>
+                                        <!-- <th>Fecha</th> -->
+                                        <th>Accion</th>
+
                                     </thead>
                                 </table>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
