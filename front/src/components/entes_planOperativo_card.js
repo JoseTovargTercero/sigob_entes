@@ -118,6 +118,8 @@ export const entes_planOperativo_card = ({
           Responsable: ${meta.responsable}
           <br />
           Unidad de medida: ${meta.unidad}
+           <br />
+          Total: ${meta.total}
         </li>`
     })
 

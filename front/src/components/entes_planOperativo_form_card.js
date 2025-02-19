@@ -467,6 +467,8 @@ export const entes_planOperativo_form_card = async ({
           meta.responsable
 
         row.querySelector(`#meta-input-unidad-${numsRows}`).value = meta.unidad
+
+        row.querySelector(`#meta-input-total-${numsRows}`).value = meta.total
       })
     }
 
@@ -742,11 +744,13 @@ export const entes_planOperativo_form_card = async ({
       let actividad = row.querySelector('.meta-input-actividad')
       let responsable = row.querySelector('.meta-input-responsable')
       let unidad = row.querySelector('.meta-input-unidad')
+      let total = row.querySelector('.meta-input-total')
 
       informacion.metas_actividades.push({
         actividad: actividad.value,
         responsable: responsable.value,
         unidad: unidad.value,
+        total: total.value,
       })
     })
 
