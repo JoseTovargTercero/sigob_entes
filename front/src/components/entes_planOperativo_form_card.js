@@ -503,7 +503,7 @@ export const entes_planOperativo_form_card = async ({
     }
 
     if (e.target.dataset.deleteRow) {
-      deleteRow(e.target.dataset.deleteRow)
+      deleteRow(e.target.dataset.deleteRow, e.target.dataset.typeRow)
     }
 
     validateFormFocus(e)
@@ -750,7 +750,7 @@ export const entes_planOperativo_form_card = async ({
         actividad: actividad.value,
         responsable: responsable.value,
         unidad: unidad.value,
-        total: total.value,
+        total: total.value || 'No definido',
       })
     })
 
@@ -778,6 +778,8 @@ export const entes_planOperativo_form_card = async ({
       )
     }
 
+    updateLabelRow(tipo)
+
     fieldListOptions[`plan-input-option-${newNumRow}`] = ''
     fieldListErrorsOptions[`plan-input-option-${newNumRow}`] = {
       value: true,
@@ -786,7 +788,7 @@ export const entes_planOperativo_form_card = async ({
     }
   }
 
-  function deleteRow(id) {
+  function deleteRow(id, type) {
     confirmNotification({
       type: NOTIFICATIONS_TYPES.send,
       message: '¿Desea eliminar esta opción?',
@@ -800,7 +802,21 @@ export const entes_planOperativo_form_card = async ({
 
         if (row) numsRows--
         row.remove()
+
+        updateLabelRow(type)
       },
+    })
+  }
+
+  function updateLabelRow(tipo) {
+    let rows = d.querySelectorAll(`[data-row-${tipo}]`)
+
+    rows.forEach((row, index) => {
+      let labelNums = row.querySelectorAll('.label-num')
+
+      labelNums.forEach((label) => {
+        label.textContent = index + 1
+      })
     })
   }
 
@@ -820,11 +836,11 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control plan-input-option" 
                    name="plan-input-option-${optionNum}" id="plan-input-option-${optionNum}" 
                    placeholder="Campo para ${tipo}">
-            <label for="plan-input-option-${optionNum}" class="form-label">${labelText}</label>
+            <label for="plan-input-option-${optionNum}" class="form-label">${labelText} <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
     <div class="col-md-1 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}' data-type-row="${tipo}">
             &times;
         </button>
     </div>
@@ -838,7 +854,7 @@ export const entes_planOperativo_form_card = async ({
     <div class="col-md-4">  <div class="form-floating">  <input type="text" class="form-control dimension-input-option dimension-input-nombre" 
                    name="dimension-input-nombre-${optionNum}" id="dimension-input-nombre-${optionNum}" 
                    placeholder="Nombre de dimensión">
-            <label for="dimension-input-nombre-${optionNum}" class="form-label">Nombre de dimensión</label>
+            <label for="dimension-input-nombre-${optionNum}" class="form-label">Nombre de dimensión <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
     <div class="col-md-7"> 
@@ -846,10 +862,10 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control dimension-input-option dimension-input-descripcion" 
                    name="dimension-input-descripcion-${optionNum}" id="dimension-input-descripcion-${optionNum}" 
                    placeholder="Descripción de dimensión">
-            <label for="dimension-input-descripcion-${optionNum}" class="form-label">Descripción de dimensión</label>
+            <label for="dimension-input-descripcion-${optionNum}" class="form-label">Descripción de dimensión <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
-    <div class="col-md-1 d-flex align-items-center justify-content-end"> <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+    <div class="col-md-1 d-flex align-items-center justify-content-end"> <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}' data-type-row="dimension">
             &times;
         </button>
     </div>
@@ -865,7 +881,7 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control meta-input-option meta-input-actividad" 
                    name="meta-input-actividad-${optionNum}" id="meta-input-actividad-${optionNum}" 
                    placeholder="Actividad de meta">
-            <label for="meta-input-actividad-${optionNum}" class="form-label">Actividad de meta</label>
+            <label for="meta-input-actividad-${optionNum}" class="form-label">Actividad de meta <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
     <div class="col-md-3">
@@ -873,7 +889,7 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control meta-input-option meta-input-responsable" 
                    name="meta-input-responsable-${optionNum}" id="meta-input-responsable-${optionNum}" 
                    placeholder="Responsable">
-            <label for="meta-input-responsable-${optionNum}" class="form-label">Responsable</label>
+            <label for="meta-input-responsable-${optionNum}" class="form-label">Responsable <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
     <div class="col-md-3">
@@ -881,7 +897,7 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control meta-input-option meta-input-unidad" 
                    name="meta-input-unidad-${optionNum}" id="meta-input-unidad-${optionNum}" 
                    placeholder="Unidad de medida">
-            <label for="meta-input-unidad-${optionNum}" class="form-label">Unidad de medida</label>
+            <label for="meta-input-unidad-${optionNum}" class="form-label">Unidad de medida <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
      <div class="col-md-2">
@@ -889,11 +905,11 @@ export const entes_planOperativo_form_card = async ({
             <input type="text" class="form-control meta-input-option meta-input-total" 
                    name="meta-input-total-${optionNum}" id="meta-input-total-${optionNum}" 
                    placeholder="Unidad de medida">
-            <label for="meta-input-total-${optionNum}" class="form-label">Total</label>
+            <label for="meta-input-total-${optionNum}" class="form-label">Total <span class="label-num text-blue-600 "></span></label>
         </div>
     </div>
     <div class="col-md-1 d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}'>
+        <button type="button" class="btn btn-danger btn-sm" data-delete-row='${optionNum}' data-type-row="metas">
             &times;
         </button>
     </div>
