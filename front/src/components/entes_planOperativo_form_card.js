@@ -856,7 +856,7 @@ export const entes_planOperativo_form_card = async ({
 
   function metasRow(optionNum) {
     let row = ` <div class="row slide-up-animation mb-3" data-row='${optionNum}' data-row-metas='${optionNum}'>
-    <div class="col-md-5">
+    <div class="col-md-3">
         <div class="form-floating">
             <input type="text" class="form-control meta-input-option meta-input-actividad" 
                    name="meta-input-actividad-${optionNum}" id="meta-input-actividad-${optionNum}" 
@@ -864,7 +864,7 @@ export const entes_planOperativo_form_card = async ({
             <label for="meta-input-actividad-${optionNum}" class="form-label">Actividad de meta</label>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-floating">
             <input type="text" class="form-control meta-input-option meta-input-responsable" 
                    name="meta-input-responsable-${optionNum}" id="meta-input-responsable-${optionNum}" 
@@ -872,7 +872,7 @@ export const entes_planOperativo_form_card = async ({
             <label for="meta-input-responsable-${optionNum}" class="form-label">Responsable</label>
         </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
         <div class="form-floating">
             <input type="text" class="form-control meta-input-option meta-input-unidad" 
                    name="meta-input-unidad-${optionNum}" id="meta-input-unidad-${optionNum}" 
