@@ -311,8 +311,9 @@ function consultarSolicitudPorMes($data)
             $resultEnte = $stmtEnte->get_result();
             $dataEnte = $resultEnte->fetch_assoc();
             $stmtEnte->close();
-
-            return json_encode(["success" => ["solicitudes" => $rows, "ente" => $dataEnte]]);
+            // Agregar la información del ente como un ítem más
+            $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
+            return json_encode(["success" => $row]);
         } else {
             return json_encode(["success" => null]);
         }
