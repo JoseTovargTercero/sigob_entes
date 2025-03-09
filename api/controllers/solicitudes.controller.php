@@ -52,8 +52,13 @@ class SolicitudesController
                     // Verificar si numero_compromiso es 0 y establecerlo como null
                     $row['numero_compromiso'] = ($row['numero_compromiso'] == 0) ? null : $row['numero_compromiso'];
 
-                    // Procesar las partidas asociadas
-                    $partidasArray = json_decode($row['partidas'], true);
+                     // Procesar las partidas asociadas
+                $partidasArray = json_decode($row['partidas'], true);
+
+                // Verificar si json_decode devolvió un array válido
+                if (!is_array($partidasArray)) {
+                    $partidasArray = []; // Si no es válido, asignamos un array vacío
+                }
 
                     foreach ($partidasArray as &$partida) {
                         $idDistribucion = $partida['id'];
@@ -218,6 +223,11 @@ class SolicitudesController
                 // Procesar las partidas asociadas
                 $partidasArray = json_decode($row['partidas'], true);
 
+                // Verificar si json_decode devolvió un array válido
+                if (!is_array($partidasArray)) {
+                    $partidasArray = []; // Si no es válido, asignamos un array vacío
+                }
+
                 foreach ($partidasArray as &$partida) {
                     $idDistribucion = $partida['id'];
 
@@ -318,8 +328,13 @@ class SolicitudesController
                     if ($row['numero_compromiso'] == 0) {
                         $row['numero_compromiso'] = null;
                     }
-                    // Procesar las partidas asociadas
-                    $partidasArray = json_decode($row['partidas'], true);
+                     // Procesar las partidas asociadas
+                $partidasArray = json_decode($row['partidas'], true);
+
+                // Verificar si json_decode devolvió un array válido
+                if (!is_array($partidasArray)) {
+                    $partidasArray = []; // Si no es válido, asignamos un array vacío
+                }
 
                     foreach ($partidasArray as &$partida) {
                         $idDistribucion = $partida['id'];
