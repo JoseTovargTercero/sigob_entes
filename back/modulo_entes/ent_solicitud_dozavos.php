@@ -236,8 +236,7 @@ function consultarSolicitudPorMes($data)
         return json_encode(["error" => "El ID del ente no está definido en la sesión."]);
     }
 
-    $mesActual = date("n") - 1;
-    // $mesActual = $mesActual < 1 ? 12 : $mesActual; // Ajustar para diciembre
+    $mesActual = date("n") - 1; // Obtener el mes anterior
 
     try {
         // Consultar las solicitudes principales
@@ -256,10 +255,20 @@ function consultarSolicitudPorMes($data)
                 if ($row['numero_compromiso'] == 0) {
                     $row['numero_compromiso'] = null;
                 }
+
                 // Procesar las partidas asociadas
                 $partidasArray = json_decode($row['partidas'], true);
 
+                // Verificar si json_decode devolvió un array válido
+                if (!is_array($partidasArray)) {
+                    $partidasArray = []; // Si no es válido, asignamos un array vacío
+                }
+
                 foreach ($partidasArray as &$partida) {
+                    if (!isset($partida['id'])) {
+                        continue; // Saltar si la partida no tiene un ID válido
+                    }
+
                     $idDistribucion = $partida['id'];
 
                     // Obtener el id_partida desde distribucion_presupuestaria
@@ -267,11 +276,13 @@ function consultarSolicitudPorMes($data)
                     $stmtPartida = $conexion->prepare($sqlPartida);
                     $stmtPartida->bind_param("i", $idDistribucion);
                     $stmtPartida->execute();
-                    $stmtPartida->bind_result($id_partida2);
+                    $stmtPartida->bind_result($id_partida);
                     $stmtPartida->fetch();
                     $stmtPartida->close();
 
-                    $id_partida = $id_partida2;
+                    if (!$id_partida) {
+                        continue; // Si no hay una partida válida, saltamos
+                    }
 
                     // Obtener información de la partida presupuestaria
                     $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
@@ -290,19 +301,18 @@ function consultarSolicitudPorMes($data)
                 // Agregar las partidas procesadas
                 $row['partidas'] = $partidasArray;
                 $rows[] = $row;
-                // Consultar la información del ente asociado
-                $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-                $stmtEnte = $conexion->prepare($sqlEnte);
-                $stmtEnte->bind_param("i", $idEnte);
-                $stmtEnte->execute();
-                $resultEnte = $stmtEnte->get_result();
-                $dataEnte = $resultEnte->fetch_assoc();
-                $stmtEnte->close();
-
-                // Agregar la información del ente como un ítem más
-                $row['ente'] = $dataEnte ?: null; // Si no se encuentra, se asigna como null
-                return json_encode(["success" => $row]);
             }
+
+            // Consultar la información del ente asociado (solo una vez)
+            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+            $stmtEnte = $conexion->prepare($sqlEnte);
+            $stmtEnte->bind_param("i", $idEnte);
+            $stmtEnte->execute();
+            $resultEnte = $stmtEnte->get_result();
+            $dataEnte = $resultEnte->fetch_assoc();
+            $stmtEnte->close();
+
+            return json_encode(["success" => ["solicitudes" => $rows, "ente" => $dataEnte]]);
         } else {
             return json_encode(["success" => null]);
         }
@@ -310,6 +320,7 @@ function consultarSolicitudPorMes($data)
         return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
+
 
 
 function registrarSolicitudozavo($data)
