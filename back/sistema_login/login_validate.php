@@ -1,7 +1,6 @@
 <?php
 ob_start();
 include '../sistema_global/conexion.php';
-require_once '../sistema_global/tasa_funciones.php';
 
 $values = json_decode(file_get_contents('php://input'), true);
 
@@ -13,7 +12,7 @@ $email = mysqli_real_escape_string($conexion, $email);
 $contrasena = mysqli_real_escape_string($conexion, $contrasena);
 
 
-$stmt = mysqli_prepare($conexion, "SELECT * FROM `system_users` WHERE u_email = ? AND u_contrasena!='' AND u_status='1' LIMIT 1");
+$stmt = mysqli_prepare($conexion, "SELECT * FROM `system_users` WHERE u_email = ? AND u_contrasena!='' AND u_stus='1' LIMIT 1");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -33,15 +32,6 @@ if ($result->num_rows > 0) {
 			$_SESSION['verificar_upload'] = false;
 
 
-			if (tasaIsEmpty($conexion)) {
-				$tasa = obtenerTasaDeApi(); // Función para obtener la tasa de la API o 0 en caso de error
-				guardarTasa($conexion, $tasa);
-			} else {
-				if (verificarUltimaActualizacionTasa($conexion)) {
-					cambiarTasa($conexion);
-				}
-				// Si la tasa no está vacía, actualizar
-			}
 
 			$id = $row['u_id'];
 
