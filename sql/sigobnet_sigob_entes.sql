@@ -2503,67 +2503,6 @@ INSERT INTO `system_users_permisos` (`id`, `id_user`, `id_item_menu`) VALUES
 (17, 40, 21);
 
 
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tasa`
---
-
-CREATE TABLE `tasa` (
-  `id` int(255) NOT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
-  `simbolo` varchar(255) DEFAULT NULL,
-  `valor` varchar(2000) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tasa`
---
-
-INSERT INTO `tasa` (`id`, `descripcion`, `simbolo`, `valor`) VALUES
-(1, 'Precio del Dólar Actual', '$', '51.9345');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tasa_historico`
---
-
-CREATE TABLE `tasa_historico` (
-  `id` int(255) NOT NULL,
-  `u_nombre` varchar(255) DEFAULT NULL,
-  `precio` varchar(255) DEFAULT NULL,
-  `descripcion` varchar(2000) DEFAULT NULL,
-  `fecha` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `tasa_historico`
---
-
-INSERT INTO `tasa_historico` (`id`, `u_nombre`, `precio`, `descripcion`, `fecha`) VALUES
-(1, 'sigob', '36.823', 'Creacion automática', '21-09-2024'),
-(2, 'sigob', '36.8105', 'actualizacion automática', '25-09-2024'),
-(3, 'sigob', '37.0358', 'actualizacion automática', '05-10-2024'),
-(4, 'sigob', '38.8857', 'actualizacion automática', '12-10-2024'),
-(5, 'sigob', '38.888', 'actualizacion automática', '14-10-2024'),
-(6, 'sigob', '38.9179', 'actualizacion automática', '15-10-2024'),
-(7, 'sigob', '39.0116', 'actualizacion automática', '17-10-2024'),
-(8, 'sigob', '39.1699', 'actualizacion automática', '19-10-2024'),
-(9, 'sigob', '0', 'actualizacion automática', '21-10-2024'),
-(10, 'sigob', '39.1813', 'actualizacion automática', '22-10-2024'),
-(11, 'sigob', '40.8803', 'actualizacion automática', '24-10-2024'),
-(12, 'sigob', '41.0429', 'actualizacion automática', '27-10-2024'),
-(13, 'sigob', '42.2256', 'actualizacion automática', '30-10-2024'),
-(14, 'sigob', '42.5622', 'actualizacion automática', '31-10-2024'),
-(15, 'sigob', '42.8569', 'actualizacion automática', '05-11-2024'),
-(16, 'sigob', '50.3319', 'actualizacion automática', '16-12-2024'),
-(17, 'sigob', '50.371', 'actualizacion automática', '17-12-2024'),
-(18, 'sigob', '50.5419', 'actualizacion automática', '18-12-2024'),
-(19, 'sigob', '51.5398', 'actualizacion automática', '23-12-2024'),
-(20, 'sigob', '51.9345', 'actualizacion automática', '27-12-2024');
-
 -- --------------------------------------------------------
 
 --
@@ -2863,18 +2802,6 @@ ALTER TABLE `system_users_permisos`
 
 
 --
--- Indices de la tabla `tasa`
---
-ALTER TABLE `tasa`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `tasa_historico`
---
-ALTER TABLE `tasa_historico`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indices de la tabla `tipo_gastos`
 --
 ALTER TABLE `tipo_gastos`
@@ -3141,19 +3068,6 @@ ALTER TABLE `system_users`
 ALTER TABLE `system_users_permisos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
-
-
---
--- AUTO_INCREMENT de la tabla `tasa`
---
-ALTER TABLE `tasa`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `tasa_historico`
---
-ALTER TABLE `tasa_historico`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_gastos`
