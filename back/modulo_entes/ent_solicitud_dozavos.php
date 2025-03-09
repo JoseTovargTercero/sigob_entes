@@ -224,25 +224,24 @@ function consultarSolicitudPorId($data)
 function consultarSolicitudPorMes($data)
 {
     global $conexion;
-
     if (!isset($data['id_ejercicio'])) {
-        return json_encode(["error" => "No se ha especificado el ID del ejercicio para la consulta."]);
+        return ["error" => "No se ha especificado el ID del ejercicio para la consulta."];
     }
 
     $idEjercicio = $data['id_ejercicio'];
-    $idEnte = $_SESSION["id_ente"] ?? null;
+    $idEnte = $data["id_ente"] ?? null;
 
     if (!$idEnte) {
-        return json_encode(["error" => "El ID del ente no está definido en la sesión."]);
+        return ["error" => "El ID del ente no está definido en la sesión."];
     }
 
-    $mesActual = date("n") - 1; // Obtener el mes anterior
+    $mesActual = date("n") - 1;
 
     try {
         // Consultar las solicitudes principales
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
-                FROM solicitud_dozavos 
-                WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
+                    FROM solicitud_dozavos 
+                    WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("iii", $idEnte, $idEjercicio, $mesActual);
         $stmt->execute();
@@ -255,20 +254,10 @@ function consultarSolicitudPorMes($data)
                 if ($row['numero_compromiso'] == 0) {
                     $row['numero_compromiso'] = null;
                 }
-
                 // Procesar las partidas asociadas
                 $partidasArray = json_decode($row['partidas'], true);
 
-                // Verificar si json_decode devolvió un array válido
-                if (!is_array($partidasArray)) {
-                    $partidasArray = []; // Si no es válido, asignamos un array vacío
-                }
-
                 foreach ($partidasArray as &$partida) {
-                    if (!isset($partida['id'])) {
-                        continue; // Saltar si la partida no tiene un ID válido
-                    }
-
                     $idDistribucion = $partida['id'];
 
                     // Obtener el id_partida desde distribucion_presupuestaria
@@ -276,13 +265,11 @@ function consultarSolicitudPorMes($data)
                     $stmtPartida = $conexion->prepare($sqlPartida);
                     $stmtPartida->bind_param("i", $idDistribucion);
                     $stmtPartida->execute();
-                    $stmtPartida->bind_result($id_partida);
+                    $stmtPartida->bind_result($id_partida2);
                     $stmtPartida->fetch();
                     $stmtPartida->close();
 
-                    if (!$id_partida) {
-                        continue; // Si no hay una partida válida, saltamos
-                    }
+                    $id_partida = $id_partida2;
 
                     // Obtener información de la partida presupuestaria
                     $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
@@ -303,22 +290,12 @@ function consultarSolicitudPorMes($data)
                 $rows[] = $row;
             }
 
-            // Consultar la información del ente asociado (solo una vez)
-            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
-            $stmtEnte = $conexion->prepare($sqlEnte);
-            $stmtEnte->bind_param("i", $idEnte);
-            $stmtEnte->execute();
-            $resultEnte = $stmtEnte->get_result();
-            $dataEnte = $resultEnte->fetch_assoc();
-            $stmtEnte->close();
-            // Agregar la información del ente como un ítem más
-            $rows['ente'] = $dataEnte ?? null; // Si no se encuentra, se asigna como null
-            return json_encode(["success" => $rows]);
+            return ["success" => $rows];
         } else {
-            return json_encode(["success" => null]);
+            return ["success" => null];
         }
     } catch (Exception $e) {
-        return json_encode(["error" => "Error: " . $e->getMessage()]);
+        return ["error" => "Error: " . $e->getMessage()];
     }
 }
 
