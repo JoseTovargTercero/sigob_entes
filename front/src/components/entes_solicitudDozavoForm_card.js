@@ -2,15 +2,15 @@ import {
   getEntesAsignacion,
   getEntesAsignaciones,
   registrarEnteSolicitudDozavo,
-} from '../api/entes_solicitudesDozavos.js'
-import { getDistribucionEntes } from '../api/form_entes.js'
+} from "../api/entes_solicitudesDozavos.js";
+import { getDistribucionEntes } from "../api/form_entes.js";
 import {
   getPreAsignacionEnte,
   getPreAsignacionEntes,
-} from '../api/pre_entes.js'
-import { registrarSolicitudDozavo } from '../api/pre_solicitudesDozavos.js'
-import { loadSolicitudEntesTable } from '../controllers/entes_solicitudTable.js'
-import { loadSolicitudesDozavosTable } from '../controllers/pre_solicitudesDozavosTable.js'
+} from "../api/pre_entes.js";
+import { registrarSolicitudDozavo } from "../api/pre_solicitudesDozavos.js";
+import { loadSolicitudEntesTable } from "../controllers/entes_solicitudTable.js";
+import { loadSolicitudesDozavosTable } from "../controllers/pre_solicitudesDozavosTable.js";
 import {
   confirmNotification,
   hideLoader,
@@ -19,10 +19,10 @@ import {
   tableLanguage,
   toastNotification,
   validateInput,
-} from '../helpers/helpers.js'
-import { NOTIFICATIONS_TYPES, meses } from '../helpers/types.js'
+} from "../helpers/helpers.js";
+import { NOTIFICATIONS_TYPES, meses } from "../helpers/types.js";
 
-const d = document
+const d = document;
 
 // export const pre_solicitudEnte_card = async ({
 //   elementToInsert,
@@ -182,19 +182,19 @@ const d = document
 // OTRO COMPONENTE
 
 const mesesOptions = () => {
-  let mesActual = new Date().getMonth()
+  let mesActual = new Date().getMonth();
 
   let mesesOptionsElement = meses.map((mes, index) => {
     if (index)
       if (mesActual === index)
-        return `<option value='${index}' selected>${mes}</option>`
-    return `<option value='${index}'>${mes}</option>`
-  })
+        return `<option value='${index}' selected>${mes}</option>`;
+    return `<option value='${index}'>${mes}</option>`;
+  });
 
-  let options = [`<option value=''>Elegir...</option>`, ...mesesOptionsElement]
+  let options = [`<option value=''>Elegir...</option>`, ...mesesOptionsElement];
 
-  return options.join('')
-}
+  return options.join("");
+};
 
 export const entes_solicitudGenerar_card = async ({
   elementToInsert,
@@ -204,49 +204,49 @@ export const entes_solicitudGenerar_card = async ({
   reset,
   asignacionEnte,
 }) => {
-  let fieldList = { mes: '', descripcion: '' }
+  let fieldList = { mes: "", descripcion: "" };
   let fieldListErrors = {
     mes: {
       value: true,
-      message: 'Elija un mes válido',
-      type: 'text',
+      message: "Elija un mes válido",
+      type: "text",
     },
     descripcion: {
       value: true,
-      message: 'Escriba descripción de la solicitud',
-      type: 'text',
+      message: "Escriba descripción de la solicitud",
+      type: "text",
     },
-  }
+  };
 
-  const oldCardElement = d.getElementById('solicitud-distribucion-form-card')
+  const oldCardElement = d.getElementById("solicitud-distribucion-form-card");
   if (oldCardElement) {
-    closeCard(oldCardElement)
+    closeCard(oldCardElement);
   }
 
-  if (close) return
+  if (close) return;
 
-  let dependencias = asignacionEnte.dependencias
+  let dependencias = asignacionEnte.dependencias;
 
-  let actividadesEnte = asignacionEnte.actividades_entes
+  let actividadesEnte = asignacionEnte.actividades_entes;
 
   const listaDependencias = () => {
-    let dozavoMontoTotal = 0
-    let montosActividadDistribuido = {}
-    let montosActividadDozavo = {}
+    let dozavoMontoTotal = 0;
+    let montosActividadDistribuido = {};
+    let montosActividadDozavo = {};
     actividadesEnte.forEach((distribucion) => {
-      montosActividadDozavo[distribucion.actividad] = 0
-      montosActividadDistribuido[distribucion.actividad] = 0
+      montosActividadDozavo[distribucion.actividad] = 0;
+      montosActividadDistribuido[distribucion.actividad] = 0;
       distribucion.distribucion_partidas.forEach((partida) => {
-        let doceavaParte = Number(partida.monto) / 12
+        let doceavaParte = Number(partida.monto) / 12;
 
-        dozavoMontoTotal += doceavaParte
-        montosActividadDozavo[distribucion.actividad] += doceavaParte
-        montosActividadDistribuido[distribucion.actividad] += partida.monto
-      })
-    })
+        dozavoMontoTotal += doceavaParte;
+        montosActividadDozavo[distribucion.actividad] += doceavaParte;
+        montosActividadDistribuido[distribucion.actividad] += partida.monto;
+      });
+    });
 
     // Guardar total de dozavo
-    fieldList.dozavoMontoTotal = dozavoMontoTotal
+    fieldList.dozavoMontoTotal = dozavoMontoTotal;
 
     let dependenciasElement =
       dependencias.length > 0
@@ -286,45 +286,45 @@ export const entes_solicitudGenerar_card = async ({
                       Bs
                     </span>
                   </p>
-                </li>`
+                </li>`;
             })
-            .join('')
-        : ''
+            .join("")
+        : "";
 
     return `
           <ul class='list-group mb-4'>${dependenciasElement}</ul>        
-      `
-  }
+      `;
+  };
 
   const crearFilas = () => {
-    let fila = []
+    let fila = [];
 
     actividadesEnte.forEach((distribucion) => {
       distribucion.distribucion_partidas.forEach((partida) => {
-        let dozavo = partida.monto / 12
+        let dozavo = partida.monto / 12;
         let codigo = `${
-          partida.sector_informacion ? partida.sector_informacion.sector : '0'
+          partida.sector_informacion ? partida.sector_informacion.sector : "0"
         }.${
           partida.programa_informacion
             ? partida.programa_informacion.programa
-            : '0'
+            : "0"
         }.${
           // partida.proyecto_informacion == 0
           //   ? '00'
           //   : partida.proyecto_informacion.proyecto
-          '00'
-        }.${distribucion.actividad == 0 ? '00' : distribucion.actividad}`
+          "00"
+        }.${distribucion.actividad == 0 ? "00" : distribucion.actividad}`;
 
         fila.push(`        <td>${codigo}</td>
         <td>${partida.partida_informacion.partida}</td>
         <td>${separadorLocal(partida.monto)} Bs</td>
         <td>${separadorLocal(dozavo.toFixed(3))} Bs</td>
-        </tr>`)
-      })
-    })
+        </tr>`);
+      });
+    });
 
-    return fila.join('')
-  }
+    return fila.join("");
+  };
 
   let card = `    <div class='card slide-up-animation' id='solicitud-distribucion-form-card'>
       <div class='card-header d-flex justify-content-between'>
@@ -409,35 +409,35 @@ export const entes_solicitudGenerar_card = async ({
           Cancelar
         </button>
       </div>
-    </div>`
+    </div>`;
 
-  d.getElementById(elementToInsert).insertAdjacentHTML('afterbegin', card)
+  d.getElementById(elementToInsert).insertAdjacentHTML("afterbegin", card);
 
-  validarEntesTabla()
+  validarEntesTabla();
 
-  let cardElement = d.getElementById('solicitud-distribucion-form-card')
+  let cardElement = d.getElementById("solicitud-distribucion-form-card");
   // let formElement = d.getElementById('solicitud-distribucion-form')
 
   function closeCard(card) {
     // validateEditButtons()
-    card.remove()
-    card.removeEventListener('click', validateClick)
-    card.removeEventListener('input', validateInputFunction)
+    card.remove();
+    card.removeEventListener("click", validateClick);
+    card.removeEventListener("input", validateInputFunction);
 
-    return false
+    return false;
   }
 
   async function validateClick(e) {
     if (e.target.dataset.close) {
-      closeCard(cardElement)
+      closeCard(cardElement);
     }
 
-    if (e.target.id === 'solicitud-cancelar') {
-      closeCard(cardElement)
+    if (e.target.id === "solicitud-cancelar") {
+      closeCard(cardElement);
     }
 
-    if (e.target.id === 'solicitud-generar') {
-      let inputs = d.querySelectorAll('.solicitud-input')
+    if (e.target.id === "solicitud-generar") {
+      let inputs = d.querySelectorAll(".solicitud-input");
 
       inputs.forEach((input) => {
         fieldList = validateInput({
@@ -445,38 +445,38 @@ export const entes_solicitudGenerar_card = async ({
           fieldList,
           fieldListErrors,
           type: fieldListErrors[input.name].type,
-        })
-      })
+        });
+      });
 
       if (Object.values(fieldListErrors).some((el) => el.value)) {
         toastNotification({
           type: NOTIFICATIONS_TYPES.fail,
-          message: 'Hay campos inválidos',
-        })
-        return
+          message: "Hay campos inválidos",
+        });
+        return;
       }
 
       if (Object.values(fieldList).some((el) => !el)) {
         toastNotification({
           type: NOTIFICATIONS_TYPES.fail,
-          message: 'No se ha completado la información necesaria',
-        })
-        return
+          message: "No se ha completado la información necesaria",
+        });
+        return;
       }
 
-      let dozavoMontoTotal = 0
+      let dozavoMontoTotal = 0;
 
-      let partidasDozavos = []
+      let partidasDozavos = [];
 
       actividadesEnte.forEach((distribucion) => {
         distribucion.distribucion_partidas.forEach((partida) => {
-          let monto = partida.monto / 12
+          let monto = partida.monto / 12;
           partidasDozavos.push({
             id: Number(partida.id_distribucion),
             monto: Number(monto.toFixed(2)),
-          })
-        })
-      })
+          });
+        });
+      });
 
       // let dozavoPartidas = asignacionEnte.distribucion_partidas.map(
       //   (distribucion) => {
@@ -497,12 +497,12 @@ export const entes_solicitudGenerar_card = async ({
         monto: fieldList.dozavoMontoTotal,
         partidas: partidasDozavos,
         id_ejercicio: ejercicioId,
-        tipo: 'D',
+        tipo: "D",
         mes: fieldList.mes,
-      }
+      };
 
-      console.log(dozavoInformacion)
-      enviarInformacion(dozavoInformacion)
+      console.log(dozavoInformacion);
+      enviarInformacion(dozavoInformacion);
     }
   }
 
@@ -512,7 +512,7 @@ export const entes_solicitudGenerar_card = async ({
       fieldList,
       fieldListErrors,
       type: fieldListErrors[e.target.name].type,
-    })
+    });
   }
 
   // CARGAR LISTA DE PARTIDAS
@@ -520,40 +520,40 @@ export const entes_solicitudGenerar_card = async ({
   function enviarInformacion(data) {
     confirmNotification({
       type: NOTIFICATIONS_TYPES.send,
-      message: `¿Desea generar la solicitud de dozavo del ente ${asignacionEnte.ente_nombre}`,
+      message: `Se enviará la solicitud de dozavo`,
       successFunction: async function () {
-        let res = await registrarEnteSolicitudDozavo(data)
+        let res = await registrarEnteSolicitudDozavo(data);
         if (res.success) {
-          closeCard(cardElement)
-          loadSolicitudEntesTable({ id_ejercicio: ejercicioId })
-          reset()
+          closeCard(cardElement);
+          loadSolicitudEntesTable({ id_ejercicio: ejercicioId });
+          reset();
         }
       },
-    })
+    });
   }
 
   // formElement.addEventListener('submit', (e) => e.preventDefault())
 
-  cardElement.addEventListener('input', validateInputFunction)
-  cardElement.addEventListener('click', validateClick)
+  cardElement.addEventListener("input", validateInputFunction);
+  cardElement.addEventListener("click", validateClick);
 
   function validarEntesTabla() {
-    let entesTable = new DataTable('#distribucion-ente-table', {
+    let entesTable = new DataTable("#distribucion-ente-table", {
       scrollY: 200,
 
       language: tableLanguage,
       layout: {
         topStart: function () {
-          let toolbar = document.createElement('div')
+          let toolbar = document.createElement("div");
           toolbar.innerHTML = `
                   <h5 class="text-center mb-0">Detalles de la distribucion presupuestaria del ente:</h5>
-                            `
-          return toolbar
+                            `;
+          return toolbar;
         },
-        topEnd: { search: { placeholder: 'Buscar...' } },
-        bottomStart: 'info',
-        bottomEnd: 'paging',
+        topEnd: { search: { placeholder: "Buscar..." } },
+        bottomStart: "info",
+        bottomEnd: "paging",
       },
-    })
+    });
   }
-}
+};
