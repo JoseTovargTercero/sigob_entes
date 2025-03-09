@@ -97,6 +97,11 @@ function consultarSolicitudes($data)
                 // Procesar las partidas asociadas
                 $partidasArray = json_decode($row['partidas'], true);
 
+                // Verificar si json_decode devolvió un array válido
+                if (!is_array($partidasArray)) {
+                    $partidasArray = []; // Si no es válido, asignamos un array vacío
+                }
+
                 foreach ($partidasArray as &$partida) {
                     $idDistribucion = $partida['id'];
 
@@ -133,6 +138,7 @@ function consultarSolicitudes($data)
         return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
+
 
 
 // Función para consultar una solicitud por ID
