@@ -249,59 +249,56 @@ function consultarSolicitudPorMes($data)
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $rows = [];
+            $row = $result->fetch_assoc();
 
-            while ($row = $result->fetch_assoc()) {
-                if ($row['numero_compromiso'] == 0) {
-                    $row['numero_compromiso'] = null;
-                }
-
-                // Procesar las partidas asociadas
-                $partidasArray = json_decode($row['partidas'], true);
-
-                // Verificar si json_decode devolvió un array válido
-                if (!is_array($partidasArray)) {
-                    $partidasArray = []; // Si no es válido, asignamos un array vacío
-                }
-
-                foreach ($partidasArray as &$partida) {
-                    if (!isset($partida['id'])) {
-                        continue; // Saltar si la partida no tiene un ID válido
-                    }
-
-                    $idDistribucion = $partida['id'];
-
-                    // Obtener el id_partida desde distribucion_presupuestaria
-                    $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
-                    $stmtPartida = $conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $idDistribucion);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($id_partida);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
-
-                    if (!$id_partida) {
-                        continue; // Si no hay una partida válida, saltamos
-                    }
-
-                    // Obtener información de la partida presupuestaria
-                    $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
-                    $stmtPartida = $conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $id_partida);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
-
-                    $partida['partida'] = $partidaCod;
-                    $partida['nombre'] = $nombre;
-                    $partida['descripcion'] = $descripcion;
-                }
-
-                // Agregar las partidas procesadas
-                $row['partidas'] = $partidasArray;
-                $rows[] = $row;
+            if ($row['numero_compromiso'] == 0) {
+                $row['numero_compromiso'] = null;
             }
+
+            // Procesar las partidas asociadas
+            $partidasArray = json_decode($row['partidas'], true) ?? [];
+
+            // Verificar si json_decode devolvió un array válido
+            if (!is_array($partidasArray)) {
+                $partidasArray = []; // Si no es válido, asignamos un array vacío
+            }
+
+            foreach ($partidasArray as &$partida) {
+                if (!isset($partida['id'])) {
+                    continue; // Saltar si la partida no tiene un ID válido
+                }
+
+                $idDistribucion = $partida['id'];
+
+                // Obtener el id_partida desde distribucion_presupuestaria
+                $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $idDistribucion);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($id_partida);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                if (!$id_partida) {
+                    continue; // Si no hay una partida válida, saltamos
+                }
+
+                // Obtener información de la partida presupuestaria
+                $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $id_partida);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                $partida['partida'] = $partidaCod;
+                $partida['nombre'] = $nombre;
+                $partida['descripcion'] = $descripcion;
+            }
+
+            // Agregar las partidas procesadas
+            $row['partidas'] = $partidasArray;
 
             // Consultar la información del ente asociado (solo una vez)
             $sqlEnte = "SELECT * FROM entes WHERE id = ?";
@@ -312,7 +309,10 @@ function consultarSolicitudPorMes($data)
             $dataEnte = $resultEnte->fetch_assoc();
             $stmtEnte->close();
 
-            return json_encode(["success" => ["solicitudes" => $rows, "ente" => $dataEnte]]);
+            // Agregar la información del ente como un ítem más
+            $row['ente'] = $dataEnte ?? null; // Si no se encuentra, se asigna como null
+
+            return json_encode(["success" => $row]);
         } else {
             return json_encode(["success" => null]);
         }
