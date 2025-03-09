@@ -224,78 +224,100 @@ function consultarSolicitudPorId($data)
 function consultarSolicitudPorMes($data)
 {
     global $conexion;
+
     if (!isset($data['id_ejercicio'])) {
-        return ["error" => "No se ha especificado el ID del ejercicio para la consulta."];
+        return json_encode(["error" => "No se ha especificado el ID del ejercicio para la consulta."]);
     }
 
     $idEjercicio = $data['id_ejercicio'];
-    $idEnte = $data["id_ente"] ?? null;
+    $idEnte = $_SESSION["id_ente"] ?? null;
 
     if (!$idEnte) {
-        return ["error" => "El ID del ente no está definido en la sesión."];
+        return json_encode(["error" => "El ID del ente no está definido en la sesión."]);
     }
 
-    $mesActual = date("n") - 1;
+    $mesActual = date("n") - 1; // Obtener el mes anterior
 
     try {
         // Consultar las solicitudes principales
         $sql = "SELECT id, numero_orden, numero_compromiso, descripcion, monto, fecha, partidas, id_ente, tipo, mes, status, id_ejercicio 
-                    FROM solicitud_dozavos 
-                    WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
+                FROM solicitud_dozavos 
+                WHERE id_ente = ? AND id_ejercicio = ? AND mes = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("iii", $idEnte, $idEjercicio, $mesActual);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $rows = [];
+            $row = $result->fetch_assoc();
 
-            while ($row = $result->fetch_assoc()) {
-                if ($row['numero_compromiso'] == 0) {
-                    $row['numero_compromiso'] = null;
-                }
-                // Procesar las partidas asociadas
-                $partidasArray = json_decode($row['partidas'], true);
-
-                foreach ($partidasArray as &$partida) {
-                    $idDistribucion = $partida['id'];
-
-                    // Obtener el id_partida desde distribucion_presupuestaria
-                    $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
-                    $stmtPartida = $conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $idDistribucion);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($id_partida2);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
-
-                    $id_partida = $id_partida2;
-
-                    // Obtener información de la partida presupuestaria
-                    $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
-                    $stmtPartida = $conexion->prepare($sqlPartida);
-                    $stmtPartida->bind_param("i", $id_partida);
-                    $stmtPartida->execute();
-                    $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
-                    $stmtPartida->fetch();
-                    $stmtPartida->close();
-
-                    $partida['partida'] = $partidaCod;
-                    $partida['nombre'] = $nombre;
-                    $partida['descripcion'] = $descripcion;
-                }
-
-                // Agregar las partidas procesadas
-                $row['partidas'] = $partidasArray;
-                $rows[] = $row;
+            if ($row['numero_compromiso'] == 0) {
+                $row['numero_compromiso'] = null;
             }
 
-            return ["success" => $rows];
+            // Procesar las partidas asociadas
+            $partidasArray = json_decode($row['partidas'], true) ?? [];
+
+            // Verificar si json_decode devolvió un array válido
+            if (!is_array($partidasArray)) {
+                $partidasArray = []; // Si no es válido, asignamos un array vacío
+            }
+
+            foreach ($partidasArray as &$partida) {
+                if (!isset($partida['id'])) {
+                    continue; // Saltar si la partida no tiene un ID válido
+                }
+
+                $idDistribucion = $partida['id'];
+
+                // Obtener el id_partida desde distribucion_presupuestaria
+                $sqlPartida = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $idDistribucion);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($id_partida);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                if (!$id_partida) {
+                    continue; // Si no hay una partida válida, saltamos
+                }
+
+                // Obtener información de la partida presupuestaria
+                $sqlPartida = "SELECT partida, nombre, descripcion FROM partidas_presupuestarias WHERE id = ?";
+                $stmtPartida = $conexion->prepare($sqlPartida);
+                $stmtPartida->bind_param("i", $id_partida);
+                $stmtPartida->execute();
+                $stmtPartida->bind_result($partidaCod, $nombre, $descripcion);
+                $stmtPartida->fetch();
+                $stmtPartida->close();
+
+                $partida['partida'] = $partidaCod;
+                $partida['nombre'] = $nombre;
+                $partida['descripcion'] = $descripcion;
+            }
+
+            // Agregar las partidas procesadas
+            $row['partidas'] = $partidasArray;
+
+            // Consultar la información del ente asociado (solo una vez)
+            $sqlEnte = "SELECT * FROM entes WHERE id = ?";
+            $stmtEnte = $conexion->prepare($sqlEnte);
+            $stmtEnte->bind_param("i", $idEnte);
+            $stmtEnte->execute();
+            $resultEnte = $stmtEnte->get_result();
+            $dataEnte = $resultEnte->fetch_assoc();
+            $stmtEnte->close();
+
+            // Agregar la información del ente como un ítem más
+            $row['ente'] = $dataEnte ?? null; // Si no se encuentra, se asigna como null
+
+            return json_encode(["success" => $row]);
         } else {
-            return ["success" => null];
+            return json_encode(["success" => null]);
         }
     } catch (Exception $e) {
-        return ["error" => "Error: " . $e->getMessage()];
+        return json_encode(["error" => "Error: " . $e->getMessage()]);
     }
 }
 
