@@ -4,249 +4,273 @@ import {
   mapData,
   showLoader,
   toastNotification,
-} from '../helpers/helpers.js'
-import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
-import { config, APP_URL } from './urlConfig.js'
+} from "../helpers/helpers.js";
+import { NOTIFICATIONS_TYPES } from "../helpers/types.js";
+import { config, APP_URL } from "./urlConfig.js";
 
-const entesDistribucionUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_asignacion_entes.php`
-const entesSolicitudesDozavosUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_solicitud_dozavos.php`
+const entesDistribucionUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_asignacion_entes.php`;
+const entesSolicitudesDozavosUrl = `${APP_URL}${config.MODULE_NAMES.ENTES}ent_solicitud_dozavos.php`;
 
 const getEntesAsignaciones = async (id_ejercicio) => {
-  showLoader()
+  showLoader();
   try {
-    let res = await fetch(entesDistribucionUrl, {
-      method: 'POST',
-      body: JSON.stringify({ accion: 'consultar', id_ejercicio }),
-    })
+    const res = await fetch(entesDistribucionUrl, {
+      method: "POST",
+      body: JSON.stringify({ accion: "consultar", id_ejercicio }),
+    });
 
-    const clone = res.clone()
+    const clone = res.clone();
+    const text = await clone.text();
 
-    let text = await clone.text()
-    console.log(text)
+    if (!res.ok) {
+      console.error("Respuesta del servidor (no ok):", text);
+      throw { status: res.status, statusText: res.statusText };
+    }
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    let json;
+    try {
+      json = await res.json();
+    } catch (jsonError) {
+      console.error("Error al parsear JSON:", jsonError);
+      console.error("Respuesta cruda:", text);
+      throw jsonError;
+    }
 
-    const json = await res.json()
-
-    // console.log(json)
     if (json.success) {
-      return json.success
+      return json.success;
     }
 
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
-      return json
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
+      return json;
     }
   } catch (e) {
-    console.log(e)
-
+    console.error("Error general:", e);
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener distribucion de entes',
-    })
+      message: "Error al obtener distribucion de entes",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 const getEntesAsignacion = async (id_ejercicio) => {
-  showLoader()
+  showLoader();
   try {
     let res = await fetch(entesDistribucionUrl, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
-        accion: 'consultar_por_id',
+        accion: "consultar_por_id",
         id_ejercicio,
       }),
-    })
+    });
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
     // const clone = res.clone()
 
     // let text = await clone.text()
     // console.log(text)
 
-    const json = await res.json()
+    const json = await res.json();
 
-    console.log(json)
+    console.log(json);
     if (json.success) {
-      return json.success
+      return json.success;
     }
 
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
-      return json
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
+      return json;
     }
   } catch (e) {
-    console.log(e)
+    console.log(e);
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener distribucion de ente',
-    })
+      message: "Error al obtener distribucion de ente",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 const getEnteSolicitudesDozavos = async ({ id_ejercicio }) => {
-  showLoader()
+  showLoader();
   try {
     let res = await fetch(entesSolicitudesDozavosUrl, {
-      method: 'POST',
-      body: JSON.stringify({ accion: 'consulta', id_ejercicio }),
-    })
+      method: "POST",
+      body: JSON.stringify({ accion: "consulta", id_ejercicio }),
+    });
 
     // console.log(res)
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
     // const clone = res.clone()
     // const text = await clone.text()
 
     // console.log(text)
 
-    const json = await res.json()
+    const json = await res.json();
 
     // console.log(json)
 
     if (json.success) {
-      return json.success
+      return json.success;
     }
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
     }
-    return json
+    return json;
   } catch (e) {
-    console.log(e)
+    console.log(e);
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener solicitudes',
-    })
+      message: "Error al obtener solicitudes",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 const getEnteSolicitudDozavos = async ({ id_ejercicio, id }) => {
-  showLoader()
+  showLoader();
   try {
     let res = await fetch(entesSolicitudesDozavosUrl, {
-      method: 'POST',
-      body: JSON.stringify({ accion: 'consulta_id', id_ejercicio, id }),
-    })
+      method: "POST",
+      body: JSON.stringify({ accion: "consulta_id", id_ejercicio, id }),
+    });
 
     // console.log(res)
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
     // const clone = res.clone()
     // const text = await clone.text()
 
     // console.log(text)
 
-    const json = await res.json()
+    const json = await res.json();
 
     // console.log(json)
 
     if (json.success) {
-      return json.success
+      return json.success;
     }
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
     }
-    return json
+    return json;
   } catch (e) {
-    console.log(e)
+    console.log(e);
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener solicitudes',
-    })
+      message: "Error al obtener solicitudes",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 const getEnteSolicitudDozavosMes = async ({ id_ejercicio }) => {
-  showLoader()
+  showLoader();
   try {
     let res = await fetch(entesSolicitudesDozavosUrl, {
-      method: 'POST',
-      body: JSON.stringify({ accion: 'consulta_mes', id_ejercicio }),
-    })
+      method: "POST",
+      body: JSON.stringify({ accion: "consulta_mes", id_ejercicio }),
+    });
 
     // console.log(res)
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
     // const clone = res.clone()
     // const text = await clone.text()
 
     // console.log(text)
 
-    const json = await res.json()
+    const json = await res.json();
 
-    console.log(json)
+    console.log(json);
 
-    if (json.hasOwnProperty('success')) {
-      return json.success
+    if (json.hasOwnProperty("success")) {
+      return json.success;
     }
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
     }
-    return json
+    return json;
   } catch (e) {
-    console.log(e)
+    console.log(e);
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener solicitudes',
-    })
+      message: "Error al obtener solicitudes",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 const registrarEnteSolicitudDozavo = async (data) => {
-  showLoader()
+  showLoader();
   try {
     let res = await fetch(entesSolicitudesDozavosUrl, {
-      method: 'POST',
-      body: JSON.stringify({ accion: 'registrar', ...data }),
-    })
+      method: "POST",
+      body: JSON.stringify({ accion: "registrar", ...data }),
+    });
 
-    if (!res.ok) throw { status: res.status, statusText: res.statusText }
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
-    const clone = res.clone()
-    const text = await clone.text()
+    const clone = res.clone();
+    const text = await clone.text();
 
-    console.log(text)
-    const json = await res.json()
+    console.log(text);
+    const json = await res.json();
 
     if (json.success) {
       toastNotification({
         type: NOTIFICATIONS_TYPES.done,
         message: json.success,
-      })
+      });
     }
     if (json.error) {
-      toastNotification({ type: NOTIFICATIONS_TYPES.fail, message: json.error })
+      toastNotification({
+        type: NOTIFICATIONS_TYPES.fail,
+        message: json.error,
+      });
     }
-    return json
+    return json;
   } catch (e) {
-    console.log(e)
+    console.log(e);
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener solicitudes',
-    })
+      message: "Error al obtener solicitudes",
+    });
   } finally {
-    hideLoader()
+    hideLoader();
   }
-}
+};
 
 export {
   getEntesAsignaciones,
@@ -255,4 +279,4 @@ export {
   getEnteSolicitudDozavos,
   getEnteSolicitudDozavosMes,
   registrarEnteSolicitudDozavo,
-}
+};
