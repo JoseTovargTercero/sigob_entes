@@ -13,7 +13,7 @@ define('CHARSET', 'utf8mb4');
     define('HOST', 'sigob.net');
     define('DB', 'sigobnet_sigob_entes');
     define('CHARSET', 'utf8mb4');
-    define('URL', 'https://sigob.net/');
+    define('URL', 'https://sigob.net/sigob_net/');
     define('PASSWORD', "]n^VmqjqCD1k");
     define('USER', 'sigobnet_userroot');
 } else {
