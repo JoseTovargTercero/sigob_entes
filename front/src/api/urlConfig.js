@@ -13,7 +13,7 @@ const isLocalhost = () => {
 
 const config = {
   BASE_URL: validateUrl(),
-  APP_NAME: isLocalhost() ? 'sigob_entes/' : '',
+  APP_NAME: isLocalhost() ? 'sigob_entes/' : 'sigob_entes/',
   DIR: 'back/',
   MODULE_NAMES: {
     ENTES: 'modulo_entes/',
