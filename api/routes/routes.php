@@ -288,7 +288,7 @@ function validateRoutes($path, $method)
         }
     }
 
-    return ['status' => 200, 'error' => 'Ruta no encontrada'];
+    return ['status' => 200, 'error' => "Ruta no encontrada $path[0]"];
 }
 
 
