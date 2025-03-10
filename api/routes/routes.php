@@ -6,13 +6,13 @@ $path = array_filter($path);
 $method = $_SERVER['REQUEST_METHOD'];
 function validateRoutes($path, $method)
 {
-    if (count($path) < 2) {
+    if (count($path) < 3) {
         return ['status' => 404, 'error' => 'No encontrado'];
     }
 
     $json = ['status' => 200, 'success' => ''];
 
-    $path = explode('?', $path[2]);
+    $path = explode('?', $path[3]);
 
     if (
         $path[0] === 'solicitudes'
@@ -288,7 +288,7 @@ function validateRoutes($path, $method)
         }
     }
 
-    return ['status' => 200, 'error' => "Ruta no encontrada $path[0]"];
+    return ['status' => 200, 'error' => "Ruta no encontrada $path[0], $path[1], $path[2], $path[3]"];
 }
 
 
