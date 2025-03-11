@@ -6,6 +6,7 @@ import {
 } from '../api/entes_solicitudesDozavos.js'
 import { ente_solicitud_dozavo } from '../components/ente_solicitud_dozavo.js'
 import { entes_solicitudDozavo_card } from '../components/entes_solicitudDozavo_card.js'
+import { entes_solicitudGenerar_card2 } from '../components/entes_solicitudDozavoForm_card copy.js'
 import { entes_solicitudGenerar_card } from '../components/entes_solicitudDozavoForm_card.js'
 import {
   ejerciciosLista,
