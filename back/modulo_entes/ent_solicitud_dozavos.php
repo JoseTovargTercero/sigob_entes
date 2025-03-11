@@ -365,15 +365,25 @@ function registrarSolicitudozavo($data)
         // Calcular el mes siguiente correctamente
         $mesSiguiente = ($mesActual + 1) % 12;
 
-        // Condiciones para permitir el registro
-        if ($mesSolicitado == $mesActual && !$existeMesActual) {
+         // Condiciones para permitir el registro
+        //if ($mesSolicitado == $mesActual && !$existeMesActual) {
             // Permitido registrar para el mes en curso si aún no existe
-        } elseif ($mesSolicitado == $mesSiguiente && $existeMesActual) {
+        //} elseif ($mesSolicitado == $mesSiguiente && $existeMesActual) {
             // Permitido registrar para el siguiente mes si el mes actual ya existe
+        //} else {
+          //  $conexion->rollback();
+           // return json_encode(["error" => "No se puede registrar la solicitud. Condiciones no cumplidas."]);
+        //}
+
+
+           // Condiciones para permitir el registro
+        if (!$existeMesActual) {
+     
         } else {
-            $conexion->rollback();
+           $conexion->rollback();
             return json_encode(["error" => "No se puede registrar la solicitud. Condiciones no cumplidas."]);
         }
+
 
         // Generar el numero_orden automáticamente
         $numero_orden = generarNumeroOrden();
