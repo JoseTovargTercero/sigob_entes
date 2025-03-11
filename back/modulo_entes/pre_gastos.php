@@ -10,7 +10,7 @@ header('Content-Type: application/json');
 
 require_once '../sistema_global/errores.php';
 
-// Función para crear un nuevo gasto
+
 function crearGasto($id_tipo, $descripcion, $monto, $id_ejercicio, $beneficiario, $identificador, $distribuciones, $fecha)
 {
     global $conexion;
@@ -21,36 +21,34 @@ function crearGasto($id_tipo, $descripcion, $monto, $id_ejercicio, $beneficiario
             throw new Exception("Faltaron uno o más valores (id_tipo, descripción, monto, id_ejercicio, beneficiario, identificador, distribuciones, fecha)");
         }
 
-        // Decodificar el JSON de distribuciones
+        // Decodificar el JSON de distribuciones si es necesario
         $distribucionesArray = $distribuciones;
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (!is_array($distribucionesArray)) {
             throw new Exception("El formato de distribuciones no es válido");
         }
 
-        // Verificar cada distribución presupuestaria y si el presupuesto es suficiente
-        foreach ($distribucionesArray as $distribucion) {
-            $id_distribucion = $distribucion['id_distribucion'];
-            $monto_distribucion = $distribucion['monto'];
+        // Calcular la sumatoria de los montos en distribuciones
+        $sumaDistribuciones = array_sum(array_column($distribucionesArray, 'monto'));
+        
+        if ($sumaDistribuciones > $monto) {
+            throw new Exception("La sumatoria de las partidas ({$sumaDistribuciones}) no puede ser superior al monto total ({$monto})");
+        }
+        if ($sumaDistribuciones < $monto) {
+            throw new Exception("La sumatoria de las partidas ({$sumaDistribuciones}) no puede ser menor al monto total ({$monto})");
+        }
 
-            // Paso 1: Buscar id_partida en la tabla distribucion_presupuestaria usando id_distribucion
-            $sqlDistribucionPresupuestaria = "SELECT id_partida FROM distribucion_presupuestaria WHERE id = ?";
-            $stmtDistribucionPresupuestaria = $conexion->prepare($sqlDistribucionPresupuestaria);
-            $stmtDistribucionPresupuestaria->bind_param("i", $id_distribucion);
-            $stmtDistribucionPresupuestaria->execute();
-            $resultadoDistribucionPresupuestaria = $stmtDistribucionPresupuestaria->get_result();
+        require_once '../sistema_global/sigob_api.php';
+        $disponible = consultarDisponibilidadApi($distribuciones, $id_ejercicio);
 
-            if ($resultadoDistribucionPresupuestaria->num_rows === 0) {
-                throw new Exception("No existe una distribución presupuestaria con el ID proporcionado: $id_distribucion");
-            }
+        if (isset($disponible['error'])) {
+            throw new Exception($disponible['error']);
+        }
+        if (!isset($disponible['success'])) {
+            throw new Exception('Error al acceder a la respuesta');
+        }
 
-            $filaDistribucionPresupuestaria = $resultadoDistribucionPresupuestaria->fetch_assoc();
-            $id_partida = $filaDistribucionPresupuestaria['id_partida'];
-
-            // Verificar si el presupuesto es suficiente para cada distribución
-            $disponible = consultarDisponibilidad($id_partida, $id_ejercicio, $monto_distribucion);
-            if (!$disponible) {
-                throw new Exception("El presupuesto actual es insuficiente para el monto del gasto en la distribución con ID: $id_distribucion");
-            }
+        if (!$disponible) {
+            throw new Exception('No se pudo verificar la disponibilidad presupuestaria');
         }
 
         // Insertar el gasto si el presupuesto es suficiente para todas las distribuciones
@@ -61,11 +59,11 @@ function crearGasto($id_tipo, $descripcion, $monto, $id_ejercicio, $beneficiario
         $stmtInsertGasto->execute();
 
         if ($stmtInsertGasto->affected_rows > 0) {
-            return json_encode(["success" => "Gasto registrado correctamente"]);
+            $id_insertado = $stmtInsertGasto->insert_id; // Obtener el ID insertado
+            return json_encode(["success" => "Gasto registrado correctamente", "id" => $id_insertado]);
         } else {
             throw new Exception("No se pudo registrar el gasto");
         }
-
     } catch (Exception $e) {
         // Registrar el error en la tabla error_log
         registrarError($e->getMessage());
