@@ -444,7 +444,7 @@ class AsignacionController
                             $idDistribucion = $distribucionItem['id_distribucion'];
 
                             // Consulta para obtener detalles de la distribución presupuestaria
-                            $sqlDetalles = "SELECT dp.id_partida, dp.id AS id_distribucion_, dp.id_sector, dp.id_programa, dp.id_proyecto, pp.partida AS codigo_partida, pp.descripcion AS partida_descripcion, 
+                            $sqlDetalles = "SELECT dp.id_partida, dp.id AS id_distribucion_, dp.id_sector, dp.id_programa, dp.id_proyecto, pp.partida AS codigo_partida, pp.descripcion AS partida_descripcion, dp.id_actividad as id_actividad,  
                                                ps.sector AS sector_denominacion, pg.programa AS programa_denominacion, pr.proyecto_id AS proyecto_denominacion
                                         FROM distribucion_presupuestaria dp
                                         LEFT JOIN partidas_presupuestarias pp ON dp.id_partida = pp.id
@@ -465,6 +465,7 @@ class AsignacionController
                                     'partida' => $detalles['codigo_partida'],
                                     'partida_descripcion' => $detalles['partida_descripcion'],
                                     'sector_denominacion' => $detalles['sector_denominacion'],
+                                    'id_actividad' => $detalles['id_actividad'],
                                     'programa_denominacion' => $detalles['programa_denominacion'],
                                     'proyecto_denominacion' => $detalles['proyecto_denominacion'],
                                     'ente_nombre' => $ente['ente_nombre'],
