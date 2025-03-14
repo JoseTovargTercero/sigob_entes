@@ -25,8 +25,6 @@ const getTraspasos = async (id_ejercicio) => {
 
     // console.log(text)
 
-    // console.error(`Error: ${text}`)
-
     if (!res.ok) {
       throw { status: res.status, statusText: res.statusText }
     }
@@ -68,10 +66,10 @@ const getTraspaso = async (id) => {
 
     if (!res.ok) throw { status: res.status, statusText: res.statusText }
 
-    let clone = res.clone()
-    let text = await clone.text()
+    // let clone = res.clone()
+    // let text = await clone.text()
 
-    console.log(text)
+    // console.log(text)
 
     const json = await res.json()
     console.log(json)
@@ -226,7 +224,7 @@ const rechazarTraspaso = async (id) => {
 }
 
 const ultimosTraspasos = async (id_ejercicio) => {
-  console.log(id_ejercicio)
+  // console.log(id_ejercicio)
 
   showLoader()
   try {
@@ -262,7 +260,7 @@ const ultimosTraspasos = async (id_ejercicio) => {
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener traspasos',
+      message: 'Error al ultimos registros de traspasos',
     })
   } finally {
     hideLoader()

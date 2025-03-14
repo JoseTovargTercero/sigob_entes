@@ -18,11 +18,11 @@ const obtenerDistribucionSecretaria = async (id_ejercicio) => {
       body: JSON.stringify({ accion: 'consultar_secretarias', id_ejercicio }),
     })
 
-    const clone = res.clone()
-    const text = await clone.text()
+    // const clone = res.clone()
+    // const text = await clone.text()
 
+    // console.error('Respuesta del servidor (no ok):', text)
     if (!res.ok) {
-      console.error('Respuesta del servidor (no ok):', text)
       throw { status: res.status, statusText: res.statusText }
     }
 

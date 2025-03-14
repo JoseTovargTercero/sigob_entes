@@ -316,7 +316,7 @@ function consultarAsignacionesSecretaria($idEjercicio)
     global $conexion;
 
     // Obtener el id_ente de la sesión
-     if (!isset($_SESSION['id_ente'])) {
+    if (!isset($_SESSION['id_ente'])) {
         return json_encode(["error" => "El usuario no tiene un ente asignado en la sesión."]);
     }
     $idEnteSesion = $_SESSION['id_ente'];

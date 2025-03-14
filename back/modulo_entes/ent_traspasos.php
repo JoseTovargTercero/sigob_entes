@@ -227,7 +227,7 @@ function registrarTraspasoPartida($data)
 function consultarTodosTraspasos($id_ejercicio)
 {
     global $conexion;
-   
+
     $idEnte = $_SESSION["id_ente"];
 
     // Consultar los traspasos principales filtrando por id_ejercicio
@@ -326,8 +326,8 @@ function obtenerUltimosOrdenes($id_ejercicio)
         // Consultar el último n_orden para tipo 1 (traslado)
         $sqlTraslado = "SELECT n_orden 
                         FROM traspasos 
-                        WHERE id_ejercicio = ? AND tipo = 1 
-                        ORDER BY id DESC LIMIT 1 WHERE AND tid_ente = ?";
+                        WHERE id_ejercicio = ? AND tipo = 1 AND id_ente = ?
+                        ORDER BY id DESC LIMIT 1";
         $stmtTraslado = $conexion->prepare($sqlTraslado);
         $stmtTraslado->bind_param("ii", $id_ejercicio, $idEnte);
         $stmtTraslado->execute();
@@ -359,7 +359,7 @@ function obtenerUltimosOrdenes($id_ejercicio)
 function gestionarTraspaso($id, $accion)
 {
     global $conexion;
- 
+
     $idEnte = $_SESSION["id_ente"];
 
     $conexion->begin_transaction();

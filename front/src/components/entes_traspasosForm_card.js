@@ -39,6 +39,8 @@ export const entes_traspasosForm_card = async ({
     id_ejercicio: ejercicioFiscal.id,
   })
 
+  // console.log(distribucionesSecretarias)
+
   let ultimosRegistros = await ultimosTraspasos(ejercicioFiscal.id)
 
   let informacion = {
@@ -145,7 +147,9 @@ export const entes_traspasosForm_card = async ({
         partidaEncontrada.proyecto_denominacion
           ? partidaEncontrada.proyecto_denominacion
           : '00'
-      }.${partidaEncontrada.actividad ? partidaEncontrada.actividad : '00'}`
+      }.${
+        partidaEncontrada.id_actividad ? partidaEncontrada.id_actividad : '00'
+      }`
 
       let montoFinal = Number(partidaEncontrada.monto) + el.monto
 
@@ -833,7 +837,7 @@ export const entes_traspasosForm_card = async ({
         partida.programa_denominacion ? partida.programa_denominacion : '00'
       }.${
         partida.proyecto_denominacion ? partida.proyecto_denominacion : '00'
-      }.${partida.actividad ? partida.actividad : '00'}`
+      }.${partida.id_actividad ? partida.id_actividad : '00'}`
 
       let opt = `<option value="${partida.id_distribucion}">${sppa}.${
         partida.partida
