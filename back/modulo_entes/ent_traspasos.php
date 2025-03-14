@@ -1,7 +1,6 @@
 <?php
 
 require_once '../sistema_global/conexion.php';
-require_once '../sistema_global/conexion_remota.php';
 require_once '../sistema_global/session.php';
 require_once '../sistema_global/notificaciones.php';
 require_once 'pre_compromisos.php'; // Agregado
@@ -14,9 +13,6 @@ require_once '../sistema_global/errores.php';
 function registrarTraspasoPartida($data)
 {
     global $conexion;
-    global $remote_db;
-
-    $conexion = $remote_db;
 
     try {
         // Iniciar la transacción
@@ -231,9 +227,7 @@ function registrarTraspasoPartida($data)
 function consultarTodosTraspasos($id_ejercicio)
 {
     global $conexion;
-    global $remote_db;
-
-    $conexion = $remote_db;
+   
     $idEnte = $_SESSION["id_ente"];
 
     // Consultar los traspasos principales filtrando por id_ejercicio
@@ -323,10 +317,10 @@ function consultarTodosTraspasos($id_ejercicio)
 function obtenerUltimosOrdenes($id_ejercicio)
 {
     global $conexion;
-    global $remote_db;
+
     $idEnte = $_SESSION["id_ente"];
 
-    $conexion = $remote_db;
+
 
     try {
         // Consultar el último n_orden para tipo 1 (traslado)
@@ -365,9 +359,7 @@ function obtenerUltimosOrdenes($id_ejercicio)
 function gestionarTraspaso($id, $accion)
 {
     global $conexion;
-    global $remote_db;
-
-    $conexion = $remote_db;
+ 
     $idEnte = $_SESSION["id_ente"];
 
     $conexion->begin_transaction();
@@ -506,9 +498,7 @@ function gestionarTraspaso($id, $accion)
 function consultarTraspasoPorId($id)
 {
     global $conexion;
-    global $remote_db;
 
-    $conexion = $remote_db;
     $idEnte = $_SESSION["id_ente"];
 
     // Consultar el traspaso principal por su ID
@@ -610,9 +600,9 @@ function consultarTraspasoPorId($id)
 function actualizarTraspasoPartida($id_traspaso, $id_partida_t, $id_partida_r, $id_ejercicio, $monto)
 {
     global $conexion;
-    global $remote_db;
+
     $idEnte = $_SESSION["id_ente"];
-    $conexion = $remote_db;
+
 
     try {
         // Iniciar la transacción
@@ -696,10 +686,10 @@ function actualizarTraspasoPartida($id_traspaso, $id_partida_t, $id_partida_r, $
 function eliminarTraspaso($id_traspaso)
 {
     global $conexion;
-    global $remote_db;
+
     $idEnte = $_SESSION["id_ente"];
 
-    $conexion = $remote_db;
+
 
     try {
         // Iniciar la transacción
