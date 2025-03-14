@@ -315,12 +315,19 @@ function consultarAsignacionesSecretaria($idEjercicio)
 {
     global $conexion;
 
+    // Obtener el id_ente de la sesión
+     if (!isset($_SESSION['id_ente'])) {
+        return json_encode(["error" => "El usuario no tiene un ente asignado en la sesión."]);
+    }
+    $idEnteSesion = $_SESSION['id_ente'];
+
     try {
-        // Consulta principal para obtener los entes_dependencias que cumplen con las condiciones
+        // Consulta principal con el nuevo filtro por ue
         $sql = "SELECT ed.id AS id_ente, ed.partida, ed.ente_nombre, ed.tipo_ente, ed.sector, ed.programa, ed.proyecto, ed.actividad
                 FROM entes_dependencias ed
-                WHERE ed.tipo_ente = 'J' AND ed.juridico = 0";
+                WHERE ed.tipo_ente = 'J' AND ed.juridico = 0 AND ed.ue = ?";
         $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $idEnteSesion);
         $stmt->execute();
         $result = $stmt->get_result();
 
