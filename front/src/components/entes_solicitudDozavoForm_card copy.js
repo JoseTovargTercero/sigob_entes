@@ -82,23 +82,32 @@ export const entes_solicitudGenerar_card2 = async ({
   let dozavoMontos = []
 
   const listaDependencias = () => {
-    let dozavoMontoTotal = 0
+    // let dozavoMontoTotal = 0
     let montosActividadDistribuido = {}
     let montosActividadDozavo = {}
     actividadesEnte.forEach((distribucion) => {
       montosActividadDozavo[distribucion.actividad] = 0
       montosActividadDistribuido[distribucion.actividad] = 0
       distribucion.distribucion_partidas.forEach((partida) => {
-        let doceavaParte = Number(partida.monto) / 12
+        // let doceavaParte = Number(partida.monto) / 12
 
-        dozavoMontoTotal += doceavaParte
-        montosActividadDozavo[distribucion.actividad] += doceavaParte
+        // dozavoMontoTotal += doceavaParte
+        // montosActividadDozavo[distribucion.actividad] += doceavaParte
         montosActividadDistribuido[distribucion.actividad] += partida.monto
       })
     })
 
     // Guardar total de dozavo
-    fieldList.dozavoMontoTotal = dozavoMontoTotal
+    // fieldList.dozavoMontoTotal = dozavoMontoTotal
+    //   <p class="mb-0">
+    //   <b>Dozavo:</b>
+    //   <span class='px-2 rounded text-secondary'>
+    //     ${separadorLocal(
+    //       montosActividadDozavo[dependencia.actividad]
+    //     )}
+    //     Bs
+    //   </span>
+    // </p>
 
     let dependenciasElement =
       dependencias.length > 0
@@ -129,15 +138,7 @@ export const entes_solicitudGenerar_card2 = async ({
                       Bs
                     </span>
                   </p>
-                  <p class="mb-0">
-                    <b>Dozavo:</b>
-                    <span class='px-2 rounded text-secondary'>
-                      ${separadorLocal(
-                        montosActividadDozavo[dependencia.actividad]
-                      )}
-                      Bs
-                    </span>
-                  </p>
+                
                 </li>`
             })
             .join('')
@@ -182,7 +183,7 @@ export const entes_solicitudGenerar_card2 = async ({
 
     let card1 = ` <div class='card-body slide-up-animation' id='card-body-part-1'>
         <h4 class='mb-3'>Seleccione las partidas a crear el dozavo</h4>
-        <table class='table table-striped table-sm'>
+        <table class='table table-striped table-sm' id="distribucion-ente-table">
           <thead class=''>
             
               <th>Seleccionar</th>
@@ -234,8 +235,8 @@ export const entes_solicitudGenerar_card2 = async ({
     })
 
     let card2 = ` <div class='card-body slide-up-animation' id='card-body-part-2'>
-        <h4 class='mb-3'>Seleccione las partidas a crear el dozavo</h4>
-        <table class='table table-striped'>
+        <h4 class='mb-3'>Asigne el monto a las partidas seleccionadas</h4>
+        <table class='table table-striped' id="distribucion-ente-table2">
           <thead class=''>
             
 
@@ -255,7 +256,11 @@ export const entes_solicitudGenerar_card2 = async ({
   let cardBodyPartView3 = () => {
     let fila = []
 
-    distribucionesSeleccionadas.forEach((partida) => {
+    dozavoMontos.forEach((dozavo) => {
+      let partida = distribucionesSeleccionadas.find(
+        (p) => Number(p.id_distribucion) === Number(dozavo.id)
+      )
+
       let codigo = `${
         partida.sector_informacion ? partida.sector_informacion.sector : '0'
       }.${
@@ -269,62 +274,29 @@ export const entes_solicitudGenerar_card2 = async ({
         '00'
       }.${partida.actividad == 0 ? '00' : partida.actividad}`
 
+      let montoFinal = partida.monto - dozavo.monto
+
       fila.push(
         `   <tr>
           <td>${codigo}.${partida.partida_informacion.partida}</td>
-          <td>MONTO SOLICITADO Bs</td>
+          <td>${separadorLocal(partida.monto)} Bs</td>
+          <td>${separadorLocal(dozavo.monto)} Bs</td>
+          <td>${separadorLocal(montoFinal)} Bs</td>
         </tr>`
       )
     })
 
     let card3 = ` <div class='card-body slide-up-animation' id='card-body-part-3'>
-        <h4 class='mb-3'>Seleccione las partidas a crear el dozavo</h4>
-        <table class='table table-sm table-striped'>
-          <thead class=''>
-            
 
-              <th>S/P/P/A - Partida</th>
-              <th>DOZAVO A SOLICITAR</th>
-            
-          </thead>
-          <tbody>${fila.join('')}</tbody>
-        </table>
-      </div>`
-
-    return card3
-  }
-
-  let cardOld = `<div class='card slide-up-animation' id='solicitud-distribucion-form-card'>
-      <div class='card-header d-flex justify-content-between'>
-        <div class=''>
-          <h5 class='mb-0'>Generar solicitud de dozavo</h5>
-          <small class='mt-0 text-muted'>
-            Valide la información para generar la solicitud del dozavo
-          </small>
-        </div>
-        <button
-          data-close='btn-close'
-          type='button'
-          class='btn btn-danger'
-          aria-label='Close'
-        >
-          &times;
-        </button>
-      </div>
-      <div class='card-body'>
-        <div class='row'>
-          <div class='text-center col-sm-6'>
-            <h5>Actividades:</h5>${listaDependencias()}
-          </div>
-          <div class='col-sm-6'>
-            <form id='solicitud-distribucion-form'>
-              <h5>
+    <form id='solicitud-distribucion-form'>
+              
+              <h4>Información para generar solicitud</h4>
+              <h5 mt-3>
                 Monto total de dozavo:
                 <span class='px-2 rounded text-green-600 bg-green-100'>
                   ${separadorLocal(fieldList.dozavoMontoTotal)} Bs
                 </span>
               </h5>
-              <h4>Información para generar solicitud</h4>
               <div class='form-group'>
                 <label for='mes' class='form-label'>
                   Mes de solicitud (mes actual por defecto)
@@ -351,32 +323,24 @@ export const entes_solicitudGenerar_card2 = async ({
                 ></textarea>
               </div>
             </form>
-          </div>
-        </div>
-        <div>
-          <table
-            id='distribucion-ente-table'
-            class='table table-striped table-sm'
-          >
-            <thead>
-              <th>S/P/P/A</th>
-              <th>PARTIDA</th>
-              <th>MONTO</th>
-              <th>DOZAVO</th>
-            </thead>
+    
+        <h4 class='mb-3'>Verifique el monto solicitado de las partidas</h4>
+        <table class='table table-sm table-striped' distribucion-ente-table3>
+          <thead class=''>
             
-          </table>
-        </div>
-      </div>
-      <div class='card-footer d-flex align-items-center justify-content-center gap-2 py-2'>
-        <button class='btn btn-primary' id='solicitud-generar'>
-          Generar solicitud
-        </button>
-        <button class='btn btn-danger' id='solicitud-cancelar'>
-          Cancelar
-        </button>
-      </div>
-    </div>`
+
+              <th>S/P/P/A - Partida</th>
+              <th>DISPONIBLE</th>
+              <th>SOLICITADO</th>
+              <th>RESTANTE</th>
+            
+          </thead>
+          <tbody>${fila.join('')}</tbody>
+        </table>
+      </div>`
+
+    return card3
+  }
 
   let card = `    <div class='card slide-up-animation' id='solicitud-distribucion-form-card'>
       <div class='card-header d-flex justify-content-between'>
@@ -395,16 +359,24 @@ export const entes_solicitudGenerar_card2 = async ({
           &times;
         </button>
       </div>
-      <div id="card-body"> 
-      ${cardBodyPartView1()}
+      <div class="card-body row" class="row">
+     <div class='text-center my-auto col-sm-4'>
+            <h5>Actividades:</h5>${listaDependencias()}
+          </div>
+
+          <div class='col-sm'>
+          <h5 class="text-center">Información para generar solicitud:</h5>
+            <div id="card-body""> 
+              ${cardBodyPartView1()}
+            </div>
+          </div>
+              
+
+     
       </div>
+      
       <div class='card-footer d-flex align-items-center justify-content-center gap-2 py-2'>
-        <button class='btn btn-primary' id='solicitud-generar'>
-          Generar solicitud
-        </button>
-        <button class='btn btn-danger' id='solicitud-cancelar'>
-          Cancelar
-        </button>
+       
           <button class='btn btn-secondary' id='btn-previus'>
           Atrás
         </button>
@@ -443,33 +415,6 @@ export const entes_solicitudGenerar_card2 = async ({
     }
 
     if (e.target.id === 'solicitud-generar') {
-      let inputs = d.querySelectorAll('.solicitud-input')
-
-      inputs.forEach((input) => {
-        fieldList = validateInput({
-          target: input,
-          fieldList,
-          fieldListErrors,
-          type: fieldListErrors[input.name].type,
-        })
-      })
-
-      if (Object.values(fieldListErrors).some((el) => el.value)) {
-        toastNotification({
-          type: NOTIFICATIONS_TYPES.fail,
-          message: 'Hay campos inválidos',
-        })
-        return
-      }
-
-      if (Object.values(fieldList).some((el) => !el)) {
-        toastNotification({
-          type: NOTIFICATIONS_TYPES.fail,
-          message: 'No se ha completado la información necesaria',
-        })
-        return
-      }
-
       let dozavoMontoTotal = 0
 
       let partidasDozavos = []
@@ -496,19 +441,6 @@ export const entes_solicitudGenerar_card2 = async ({
       //     }
       //   }
       // )
-
-      let dozavoInformacion = {
-        id_ente: asignacionEnte.id_ente,
-        descripcion: fieldList.descripcion,
-        monto: fieldList.dozavoMontoTotal,
-        partidas: partidasDozavos,
-        id_ejercicio: ejercicioId,
-        tipo: 'D',
-        mes: fieldList.mes,
-      }
-
-      console.log(dozavoInformacion)
-      enviarInformacion(dozavoInformacion)
     }
 
     validateFormFocus(e)
@@ -607,6 +539,8 @@ export const entes_solicitudGenerar_card2 = async ({
           cardBody.insertAdjacentHTML('beforeend', cardBodyPartView2())
         }
 
+        validarEntesTabla2()
+
         let dozavoMontosInputs = d.querySelectorAll('.dozavo-monto')
         // console.log(dozavoMontosInputs)
 
@@ -664,11 +598,21 @@ export const entes_solicitudGenerar_card2 = async ({
             type: fieldListErrorsDozavos[input.name].type,
           })
 
+          let monto = formatearFloat(input.value)
+
+          sumaTotal += monto
+
           return {
-            id_distribucion: input.dataset.distribucionid,
-            monto: formatearFloat(input.value),
+            id: input.dataset.distribucionid,
+            monto,
           }
         })
+
+        fieldList.dozavoMontoTotal = sumaTotal
+
+        console.log(dozavoMontos)
+
+        // VALIDAR ERRORES EN LOS INPUTS
 
         if (
           Object.values(fieldListErrorsDozavos).some((input) => input.value)
@@ -696,34 +640,66 @@ export const entes_solicitudGenerar_card2 = async ({
             type: NOTIFICATIONS_TYPES.fail,
             message: 'Hay distribuciones que superan el monto disponible',
           })
+          return
         }
-
-        console.log(sumaTotal)
 
         cardBodyPart2.classList.add('d-none')
 
         if (cardBodyPart3) {
-          cardBodyPart3.classList.remove('d-none')
+          cardBodyPart3.outerHTML = cardBodyPartView3()
         } else {
           cardBody.insertAdjacentHTML('beforeend', cardBodyPartView3())
         }
+
+        validarEntesTabla3()
+
+        btnNext.textContent = 'Enviar solicitud'
 
         formFocus++
         return
       }
 
       if (formFocus === 3) {
-        if (id) {
-          btnNext.textContent = 'Actualizar'
-        } else {
-          btnNext.textContent = 'Enviar'
-        }
-
         // let data = validarInformacion()
 
-        console.log()
+        let inputs = d.querySelectorAll('.solicitud-input')
 
-        enviarInformacion()
+        inputs.forEach((input) => {
+          fieldList = validateInput({
+            target: input,
+            fieldList,
+            fieldListErrors,
+            type: fieldListErrors[input.name].type,
+          })
+        })
+
+        if (Object.values(fieldListErrors).some((el) => el.value)) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'Hay campos inválidos',
+          })
+          return
+        }
+
+        if (Object.values(fieldList).some((el) => !el)) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'No se ha completado la información necesaria',
+          })
+          return
+        }
+
+        let dozavoInformacion = {
+          id_ente: asignacionEnte.id_ente,
+          descripcion: fieldList.descripcion,
+          monto: fieldList.dozavoMontoTotal,
+          partidas: dozavoMontos,
+          id_ejercicio: ejercicioId,
+          tipo: 'D',
+          mes: fieldList.mes,
+        }
+
+        enviarInformacion(dozavoInformacion)
       }
     }
 
@@ -797,14 +773,13 @@ export const entes_solicitudGenerar_card2 = async ({
 
   function validarEntesTabla() {
     let entesTable = new DataTable('#distribucion-ente-table', {
-      scrollY: 200,
+      scrollY: 250,
 
       language: tableLanguage,
       layout: {
         topStart: function () {
           let toolbar = document.createElement('div')
           toolbar.innerHTML = `
-                  <h5 class="text-center mb-0">Detalles de la distribucion presupuestaria del ente:</h5>
                             `
           return toolbar
         },
@@ -814,4 +789,43 @@ export const entes_solicitudGenerar_card2 = async ({
       },
     })
   }
+}
+
+function validarEntesTabla2() {
+  let entesTable = new DataTable('#distribucion-ente-table2', {
+    scrollY: 250,
+
+    language: tableLanguage,
+    layout: {
+      topStart: function () {
+        let toolbar = document.createElement('div')
+        toolbar.innerHTML = `
+                          `
+        return toolbar
+      },
+      topEnd: { search: { placeholder: 'Buscar...' } },
+      bottomStart: 'info',
+      bottomEnd: 'paging',
+    },
+  })
+}
+
+function validarEntesTabla3() {
+  let entesTable = new DataTable('#distribucion-ente-table3', {
+    scrollY: 250,
+
+    language: tableLanguage,
+    layout: {
+      topStart: function () {
+        let toolbar = document.createElement('div')
+        toolbar.innerHTML = `
+                
+                          `
+        return toolbar
+      },
+      topEnd: { search: { placeholder: 'Buscar...' } },
+      bottomStart: 'info',
+      bottomEnd: 'paging',
+    },
+  })
 }
