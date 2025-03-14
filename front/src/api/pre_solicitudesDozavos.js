@@ -89,7 +89,7 @@ const registrarSolicitudDozavo = async (data) => {
 
     return confirmNotification({
       type: NOTIFICATIONS_TYPES.fail,
-      message: 'Error al obtener solicitudes',
+      message: 'Error al registrar solicitudes',
     })
   } finally {
     hideLoader()

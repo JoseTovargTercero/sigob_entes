@@ -2,199 +2,45 @@ import {
   getEntesAsignacion,
   getEntesAsignaciones,
   registrarEnteSolicitudDozavo,
-} from "../api/entes_solicitudesDozavos.js";
-import { getDistribucionEntes } from "../api/form_entes.js";
+} from '../api/entes_solicitudesDozavos.js'
+import { getDistribucionEntes } from '../api/form_entes.js'
 import {
   getPreAsignacionEnte,
   getPreAsignacionEntes,
-} from "../api/pre_entes.js";
-import { registrarSolicitudDozavo } from "../api/pre_solicitudesDozavos.js";
-import { loadSolicitudEntesTable } from "../controllers/entes_solicitudTable.js";
-import { loadSolicitudesDozavosTable } from "../controllers/pre_solicitudesDozavosTable.js";
+} from '../api/pre_entes.js'
+import { registrarSolicitudDozavo } from '../api/pre_solicitudesDozavos.js'
+import { loadSolicitudEntesTable } from '../controllers/entes_solicitudTable.js'
+import { loadSolicitudesDozavosTable } from '../controllers/pre_solicitudesDozavosTable.js'
 import {
   confirmNotification,
+  formatearFloat,
   hideLoader,
   insertOptions,
   separadorLocal,
   tableLanguage,
   toastNotification,
   validateInput,
-} from "../helpers/helpers.js";
-import { NOTIFICATIONS_TYPES, meses } from "../helpers/types.js";
+} from '../helpers/helpers.js'
+import { NOTIFICATIONS_TYPES, meses } from '../helpers/types.js'
 
-const d = document;
-
-// export const pre_solicitudEnte_card = async ({
-//   elementToInsert,
-//   ejercicioId,
-// }) => {
-//   let fieldList = { ejemplo: '' }
-//   let fieldListErrors = {
-//     ejemplo: {
-//       value: true,
-//       message: 'mensaje de error',
-//       type: 'text',
-//     },
-//   }
-//   const oldCardElement = d.getElementById('solicitud-ente-card')
-//   if (oldCardElement) oldCardElement.remove()
-
-//   let distribucionEntes = await getEntesAsignaciones()
-
-//   console.log(distribucionEntes)
-//   if (distribucionEntes.fullInfo.length === 0) {
-//     toastNotification({
-//       type: NOTIFICATIONS_TYPES.fail,
-//       message: 'No hay entes con distribucion asignada',
-//     })
-//     return
-//   }
-//   const crearFilas = () => {
-//     let fila = distribucionEntes.fullInfo
-//       .filter(
-//         (distribucion) =>
-//           Number(distribucion.status) === 1 &&
-//           Number(ejercicioId) === Number(distribucion.id_ejercicio)
-//       )
-//       .map((distribucion) => {
-//         return `  <tr>
-//               <td>${distribucion.ente_nombre}</td>
-//               <td>${
-//                 distribucion.tipo_ente === 'J' ? 'Jurídico' : 'Descentralizado'
-//               }</td>
-//               <td>
-//                 <button class='btn btn-secondary btn-sm' data-validarid="${
-//                   distribucion.id
-//                 }">Realizar solicitud</button>
-//               </td>
-//             </tr>`
-//       })
-
-//     return fila
-//   }
-
-//   let card = ` <div class='card slide-up-animation' id='solicitud-ente-card'>
-//       <div class='card-header d-flex justify-content-between'>
-//         <div class=''>
-//           <h5 class='mb-0'>Distribución de entes</h5>
-//           <small class='mt-0 text-muted'>
-//             Elija la distribución de entes para realizar solicitud de dozavo
-//           </small>
-//         </div>
-//         <button
-//           data-close='btn-close'
-//           type='button'
-//           class='btn btn-danger'
-//           aria-label='Close'
-//         >
-//           &times;
-//         </button>
-//       </div>
-//       <div class='card-body'>
-//         <table id='entes-elegir-table' class='table table-striped table-xs'>
-//           <thead>
-//             <th>NOMBRE</th>
-//             <th>TIPO</th>
-//             <th>ACCIÓN</th>
-//           </thead>
-//           <tbody>${crearFilas()}</tbody>
-//         </table>
-//       </div>
-
-//     </div>`
-
-//   d.getElementById(elementToInsert).insertAdjacentHTML('afterbegin', card)
-
-//   validarEntesTabla()
-
-//   let cardElement = d.getElementById('solicitud-ente-card')
-//   // let formElement = d.getElementById('solicitud-ente')
-
-//   const closeCard = () => {
-//     // validateEditButtons()
-//     cardElement.remove()
-//     cardElement.removeEventListener('click', validateClick)
-//     cardElement.removeEventListener('input', validateInputFunction)
-
-//     return false
-//   }
-
-//   async function validateClick(e) {
-//     if (e.target.dataset.close) {
-//       closeCard()
-//     }
-
-//     if (e.target.dataset.validarid) {
-//       closeCard()
-//     }
-//   }
-
-//   async function validateInputFunction(e) {
-//     fieldList = validateInput({
-//       target: e.target,
-//       fieldList,
-//       fieldListErrors,
-//       type: fieldListErrors[e.target.name].type,
-//     })
-//   }
-
-//   // CARGAR LISTA DE PARTIDAS
-
-//   function enviarInformacion(data) {}
-
-//   // formElement.addEventListener('submit', (e) => e.preventDefault())
-
-//   // cardElement.addEventListener('input', validateInputFunction)
-//   cardElement.addEventListener('click', validateClick)
-
-//   function validarEntesTabla() {
-//     let entesTable = new DataTable('#entes-elegir-table', {
-//       scrollY: 200,
-//       colums: [
-//         {
-//           data: 'entes_nombre',
-//           render: function (data) {
-//             return `<div class="text-wrap">
-//             ${data}
-//           </div>`
-//           },
-//         },
-//         { data: 'entes_tipo' },
-//         { data: 'acciones' },
-//       ],
-//       language: tableLanguage,
-//       layout: {
-//         topStart: function () {
-//           let toolbar = document.createElement('div')
-//           toolbar.innerHTML = `
-//                   <h5 class="text-center mb-0">Lista de entes con distribución confirmada:</h5>
-//                             `
-//           return toolbar
-//         },
-//         topEnd: { search: { placeholder: 'Buscar...' } },
-//         bottomStart: 'info',
-//         bottomEnd: 'paging',
-//       },
-//     })
-//   }
-// }
+const d = document
 
 // OTRO COMPONENTE
 
 const mesesOptions = () => {
-  let mesActual = new Date().getMonth();
+  let mesActual = new Date().getMonth()
 
   let mesesOptionsElement = meses.map((mes, index) => {
     if (index)
       if (mesActual === index)
-        return `<option value='${index}' selected>${mes}</option>`;
-    return `<option value='${index}'>${mes}</option>`;
-  });
+        return `<option value='${index}' selected>${mes}</option>`
+    return `<option value='${index}'>${mes}</option>`
+  })
 
-  let options = [`<option value=''>Elegir...</option>`, ...mesesOptionsElement];
+  let options = [`<option value=''>Elegir...</option>`, ...mesesOptionsElement]
 
-  return options.join("");
-};
+  return options.join('')
+}
 
 export const entes_solicitudGenerar_card = async ({
   elementToInsert,
@@ -204,49 +50,64 @@ export const entes_solicitudGenerar_card = async ({
   reset,
   asignacionEnte,
 }) => {
-  let fieldList = { mes: "", descripcion: "" };
+  let fieldList = { mes: '', descripcion: '' }
   let fieldListErrors = {
     mes: {
       value: true,
-      message: "Elija un mes válido",
-      type: "text",
+      message: 'Elija un mes válido',
+      type: 'text',
     },
     descripcion: {
       value: true,
-      message: "Escriba descripción de la solicitud",
-      type: "text",
+      message: 'Escriba descripción de la solicitud',
+      type: 'text',
     },
-  };
-
-  const oldCardElement = d.getElementById("solicitud-distribucion-form-card");
-  if (oldCardElement) {
-    closeCard(oldCardElement);
   }
 
-  if (close) return;
+  let fieldListDozavos = {}
+  let fieldListErrorsDozavos = {}
 
-  let dependencias = asignacionEnte.dependencias;
+  const oldCardElement = d.getElementById('solicitud-distribucion-form-card')
+  if (oldCardElement) {
+    closeCard(oldCardElement)
+  }
 
-  let actividadesEnte = asignacionEnte.actividades_entes;
+  if (close) return
+
+  let dependencias = asignacionEnte.dependencias
+
+  let actividadesEnte = asignacionEnte.actividades_entes
+
+  let distribucionesSeleccionadas = []
+  let dozavoMontos = []
 
   const listaDependencias = () => {
-    let dozavoMontoTotal = 0;
-    let montosActividadDistribuido = {};
-    let montosActividadDozavo = {};
+    // let dozavoMontoTotal = 0
+    let montosActividadDistribuido = {}
+    let montosActividadDozavo = {}
     actividadesEnte.forEach((distribucion) => {
-      montosActividadDozavo[distribucion.actividad] = 0;
-      montosActividadDistribuido[distribucion.actividad] = 0;
+      montosActividadDozavo[distribucion.actividad] = 0
+      montosActividadDistribuido[distribucion.actividad] = 0
       distribucion.distribucion_partidas.forEach((partida) => {
-        let doceavaParte = Number(partida.monto) / 12;
+        // let doceavaParte = Number(partida.monto) / 12
 
-        dozavoMontoTotal += doceavaParte;
-        montosActividadDozavo[distribucion.actividad] += doceavaParte;
-        montosActividadDistribuido[distribucion.actividad] += partida.monto;
-      });
-    });
+        // dozavoMontoTotal += doceavaParte
+        // montosActividadDozavo[distribucion.actividad] += doceavaParte
+        montosActividadDistribuido[distribucion.actividad] += partida.monto
+      })
+    })
 
     // Guardar total de dozavo
-    fieldList.dozavoMontoTotal = dozavoMontoTotal;
+    // fieldList.dozavoMontoTotal = dozavoMontoTotal
+    //   <p class="mb-0">
+    //   <b>Dozavo:</b>
+    //   <span class='px-2 rounded text-secondary'>
+    //     ${separadorLocal(
+    //       montosActividadDozavo[dependencia.actividad]
+    //     )}
+    //     Bs
+    //   </span>
+    // </p>
 
     let dependenciasElement =
       dependencias.length > 0
@@ -277,87 +138,165 @@ export const entes_solicitudGenerar_card = async ({
                       Bs
                     </span>
                   </p>
-                  <p class="mb-0">
-                    <b>Dozavo:</b>
-                    <span class='px-2 rounded text-secondary'>
-                      ${separadorLocal(
-                        montosActividadDozavo[dependencia.actividad]
-                      )}
-                      Bs
-                    </span>
-                  </p>
-                </li>`;
+                
+                </li>`
             })
-            .join("")
-        : "";
+            .join('')
+        : ''
 
     return `
           <ul class='list-group mb-4'>${dependenciasElement}</ul>        
-      `;
-  };
+      `
+  }
 
-  const crearFilas = () => {
-    let fila = [];
+  let cardBodyPartView1 = () => {
+    let fila = []
 
     actividadesEnte.forEach((distribucion) => {
       distribucion.distribucion_partidas.forEach((partida) => {
-        let dozavo = partida.monto / 12;
+        let dozavo = partida.monto / 12
         let codigo = `${
-          partida.sector_informacion ? partida.sector_informacion.sector : "0"
+          partida.sector_informacion ? partida.sector_informacion.sector : '0'
         }.${
           partida.programa_informacion
             ? partida.programa_informacion.programa
-            : "0"
+            : '0'
         }.${
           // partida.proyecto_informacion == 0
           //   ? '00'
           //   : partida.proyecto_informacion.proyecto
-          "00"
-        }.${distribucion.actividad == 0 ? "00" : distribucion.actividad}`;
+          '00'
+        }.${distribucion.actividad == 0 ? '00' : distribucion.actividad}`
 
-        fila.push(`        <td>${codigo}</td>
+        fila.push(`   
+          <tr>     
+        <td><input type="checkbox" class="dozavo-checkbox" id="${
+          partida.id_distribucion
+        }"></td>
+        <td>${codigo}</td>
         <td>${partida.partida_informacion.partida}</td>
         <td>${separadorLocal(partida.monto)} Bs</td>
-        <td>${separadorLocal(dozavo.toFixed(3))} Bs</td>
-        </tr>`);
-      });
-    });
+        
+        </tr>`)
+      })
+    })
 
-    return fila.join("");
-  };
+    let card1 = ` <div class='card-body slide-up-animation' id='card-body-part-1'>
+        <h4 class='mb-3'>Seleccione las partidas a crear el dozavo</h4>
+        <table class='table table-striped table-sm' id="distribucion-ente-table">
+          <thead class=''>
+            
+              <th>Seleccionar</th>
+              <th>S/P/P/A</th>
+              <th>PARTIDA</th>
+              <th>MONTO PARTIDA</th>
+            
+          </thead>
+          <tbody>${fila.join('')}</tbody>
+        </table>
+      </div>`
 
-  let card = `    <div class='card slide-up-animation' id='solicitud-distribucion-form-card'>
-      <div class='card-header d-flex justify-content-between'>
-        <div class=''>
-          <h5 class='mb-0'>Generar solicitud de dozavo</h5>
-          <small class='mt-0 text-muted'>
-            Valide la información para generar la solicitud del dozavo
-          </small>
-        </div>
-        <button
-          data-close='btn-close'
-          type='button'
-          class='btn btn-danger'
-          aria-label='Close'
-        >
-          &times;
-        </button>
-      </div>
-      <div class='card-body'>
-        <div class='row'>
-          <div class='text-center col-sm-6'>
-            <h5>Actividades:</h5>${listaDependencias()}
-           
-          </div>
-          <div class='col-sm-6'>
-            <form id='solicitud-distribucion-form'>
-             <h5>
-              Monto total de dozavo:
-              <span class='px-2 rounded text-green-600 bg-green-100'>
-                ${separadorLocal(fieldList.dozavoMontoTotal)} Bs
-              </span>
-            </h5>
+    return card1
+  }
+
+  let cardBodyPartView2 = () => {
+    let fila = []
+
+    distribucionesSeleccionadas.forEach((partida) => {
+      let codigo = `${
+        partida.sector_informacion ? partida.sector_informacion.sector : '0'
+      }.${
+        partida.programa_informacion
+          ? partida.programa_informacion.programa
+          : '0'
+      }.${
+        // partida.proyecto_informacion == 0
+        //   ? '00'
+        //   : partida.proyecto_informacion.proyecto
+        '00'
+      }.${partida.actividad == 0 ? '00' : partida.actividad}`
+
+      fila.push(
+        ` <tr>
+          <td>${codigo}</td>
+          <td>${partida.partida_informacion.partida}</td>
+          <td>${separadorLocal(partida.monto)} Bs</td>
+          <td>
+            <input
+              class='form-control dozavo-monto'
+              name='distribucion-monto-${partida.id_distribucion}'
+              id='distribucion-monto-${partida.id_distribucion}'
+              data-distribucionid='${partida.id_distribucion}'
+              placeholder='monto a solicitar'
+            />
+          </td>
+        </tr>`
+      )
+    })
+
+    let card2 = ` <div class='card-body slide-up-animation' id='card-body-part-2'>
+        <h4 class='mb-3'>Asigne el monto a las partidas seleccionadas</h4>
+        <table class='table table-striped' id="distribucion-ente-table2">
+          <thead class=''>
+            
+
+              <th>S/P/P/A</th>
+              <th>PARTIDA</th>
+              <th>MONTO PARTIDA</th>
+              <th>DOZAVO A SOLICITAR</th>
+            
+          </thead>
+          <tbody>${fila.join('')}</tbody>
+        </table>
+      </div>`
+
+    return card2
+  }
+
+  let cardBodyPartView3 = () => {
+    let fila = []
+
+    dozavoMontos.forEach((dozavo) => {
+      let partida = distribucionesSeleccionadas.find(
+        (p) => Number(p.id_distribucion) === Number(dozavo.id)
+      )
+
+      let codigo = `${
+        partida.sector_informacion ? partida.sector_informacion.sector : '0'
+      }.${
+        partida.programa_informacion
+          ? partida.programa_informacion.programa
+          : '0'
+      }.${
+        // partida.proyecto_informacion == 0
+        //   ? '00'
+        //   : partida.proyecto_informacion.proyecto
+        '00'
+      }.${partida.actividad == 0 ? '00' : partida.actividad}`
+
+      let montoFinal = partida.monto - dozavo.monto
+
+      fila.push(
+        `   <tr>
+          <td>${codigo}.${partida.partida_informacion.partida}</td>
+          <td>${separadorLocal(partida.monto)} Bs</td>
+          <td>${separadorLocal(dozavo.monto)} Bs</td>
+          <td>${separadorLocal(montoFinal)} Bs</td>
+        </tr>`
+      )
+    })
+
+    let card3 = ` <div class='card-body slide-up-animation' id='card-body-part-3'>
+
+    <form id='solicitud-distribucion-form'>
+              
               <h4>Información para generar solicitud</h4>
+              <h5 mt-3>
+                Monto total de dozavo:
+                <span class='px-2 rounded text-green-600 bg-green-100'>
+                  ${separadorLocal(fieldList.dozavoMontoTotal)} Bs
+                </span>
+              </h5>
               <div class='form-group'>
                 <label for='mes' class='form-label'>
                   Mes de solicitud (mes actual por defecto)
@@ -384,99 +323,111 @@ export const entes_solicitudGenerar_card = async ({
                 ></textarea>
               </div>
             </form>
+    
+        <h4 class='mb-3'>Verifique el monto solicitado de las partidas</h4>
+        <table class='table table-sm table-striped' distribucion-ente-table3>
+          <thead class=''>
+            
+
+              <th>S/P/P/A - Partida</th>
+              <th>DISPONIBLE</th>
+              <th>SOLICITADO</th>
+              <th>RESTANTE</th>
+            
+          </thead>
+          <tbody>${fila.join('')}</tbody>
+        </table>
+      </div>`
+
+    return card3
+  }
+
+  let card = `    <div class='card slide-up-animation' id='solicitud-distribucion-form-card'>
+      <div class='card-header d-flex justify-content-between'>
+        <div class=''>
+          <h5 class='mb-0'>Generar solicitud de dozavo</h5>
+          <small class='mt-0 text-muted'>
+            Valide la información para generar la solicitud del dozavo
+          </small>
+        </div>
+        <button
+          data-close='btn-close'
+          type='button'
+          class='btn btn-danger'
+          aria-label='Close'
+        >
+          &times;
+        </button>
+      </div>
+      <div class="card-body row" class="row">
+     <div class='text-center my-auto col-sm-4'>
+            <h5>Actividades:</h5>${listaDependencias()}
           </div>
-        </div>
-        <div>
-          <table
-            id='distribucion-ente-table'
-            class='table table-striped table-sm'
-          >
-            <thead>
-              <th>S/P/P/A</th>
-              <th>PARTIDA</th>
-              <th>MONTO</th>
-              <th>DOZAVO</th>
-            </thead>
-            <tbody>${crearFilas()}</tbody>
-          </table>
-        </div>
+
+          <div class='col-sm'>
+          <h5 class="text-center">Información para generar solicitud:</h5>
+            <div id="card-body""> 
+              ${cardBodyPartView1()}
+            </div>
+          </div>
+              
+
+     
       </div>
+      
       <div class='card-footer d-flex align-items-center justify-content-center gap-2 py-2'>
-        <button class='btn btn-primary' id='solicitud-generar'>
-          Generar solicitud
+       
+          <button class='btn btn-secondary' id='btn-previus'>
+          Atrás
         </button>
-        <button class='btn btn-danger' id='solicitud-cancelar'>
-          Cancelar
+        <button class='btn btn-primary' id='btn-next'>
+          Siguiente
         </button>
       </div>
-    </div>`;
+    </div>`
 
-  d.getElementById(elementToInsert).insertAdjacentHTML("afterbegin", card);
+  d.getElementById(elementToInsert).insertAdjacentHTML('afterbegin', card)
 
-  validarEntesTabla();
+  validarEntesTabla()
 
-  let cardElement = d.getElementById("solicitud-distribucion-form-card");
+  let cardElement = d.getElementById('solicitud-distribucion-form-card')
+  let cardBody = d.getElementById('card-body')
+
+  let formFocus = 1
   // let formElement = d.getElementById('solicitud-distribucion-form')
 
   function closeCard(card) {
     // validateEditButtons()
-    card.remove();
-    card.removeEventListener("click", validateClick);
-    card.removeEventListener("input", validateInputFunction);
+    card.remove()
+    card.removeEventListener('click', validateClick)
+    card.removeEventListener('input', validateInputFunction)
 
-    return false;
+    return false
   }
 
   async function validateClick(e) {
     if (e.target.dataset.close) {
-      closeCard(cardElement);
+      closeCard(cardElement)
     }
 
-    if (e.target.id === "solicitud-cancelar") {
-      closeCard(cardElement);
+    if (e.target.id === 'solicitud-cancelar') {
+      closeCard(cardElement)
     }
 
-    if (e.target.id === "solicitud-generar") {
-      let inputs = d.querySelectorAll(".solicitud-input");
+    if (e.target.id === 'solicitud-generar') {
+      let dozavoMontoTotal = 0
 
-      inputs.forEach((input) => {
-        fieldList = validateInput({
-          target: input,
-          fieldList,
-          fieldListErrors,
-          type: fieldListErrors[input.name].type,
-        });
-      });
+      let partidasDozavos = []
 
-      if (Object.values(fieldListErrors).some((el) => el.value)) {
-        toastNotification({
-          type: NOTIFICATIONS_TYPES.fail,
-          message: "Hay campos inválidos",
-        });
-        return;
-      }
-
-      if (Object.values(fieldList).some((el) => !el)) {
-        toastNotification({
-          type: NOTIFICATIONS_TYPES.fail,
-          message: "No se ha completado la información necesaria",
-        });
-        return;
-      }
-
-      let dozavoMontoTotal = 0;
-
-      let partidasDozavos = [];
-
-      actividadesEnte.forEach((distribucion) => {
-        distribucion.distribucion_partidas.forEach((partida) => {
-          let monto = partida.monto / 12;
-          partidasDozavos.push({
-            id: Number(partida.id_distribucion),
-            monto: Number(monto.toFixed(2)),
-          });
-        });
-      });
+      // actividadesEnte.forEach((distribucion) => {
+      //   distribucion.distribucion_partidas.forEach((partida) => {
+      //     let monto = partida.monto / 12
+      //     partidasDozavos.push({
+      //       id: Number(partida.id_distribucion),
+      //       monto: Number(monto.toFixed(2)),
+      //     })
+      //   })
+      // })
 
       // let dozavoPartidas = asignacionEnte.distribucion_partidas.map(
       //   (distribucion) => {
@@ -490,29 +441,312 @@ export const entes_solicitudGenerar_card = async ({
       //     }
       //   }
       // )
-
-      let dozavoInformacion = {
-        id_ente: asignacionEnte.id_ente,
-        descripcion: fieldList.descripcion,
-        monto: fieldList.dozavoMontoTotal,
-        partidas: partidasDozavos,
-        id_ejercicio: ejercicioId,
-        tipo: "D",
-        mes: fieldList.mes,
-      };
-
-      console.log(dozavoInformacion);
-      enviarInformacion(dozavoInformacion);
     }
+
+    validateFormFocus(e)
   }
 
   async function validateInputFunction(e) {
-    fieldList = validateInput({
-      target: e.target,
-      fieldList,
-      fieldListErrors,
-      type: fieldListErrors[e.target.name].type,
-    });
+    if (e.target.classList.contains('dozavo-checkbox')) {
+      // console.log(e.target.id)
+
+      if (e.target.checked) {
+        actividadesEnte.forEach((distribucion) => {
+          // console.log(distribucion)
+
+          let partida = distribucion.distribucion_partidas.find(
+            (partida) => partida.id_distribucion === e.target.id
+          )
+
+          partida.actividad = distribucion.actividad
+
+          distribucionesSeleccionadas.push(partida)
+        })
+      } else {
+        const index = distribucionesSeleccionadas.findIndex(
+          (partida) => partida.id_distribucion === e.target.id
+        )
+        if (index !== -1) {
+          distribucionesSeleccionadas.splice(index, 1)
+        }
+      }
+
+      // console.log(distribucionesSeleccionadas)
+
+      return
+    }
+
+    if (e.target.classList.contains('dozavo-monto')) {
+      fieldListDozavos = validateInput({
+        target: e.target,
+        fieldList: fieldListDozavos,
+        fieldListErrors: fieldListErrorsDozavos,
+        type: fieldListErrorsDozavos[e.target.name].type,
+      })
+    } else {
+      fieldList = validateInput({
+        target: e.target,
+        fieldList,
+        fieldListErrors,
+        type: fieldListErrors[e.target.name].type,
+      })
+    }
+  }
+
+  async function validateFormFocus(e) {
+    let btnNext = d.getElementById('btn-next')
+    let btnPrevius = d.getElementById('btn-previus')
+
+    // let btnAdd = d.getElementById('btn-add')
+    let cardBodyPart1 = d.getElementById('card-body-part-1')
+    let cardBodyPart2 = d.getElementById('card-body-part-2')
+    let cardBodyPart3 = d.getElementById('card-body-part-3')
+
+    if (e.target === btnNext) {
+      if (formFocus === 1) {
+        // let planInputs = d.querySelectorAll('.plan-input')
+
+        // planInputs.forEach((input) => {
+        //   fieldList = validateInput({
+        //     target: input,
+        //     fieldList,
+        //     fieldListErrors,
+        //     type: fieldListErrors[input.name].type,
+        //   })
+        // })
+
+        // if (Object.values(fieldListErrors).some((el) => el.value)) {
+        //   toastNotification({
+        //     type: NOTIFICATIONS_TYPES.fail,
+        //     message: 'Hay campos inválidos',
+        //   })
+        //   return
+        // }
+
+        if (distribucionesSeleccionadas.length < 1) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'No se han seleccionado distribuciones a solicitar dozavo',
+          })
+          return
+        }
+
+        cardBodyPart1.classList.add('d-none')
+
+        if (cardBodyPart2) {
+          cardBodyPart2.outerHTML = cardBodyPartView2()
+        } else {
+          cardBody.insertAdjacentHTML('beforeend', cardBodyPartView2())
+        }
+
+        validarEntesTabla2()
+
+        let dozavoMontosInputs = d.querySelectorAll('.dozavo-monto')
+        // console.log(dozavoMontosInputs)
+
+        dozavoMontosInputs.forEach((input) => {
+          fieldListDozavos = {
+            ...fieldListDozavos,
+            [input.name]: 0,
+          }
+          fieldListErrorsDozavos = {
+            ...fieldListErrorsDozavos,
+            [input.name]: {
+              value: true,
+              message: 'Monto inváldo',
+              type: 'number3',
+            },
+          }
+        })
+
+        if (btnPrevius.hasAttribute('disabled'))
+          btnPrevius.removeAttribute('disabled')
+
+        formFocus++
+        return
+      }
+      if (formFocus === 2) {
+        // let planInputsOptions = d.querySelectorAll('.plan-input-option')
+
+        // planInputsOptions.forEach((input) => {
+        //   fieldListOptions = validateInput({
+        //     target: input,
+        //     fieldListOptions,
+        //     fieldListErrorsOptions,
+        //     type: fieldListErrorsOptions[input.name].type,
+        //   })
+        // })
+
+        // if (Object.values(fieldListErrorsOptions).some((el) => el.value)) {
+        //   toastNotification({
+        //     type: NOTIFICATIONS_TYPES.fail,
+        //     message: 'Hay campos inválidos',
+        //   })
+        //   return
+        // }
+
+        let dozavoMontosInputs = Array.from(d.querySelectorAll('.dozavo-monto'))
+
+        let sumaTotal = 0
+
+        // Mapear y validar inputs de montos de partidas
+        dozavoMontos = dozavoMontosInputs.map((input) => {
+          fieldListDozavos = validateInput({
+            target: input,
+            fieldList: fieldListDozavos,
+            fieldListErrors: fieldListErrorsDozavos,
+            type: fieldListErrorsDozavos[input.name].type,
+          })
+
+          let monto = formatearFloat(input.value)
+
+          sumaTotal += monto
+
+          return {
+            id: input.dataset.distribucionid,
+            monto,
+          }
+        })
+
+        fieldList.dozavoMontoTotal = sumaTotal
+
+        console.log(dozavoMontos)
+
+        // VALIDAR ERRORES EN LOS INPUTS
+
+        if (
+          Object.values(fieldListErrorsDozavos).some((input) => input.value)
+        ) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'Montos inválidos',
+          })
+          return
+        }
+
+        let montosInvalidos = distribucionesSeleccionadas.every(
+          (distribucion) => {
+            let dozavoMonto = formatearFloat(
+              fieldListDozavos[
+                `distribucion-monto-${distribucion.id_distribucion}`
+              ]
+            )
+            return dozavoMonto <= distribucion.monto
+          }
+        )
+
+        if (!montosInvalidos) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'Hay distribuciones que superan el monto disponible',
+          })
+          return
+        }
+
+        cardBodyPart2.classList.add('d-none')
+
+        if (cardBodyPart3) {
+          cardBodyPart3.outerHTML = cardBodyPartView3()
+        } else {
+          cardBody.insertAdjacentHTML('beforeend', cardBodyPartView3())
+        }
+
+        validarEntesTabla3()
+
+        btnNext.textContent = 'Enviar solicitud'
+
+        formFocus++
+        return
+      }
+
+      if (formFocus === 3) {
+        // let data = validarInformacion()
+
+        let inputs = d.querySelectorAll('.solicitud-input')
+
+        inputs.forEach((input) => {
+          fieldList = validateInput({
+            target: input,
+            fieldList,
+            fieldListErrors,
+            type: fieldListErrors[input.name].type,
+          })
+        })
+
+        if (Object.values(fieldListErrors).some((el) => el.value)) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'Hay campos inválidos',
+          })
+          return
+        }
+
+        if (Object.values(fieldList).some((el) => !el)) {
+          toastNotification({
+            type: NOTIFICATIONS_TYPES.fail,
+            message: 'No se ha completado la información necesaria',
+          })
+          return
+        }
+
+        let dozavoInformacion = {
+          id_ente: asignacionEnte.id_ente,
+          descripcion: fieldList.descripcion,
+          monto: fieldList.dozavoMontoTotal,
+          partidas: dozavoMontos,
+          id_ejercicio: ejercicioId,
+          tipo: 'D',
+          mes: fieldList.mes,
+        }
+
+        enviarInformacion(dozavoInformacion)
+      }
+    }
+
+    if (e.target === btnPrevius) {
+      if (formFocus === 3) {
+        cardBodyPart2.classList.remove('d-none')
+        btnNext.textContent = 'Siguiente'
+
+        if (cardBodyPart3) {
+          cardBodyPart3.classList.add('d-none')
+        }
+
+        formFocus--
+        return
+        // confirmNotification({
+        //   type: NOTIFICATIONS_TYPES.send,
+        //   message: 'Si continua se borrarán los cambios hechos aquí',
+        //   successFunction: function () {
+        //     cardBodyPart2.remove()
+
+        //     cardBodyPart1.classList.remove('d-block')
+        //     cardBodyPart1.classList.add('d-none')
+        //     btnNext.textContent = 'Siguiente'
+        //     // btnAdd.classList.remove('d-none')
+
+        //     partidasSeleccionadas = []
+        //     cardBody.innerHTML += seleccionPartidas()
+        //     validarSeleccionPartidasTable()
+
+        //     formFocus--
+        //   },
+        // })
+      }
+      if (formFocus === 2) {
+        cardBodyPart1.classList.remove('d-none')
+
+        if (cardBodyPart2) {
+          cardBodyPart2.classList.add('d-none')
+        }
+
+        formFocus--
+
+        btnPrevius.setAttribute('disabled', true)
+
+        return
+      }
+    }
   }
 
   // CARGAR LISTA DE PARTIDAS
@@ -522,38 +756,76 @@ export const entes_solicitudGenerar_card = async ({
       type: NOTIFICATIONS_TYPES.send,
       message: `Se enviará la solicitud de dozavo`,
       successFunction: async function () {
-        let res = await registrarEnteSolicitudDozavo(data);
+        let res = await registrarEnteSolicitudDozavo(data)
         if (res.success) {
-          closeCard(cardElement);
-          loadSolicitudEntesTable({ id_ejercicio: ejercicioId });
-          reset();
+          closeCard(cardElement)
+          loadSolicitudEntesTable({ id_ejercicio: ejercicioId })
+          reset()
         }
       },
-    });
+    })
   }
 
   // formElement.addEventListener('submit', (e) => e.preventDefault())
 
-  cardElement.addEventListener("input", validateInputFunction);
-  cardElement.addEventListener("click", validateClick);
+  cardElement.addEventListener('input', validateInputFunction)
+  cardElement.addEventListener('click', validateClick)
 
   function validarEntesTabla() {
-    let entesTable = new DataTable("#distribucion-ente-table", {
-      scrollY: 200,
+    let entesTable = new DataTable('#distribucion-ente-table', {
+      scrollY: 250,
 
       language: tableLanguage,
       layout: {
         topStart: function () {
-          let toolbar = document.createElement("div");
+          let toolbar = document.createElement('div')
           toolbar.innerHTML = `
-                  <h5 class="text-center mb-0">Detalles de la distribucion presupuestaria del ente:</h5>
-                            `;
-          return toolbar;
+                            `
+          return toolbar
         },
-        topEnd: { search: { placeholder: "Buscar..." } },
-        bottomStart: "info",
-        bottomEnd: "paging",
+        topEnd: { search: { placeholder: 'Buscar...' } },
+        bottomStart: 'info',
+        bottomEnd: 'paging',
       },
-    });
+    })
   }
-};
+}
+
+function validarEntesTabla2() {
+  let entesTable = new DataTable('#distribucion-ente-table2', {
+    scrollY: 250,
+
+    language: tableLanguage,
+    layout: {
+      topStart: function () {
+        let toolbar = document.createElement('div')
+        toolbar.innerHTML = `
+                          `
+        return toolbar
+      },
+      topEnd: { search: { placeholder: 'Buscar...' } },
+      bottomStart: 'info',
+      bottomEnd: 'paging',
+    },
+  })
+}
+
+function validarEntesTabla3() {
+  let entesTable = new DataTable('#distribucion-ente-table3', {
+    scrollY: 250,
+
+    language: tableLanguage,
+    layout: {
+      topStart: function () {
+        let toolbar = document.createElement('div')
+        toolbar.innerHTML = `
+                
+                          `
+        return toolbar
+      },
+      topEnd: { search: { placeholder: 'Buscar...' } },
+      bottomStart: 'info',
+      bottomEnd: 'paging',
+    },
+  })
+}
