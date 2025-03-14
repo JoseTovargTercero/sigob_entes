@@ -176,10 +176,10 @@ function registrarTraspasoPartida($data)
             }
 
             // Insertar el registro principal en la tabla `traspasos`
-            $sqlTraspaso = "INSERT INTO traspasos (n_orden, id_ejercicio, monto_total, fecha, status, tipo) VALUES (?, ?, ?, ?, 0, ?)";
+            $sqlTraspaso = "INSERT INTO traspasos (n_orden, id_ejercicio, monto_total, fecha, status, tipo, id_ente) VALUES (?, ?, ?, ?, 0, ?, ?)";
             $stmtTraspaso = $conexion->prepare($sqlTraspaso);
 
-            $stmtTraspaso->bind_param("sidsi", $nOrden, $info['id_ejercicio'], $info['monto_total'], $fecha_actual, $tipo);
+            $stmtTraspaso->bind_param("sidsii", $nOrden, $info['id_ejercicio'], $info['monto_total'], $fecha_actual, $tipo, $idEnte);
             $stmtTraspaso->execute();
 
             if ($stmtTraspaso->affected_rows === 0) {
@@ -233,9 +233,9 @@ function consultarTodosTraspasos($id_ejercicio)
     // Consultar los traspasos principales filtrando por id_ejercicio
     $sql = "SELECT t.id, t.n_orden, t.id_ejercicio, t.monto_total, t.fecha, t.status, t.tipo 
             FROM traspasos t
-            WHERE t.id_ejercicio = ?";
+            WHERE t.id_ejercicio = ? AND t.id_ente = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_ejercicio);
+    $stmt->bind_param("ii", $id_ejercicio, $idEnte);
     $stmt->execute();
     $resultado = $stmt->get_result();
 
@@ -327,9 +327,9 @@ function obtenerUltimosOrdenes($id_ejercicio)
         $sqlTraslado = "SELECT n_orden 
                         FROM traspasos 
                         WHERE id_ejercicio = ? AND tipo = 1 
-                        ORDER BY id DESC LIMIT 1";
+                        ORDER BY id DESC LIMIT 1 WHERE AND tid_ente = ?";
         $stmtTraslado = $conexion->prepare($sqlTraslado);
-        $stmtTraslado->bind_param("i", $id_ejercicio);
+        $stmtTraslado->bind_param("ii", $id_ejercicio, $idEnte);
         $stmtTraslado->execute();
         $resultadoTraslado = $stmtTraslado->get_result();
         $traslado = $resultadoTraslado->num_rows > 0 ? $resultadoTraslado->fetch_assoc()['n_orden'] : null;
@@ -389,9 +389,9 @@ function gestionarTraspaso($id, $accion)
             }
 
             // Obtener el `id_ejercicio` desde la tabla `traspasos`
-            $sqlEjercicio = "SELECT id_ejercicio FROM traspasos WHERE id = ?";
+            $sqlEjercicio = "SELECT id_ejercicio FROM traspasos WHERE id = ? AND id_ente = ?";
             $stmtEjercicio = $conexion->prepare($sqlEjercicio);
-            $stmtEjercicio->bind_param("i", $id);
+            $stmtEjercicio->bind_param("ii", $id, $idEnte);
             $stmtEjercicio->execute();
             $resultEjercicio = $stmtEjercicio->get_result();
 
@@ -408,10 +408,10 @@ function gestionarTraspaso($id, $accion)
                 $tipo = $row['tipo'];
 
                 // Consultar la tabla `distribucion_entes` para obtener el monto de la distribución específica con el filtro adicional por `id_ejercicio`
-                $sqlDistribucionEnte = "SELECT distribucion FROM distribucion_entes WHERE distribucion LIKE ? AND id_ejercicio = ?";
+                $sqlDistribucionEnte = "SELECT distribucion FROM distribucion_entes WHERE distribucion LIKE ? AND id_ejercicio = ? AND id_ente = ?";
                 $likePattern = '%"id_distribucion":"' . $idDistribucion . '"%';
                 $stmtDistribucionEnte = $conexion->prepare($sqlDistribucionEnte);
-                $stmtDistribucionEnte->bind_param("si", $likePattern, $idEjercicio);
+                $stmtDistribucionEnte->bind_param("sii", $likePattern, $idEjercicio, $idEnte);
                 $stmtDistribucionEnte->execute();
                 $resultDistribucionEnte = $stmtDistribucionEnte->get_result();
 
@@ -453,9 +453,9 @@ function gestionarTraspaso($id, $accion)
 
                 // Guardar el JSON actualizado en la tabla `distribucion_entes`
                 $nuevoDistribucionJSON = json_encode($distribucionData);
-                $sqlUpdateDistribucionEnte = "UPDATE distribucion_entes SET distribucion = ? WHERE distribucion LIKE ? AND id_ejercicio = ?";
+                $sqlUpdateDistribucionEnte = "UPDATE distribucion_entes SET distribucion = ? WHERE distribucion LIKE ? AND id_ejercicio = ? AND id_ente = ?";
                 $stmtUpdateDistribucionEnte = $conexion->prepare($sqlUpdateDistribucionEnte);
-                $stmtUpdateDistribucionEnte->bind_param("ssi", $nuevoDistribucionJSON, $likePattern, $idEjercicio);
+                $stmtUpdateDistribucionEnte->bind_param("ssii", $nuevoDistribucionJSON, $likePattern, $idEjercicio, $idEnte);
                 $stmtUpdateDistribucionEnte->execute();
 
                 if ($stmtUpdateDistribucionEnte->affected_rows === 0) {
@@ -504,9 +504,9 @@ function consultarTraspasoPorId($id)
     // Consultar el traspaso principal por su ID
     $sql = "SELECT t.id, t.n_orden, t.id_ejercicio, t.monto_total, t.fecha, t.status, t.tipo 
             FROM traspasos t 
-            WHERE t.id = ?";
+            WHERE t.id = ? AND t.id_ente = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param("ii", $id, $idEnte);
     $stmt->execute();
     $resultado = $stmt->get_result();
 
@@ -530,10 +530,10 @@ function consultarTraspasoPorId($id)
                 // Obtener información de distribucion_entes
                 $sqlDistribucionEnte = "SELECT de.id AS id_distribucion_ente, de.monto_total, de.distribucion, de.id_ejercicio, de.actividad_id 
                                         FROM distribucion_entes de 
-                                        WHERE de.distribucion LIKE ? AND de.id_ejercicio = ?";
+                                        WHERE de.distribucion LIKE ? AND de.id_ejercicio = ? AND de.id_ente = ?";
                 $likePattern = '%"id_distribucion":"' . $idDistribucion . '"%';
                 $stmtDistribucionEnte = $conexion->prepare($sqlDistribucionEnte);
-                $stmtDistribucionEnte->bind_param("si", $likePattern, $traspaso['id_ejercicio']);
+                $stmtDistribucionEnte->bind_param("sii", $likePattern, $traspaso['id_ejercicio'], $idEnte);
                 $stmtDistribucionEnte->execute();
                 $resultadoDistribucionEnte = $stmtDistribucionEnte->get_result();
                 $informacionDistribucionEnte = $resultadoDistribucionEnte->fetch_assoc();
