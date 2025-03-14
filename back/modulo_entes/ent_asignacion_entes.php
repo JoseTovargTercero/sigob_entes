@@ -311,6 +311,78 @@ function consultarTodasAsignaciones($id_ejercicio)
     }
 }
 
+function consultarAsignacionesSecretaria($idEjercicio)
+{
+    global $conexion;
+
+    try {
+        // Consulta principal para obtener los entes_dependencias que cumplen con las condiciones
+        $sql = "SELECT ed.id AS id_ente, ed.partida, ed.ente_nombre, ed.tipo_ente, ed.sector, ed.programa, ed.proyecto, ed.actividad
+                FROM entes_dependencias ed
+                WHERE ed.tipo_ente = 'J' AND ed.juridico = 0";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $asignaciones = [];
+        while ($ente = $result->fetch_assoc()) {
+            // Consulta para obtener las distribuciones asociadas al ente
+            $sqlDistribuciones = "SELECT de.id AS id_distribucion, de.monto_total, de.distribucion
+                                  FROM distribucion_entes de
+                                  WHERE de.actividad_id = ? AND de.id_ejercicio = ?";
+            $stmtDistribuciones = $conexion->prepare($sqlDistribuciones);
+            $stmtDistribuciones->bind_param("ii", $ente['id_ente'], $idEjercicio);
+            $stmtDistribuciones->execute();
+            $resultDistribuciones = $stmtDistribuciones->get_result();
+
+            while ($distribucion = $resultDistribuciones->fetch_assoc()) {
+                if (!empty($distribucion['distribucion'])) {
+                    $distribucionPartidas = json_decode($distribucion['distribucion'], true);
+
+                    foreach ($distribucionPartidas as $distribucionItem) {
+                        $idDistribucion = $distribucionItem['id_distribucion'];
+
+                        // Consulta para obtener detalles de la distribución presupuestaria
+                        $sqlDetalles = "SELECT dp.id_partida, dp.id AS id_distribucion_, dp.id_sector, dp.id_programa, dp.id_proyecto, pp.partida AS codigo_partida, pp.descripcion AS partida_descripcion, dp.id_actividad as id_actividad,  
+                                               ps.sector AS sector_denominacion, pg.programa AS programa_denominacion, pr.proyecto_id AS proyecto_denominacion
+                                        FROM distribucion_presupuestaria dp
+                                        LEFT JOIN partidas_presupuestarias pp ON dp.id_partida = pp.id
+                                        LEFT JOIN pl_sectores ps ON dp.id_sector = ps.id
+                                        LEFT JOIN pl_programas pg ON dp.id_programa = pg.id
+                                        LEFT JOIN pl_proyectos pr ON dp.id_proyecto = pr.id
+                                        WHERE dp.id = ?";
+                        $stmtDetalles = $conexion->prepare($sqlDetalles);
+                        $stmtDetalles->bind_param("i", $idDistribucion);
+                        $stmtDetalles->execute();
+                        $resultDetalles = $stmtDetalles->get_result();
+
+                        if ($resultDetalles->num_rows > 0) {
+                            $detalles = $resultDetalles->fetch_assoc();
+
+                            $asignaciones[] = [
+                                "id_distribucion" => $detalles['id_distribucion_'],
+                                'partida' => $detalles['codigo_partida'],
+                                'partida_descripcion' => $detalles['partida_descripcion'],
+                                'sector_denominacion' => $detalles['sector_denominacion'],
+                                'id_actividad' => $detalles['id_actividad'],
+                                'programa_denominacion' => $detalles['programa_denominacion'],
+                                'proyecto_denominacion' => $detalles['proyecto_denominacion'],
+                                'ente_nombre' => $ente['ente_nombre'],
+                                'monto' => $distribucionItem['monto'],
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        return json_encode(["success" => $asignaciones]);
+    } catch (Exception $e) {
+        registrarError($e->getMessage());
+        return json_encode(['error' => $e->getMessage()]);
+    }
+}
+
 
 
 // Procesar la solicitud
@@ -347,6 +419,11 @@ if (isset($data["accion"])) {
     } elseif ($accion === "consultar") {
         $id_ejercicio = $data["id_ejercicio"];
         echo consultarTodasAsignaciones($id_ejercicio);
+
+        // Acción no válida o faltan datos
+    } elseif ($accion === "consultar_secretarias") {
+        $id_ejercicio = $data["id_ejercicio"];
+        echo consultarAsignacionesSecretaria($id_ejercicio);
 
         // Acción no válida o faltan datos
     } else {
