@@ -53,7 +53,7 @@ export const entes_traspasosCard = ({
         partida.programa_denominacion ? partida.programa_denominacion : '00'
       }.${
         partida.proyecto_denominacion ? partida.proyecto_denominacion : '00'
-      }.${partida.actividad ? partida.actividad : '00'}`
+      }.${partida.id_actividad ? partida.id_actividad : '00'}`
 
       let montoFinal = Number(partida.monto) + Number(partida.monto_traspaso)
 
@@ -119,12 +119,7 @@ export const entes_traspasosCard = ({
 
   let validarFooter = () => {
     if (data.status === 0) {
-      return `  <button class='btn btn-danger' id='btn-rechazar'>
-      Rechazar
-    </button>
-    <button class='btn btn-primary' id='btn-aceptar'>
-      Aceptar
-    </button>`
+      return `<span class='btn btn-warning'>Pendiente</span>>`
     }
     if (data.status === 1) {
       return `<span class='btn btn-success'>Aceptado</span>`
@@ -182,32 +177,6 @@ export const entes_traspasosCard = ({
   function validateClick(e) {
     if (e.target.dataset.close) {
       closeCard(cardElement)
-    }
-    if (e.target.id === 'btn-aceptar') {
-      confirmNotification({
-        type: NOTIFICATIONS_TYPES.send,
-        message: '¿Está seguro de aceptar el traspaso?',
-        successFunction: async () => {
-          let res = await aceptarTraspaso(data.id)
-          if (res.success) {
-            closeCard(cardElement)
-            loadTraspasosTable(ejercicioFiscal.id)
-          }
-        },
-      })
-    }
-    if (e.target.id === 'btn-rechazar') {
-      confirmNotification({
-        type: NOTIFICATIONS_TYPES.send,
-        message: '¿Está seguro de rechazar el traspaso?',
-        successFunction: async () => {
-          let res = await rechazarTraspaso(data.id)
-          if (res.success) {
-            closeCard(cardElement)
-            loadTraspasosTable(ejercicioFiscal.id)
-          }
-        },
-      })
     }
   }
 
