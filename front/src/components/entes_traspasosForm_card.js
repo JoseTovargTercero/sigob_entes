@@ -39,6 +39,14 @@ export const entes_traspasosForm_card = async ({
     id_ejercicio: ejercicioFiscal.id,
   })
 
+  if (distribucionesSecretarias.length < 1) {
+    toastNotification({
+      type: NOTIFICATIONS_TYPES.fail,
+      message: 'Solamente las secretarías pueden realizar traspasos',
+    })
+    return
+  }
+
   // console.log(distribucionesSecretarias)
 
   let ultimosRegistros = await ultimosTraspasos(ejercicioFiscal.id)
