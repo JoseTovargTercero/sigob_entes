@@ -744,7 +744,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 if (isset($data["accion"])) {
     switch ($data["accion"]) {
         case 'registrar':
-            if (isset($data["info"]["n_orden"], $data["info"]["id_ejercicio"], $data["info"]["monto_total"], $data["añadir"], $data["restar"])) {
+            if (isset($data["info"]["id_ejercicio"], $data["info"]["monto_total"], $data["añadir"], $data["restar"])) {
                 // Se pasa todo el array $data a la función registrarTraspasoPartida
                 echo registrarTraspasoPartida($data);
             } else {

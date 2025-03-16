@@ -50,7 +50,7 @@ export async function loadTraspasosTable(id_ejercicio) {
   let data = datosOrdenados.map((solicitud) => {
     return {
       tipo: Number(solicitud.tipo) === 1 ? 'Traslado' : 'Traspaso',
-      numero_orden: solicitud.n_orden,
+      numero_orden: solicitud.n_orden ? solicitud.n_orden : 'Pendiente',
 
       monto: separadorLocal(solicitud.monto_total),
       fecha: solicitud.fecha,

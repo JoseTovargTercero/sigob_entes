@@ -1,5 +1,3 @@
-import { aceptarTraspaso, rechazarTraspaso } from '../api/entes_traspasos.js'
-import { loadTraspasosTable } from '../controllers/entes_traspasosTable.js'
 import {
   confirmNotification,
   hideLoader,
@@ -8,7 +6,7 @@ import {
   toastNotification,
   validateInput,
 } from '../helpers/helpers.js'
-import { NOTIFICATIONS_TYPES } from '../helpers/types.js'
+
 const d = document
 
 export const entes_traspasosCard = ({
@@ -107,7 +105,7 @@ export const entes_traspasosCard = ({
           <th class="w-10">Cambio</th>
           <th class="w-50">Monto Final</th>
         </thead>
-        <tbody>${filasDisminuir.join('')}${filasAumentar.join('')}</tbody>
+        <tbody>${filasAumentar.join('')}${filasDisminuir.join('')}</tbody>
       </table>`
 
     return `<div id='card-body-part-3' class="slide-up-animation">
@@ -119,7 +117,7 @@ export const entes_traspasosCard = ({
 
   let validarFooter = () => {
     if (data.status === 0) {
-      return `<span class='btn btn-warning'>Pendiente</span>>`
+      return `<span class='btn btn-warning'>Pendiente</span>`
     }
     if (data.status === 1) {
       return `<span class='btn btn-success'>Aceptado</span>`
@@ -146,7 +144,9 @@ export const entes_traspasosCard = ({
           </div>
           <div class='card-body'>
           
-          <h6>Numero de documento: <b>${data.n_orden}</b></h6>
+          <h6>Numero de documento: <b>${
+            data.n_orden ? data.n_orden : 'Pendiente'
+          }</b></h6>
           <h6>Fecha de creación del documento: <b>${data.fecha
             .split('-')
             .reverse()

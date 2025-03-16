@@ -21,13 +21,13 @@ export const entes_traspasosForm_card = async ({
   ejercicioFiscal,
   recargarEjercicio,
 }) => {
-  let fieldList = { codigo: '', tipo: '' }
+  let fieldList = { tipo: '' }
   let fieldListErrors = {
-    codigo: {
-      value: true,
-      message: 'Código inválido',
-      type: 'textarea',
-    },
+    // codigo: {
+    //   value: true,
+    //   message: 'Código inválido',
+    //   type: 'textarea',
+    // },
     tipo: {
       value: true,
       message: 'Tipo inválido',
@@ -49,7 +49,7 @@ export const entes_traspasosForm_card = async ({
 
   // console.log(distribucionesSecretarias)
 
-  let ultimosRegistros = await ultimosTraspasos(ejercicioFiscal.id)
+  // let ultimosRegistros = await ultimosTraspasos(ejercicioFiscal.id)
 
   let informacion = {
     añadir: [],
@@ -88,20 +88,7 @@ export const entes_traspasosForm_card = async ({
                 </select>
               </div>
             </div>
-            <div class='col'>
-              <div class='form-group'>
-                <label for='codigo' class='form-label'>
-                  Código para traspaso
-                </label>
-                <input
-                  class='form-control traslado-input'
-                  type='text'
-                  name='codigo'
-                  id='codigo'
-                  placeholder='Código de traspaso'
-                />
-              </div>
-            </div>
+           
           </div>
         </form>
         <h5 class='text-center text-blue-600 mb-4'>Partidas a aumentar</h5>
@@ -118,6 +105,21 @@ export const entes_traspasosForm_card = async ({
         </div>
       </div>`
   }
+
+  // ;<div class='col'>
+  //   <div class='form-group'>
+  //     <label for='codigo' class='form-label'>
+  //       Código para traspaso
+  //     </label>
+  //     <input
+  //       class='form-control traslado-input'
+  //       type='text'
+  //       name='codigo'
+  //       id='codigo'
+  //       placeholder='Código de traspaso'
+  //     />
+  //   </div>
+  // </div>
 
   const partidasRestar = () => {
     return `<div id='card-body-part-2' class="slide-up-animation">
@@ -206,7 +208,7 @@ export const entes_traspasosForm_card = async ({
           <th class="w-10">Cambio</th>
           <th class="w-50">Monto Final</th>
         </thead>
-        <tbody>${filasDisminuir.join('')}${filasAumentar.join('')}</tbody>
+        <tbody>${filasAumentar.join('')}${filasDisminuir.join('')}</tbody>
       </table>`
 
     let tablaDisminuir = ` <table class="table table-xs">
@@ -258,18 +260,7 @@ export const entes_traspasosForm_card = async ({
               </h6>
             </div>
           </div>
-          <div class='row'>
-            <div class='col'>
-              <h6>
-               Ultima orden: <b id='ultima-orden'>Seleccione un tipo</b>
-              </h6>
-            </div>
-            <div class='col'>
-              <h6>
-                Se guardará como: <b id='label-codigo'>Seleccione un tipo</b>
-              </h6>
-            </div>
-          </div>
+         
         </div>
         ${informacionPrincipal()}
       </div>
@@ -429,34 +420,34 @@ export const entes_traspasosForm_card = async ({
       }
     }
 
-    if (e.target.id === 'tipo') {
-      let ultimaOrden = d.getElementById('ultima-orden')
-      let labelCodigo = d.getElementById('label-codigo')
-      if (Number(e.target.value) === 1) {
-        if (ultimosRegistros.ultimo_traslado === null) {
-          ultimaOrden.textContent = 'No hay registro de traslado'
-          labelCodigo.textContent = ''
-        } else {
-          ultimaOrden.textContent = ultimosRegistros.ultimo_traslado
-          labelCodigo.textContent = `T${ejercicioFiscal.ano}`
-        }
-      }
+    // if (e.target.id === 'tipo') {
+    //   let ultimaOrden = d.getElementById('ultima-orden')
+    //   let labelCodigo = d.getElementById('label-codigo')
+    //   if (Number(e.target.value) === 1) {
+    //     if (ultimosRegistros.ultimo_traslado === null) {
+    //       ultimaOrden.textContent = 'No hay registro de traslado'
+    //       labelCodigo.textContent = ''
+    //     } else {
+    //       ultimaOrden.textContent = ultimosRegistros.ultimo_traslado
+    //       labelCodigo.textContent = `T${ejercicioFiscal.ano}`
+    //     }
+    //   }
 
-      if (Number(e.target.value) === 2) {
-        if (ultimosRegistros.ultimo_traspaso === null) {
-          ultimaOrden.textContent = 'No hay registro de traspasos'
-          labelCodigo.textContent = ''
-        } else {
-          ultimaOrden.textContent = ultimosRegistros.ultimo_traspaso
-          labelCodigo.textContent = ultimosRegistros.ultimo_traspaso
-        }
-      }
+    //   if (Number(e.target.value) === 2) {
+    //     if (ultimosRegistros.ultimo_traspaso === null) {
+    //       ultimaOrden.textContent = 'No hay registro de traspasos'
+    //       labelCodigo.textContent = ''
+    //     } else {
+    //       ultimaOrden.textContent = ultimosRegistros.ultimo_traspaso
+    //       labelCodigo.textContent = ultimosRegistros.ultimo_traspaso
+    //     }
+    //   }
 
-      if (!e.target.textContent) {
-        ultimaOrden.textContent = 'Correlativo de última orden...'
-        labelCodigo.textContent = ''
-      }
-    }
+    //   if (!e.target.textContent) {
+    //     ultimaOrden.textContent = 'Correlativo de última orden...'
+    //     labelCodigo.textContent = ''
+    //   }
+    // }
 
     fieldList = validateInput({
       target: e.target,
@@ -472,7 +463,7 @@ export const entes_traspasosForm_card = async ({
   async function enviarInformacion() {
     let mappedInformacion = {
       info: {
-        n_orden: fieldList.codigo,
+        // n_orden: fieldList.codigo,
         id_ejercicio: ejercicioFiscal.id,
         monto_total: montos.totalSumar,
         tipo: fieldList.tipo,
@@ -851,7 +842,7 @@ export const entes_traspasosForm_card = async ({
         partida.partida
       } - ${partida.ente_nombre[0].toUpperCase()}${partida.ente_nombre
         .substr(1, partida.ente_nombre.length - 1)
-        .toLowerCase()}</option>`
+        .toLowerCase()} - ${partida.partida_descripcion}</option>`
       options.push(opt)
     })
 
@@ -872,8 +863,6 @@ export const entes_traspasosForm_card = async ({
           (partida) =>
             Number(partida.id_distribucion) === Number(result.selected)
         )
-
-        console.log(result.selected, partida.id_distribucion)
 
         distribucionMontoActual.value = partida
           ? `${separadorLocal(partida.monto)} Bs`
