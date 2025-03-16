@@ -163,11 +163,11 @@ function registrarTraspasoPartida($data)
                 if (!$esValido) {
                     throw new Exception("Un traslado no puede ser mayor al 20 por ciento de la agrupación de las partidas seleccionadas");
                 } else {
-                    $nOrden = "T" . $anoEjercicio . "-" . $info['n_orden'];
+                    $nOrden = "";
                 }
             } elseif ($tipo == 2) {
                 if (!$esValido) {
-                    $nOrden = $info['n_orden'];
+                    $nOrden = "";
                 } else {
                     throw new Exception("Un Traspaso no puede ser menor al 20 por ciento de la agrupación de las partidas seleccionadas");
                 }
