@@ -423,7 +423,7 @@ class AsignacionController
                 WHERE ed.tipo_ente = 'J'";
 
             if (!$todo) {
-                $sql += " AND ed.juridico = 0";
+                $sql .= " AND ed.juridico = 0";
             }
             $stmt = $this->conexion->prepare($sql);
             $stmt->execute();
