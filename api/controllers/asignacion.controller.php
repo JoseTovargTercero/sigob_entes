@@ -414,13 +414,17 @@ class AsignacionController
 
 
 
-    public function consultarAsignacionesSecretaria($idEjercicio)
+    public function consultarAsignacionesSecretaria($idEjercicio, $todo)
     {
         try {
             // Consulta principal para obtener los entes_dependencias que cumplen con las condiciones
             $sql = "SELECT ed.id AS id_ente, ed.partida, ed.ente_nombre, ed.tipo_ente, ed.sector, ed.programa, ed.proyecto, ed.actividad
                 FROM entes_dependencias ed
-                WHERE ed.tipo_ente = 'J' AND ed.juridico = 0";
+                WHERE ed.tipo_ente = 'J'";
+
+            if (!$todo) {
+                $sql += " AND ed.juridico = 0";
+            }
             $stmt = $this->conexion->prepare($sql);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -648,15 +652,4 @@ class AsignacionController
             return ['error' => $e->getMessage()];
         }
     }
-
-
-
-
-
 }
-
-
-
-
-
-?>

@@ -52,7 +52,6 @@ function validateRoutes($path, $method)
                     $paramsIdEjercicio = isset($params['id_ejercicio']) ? $params['id_ejercicio'] : null;
                     $dataRequest = ['accion' => 'consulta', 'id_ejercicio' => $paramsIdEjercicio];
                     $resultado = $solicutudesController->consultarSolicitudes($dataRequest);
-
                 }
 
                 if (array_key_exists('error', $resultado)) {
@@ -115,16 +114,16 @@ function validateRoutes($path, $method)
 
 
             case 'DELETE':
-            // if ($accion === 'rechazar') {
-            //     // Acción para rechazar la solicitud
-            //     return rechazarSolicitud($data);
-            // }
+                // if ($accion === 'rechazar') {
+                //     // Acción para rechazar la solicitud
+                //     return rechazarSolicitud($data);
+                // }
 
-            // if ($accion === 'delete') {
-            //     // Acción para eliminar la solicitud
-            //     return eliminarSolicitudozavo($data);
-            // }
-            // break;
+                // if ($accion === 'delete') {
+                //     // Acción para eliminar la solicitud
+                //     return eliminarSolicitudozavo($data);
+                // }
+                // break;
 
             default:
                 return ['status' => 200, 'error' => 'Método no permitido'];
@@ -185,12 +184,15 @@ function validateRoutes($path, $method)
                 if ($accion === 'consultar_secretarias' && isset($data['id_ejercicio'])) {
 
                     $dataRequest = $data["id_ejercicio"];
-                    $resultado = $asignacionController->consultarAsignacionesSecretaria($dataRequest);
+
+                    $todo = isset($data['todo']) ? $data['todo'] : false;
+
+
+                    $resultado = $asignacionController->consultarAsignacionesSecretaria($dataRequest, $todo);
                 }
 
                 if ($accion === 'consultar_disponibilidad') {
                     $resultado = $asignacionController->consultarDisponibilidad($data['distribuciones'], $data['id_ejercicio']);
-
                 }
 
                 if ($accion === 'actualizar_distribucion') {
@@ -219,23 +221,23 @@ function validateRoutes($path, $method)
 
             case 'DELETE':
 
-            // $resultado = [];
-            // $data = json_decode(file_get_contents('php://input'), true);
+                // $resultado = [];
+                // $data = json_decode(file_get_contents('php://input'), true);
 
-            // if (isset($data['id'])) {
-            //     // Acción para eliminar una asignación
-            //     $dataRequest = ['id' => $data['id']];
-            //     $resultado = $asignacionController->eliminarAsignacionEnte($dataRequest);
-            // } else {
-            //     $resultado = ['status' => 200, 'error' => 'Faltan datos para eliminar'];
-            // }
+                // if (isset($data['id'])) {
+                //     // Acción para eliminar una asignación
+                //     $dataRequest = ['id' => $data['id']];
+                //     $resultado = $asignacionController->eliminarAsignacionEnte($dataRequest);
+                // } else {
+                //     $resultado = ['status' => 200, 'error' => 'Faltan datos para eliminar'];
+                // }
 
-            // if (array_key_exists('error', $resultado)) {
-            //     $resultado = ['status' => 200, 'error' => $resultado['error']];
-            // } else {
-            //     $resultado = ['status' => 200, 'success' => $resultado['success']];
-            // }
-            // return $resultado;
+                // if (array_key_exists('error', $resultado)) {
+                //     $resultado = ['status' => 200, 'error' => $resultado['error']];
+                // } else {
+                //     $resultado = ['status' => 200, 'success' => $resultado['success']];
+                // }
+                // return $resultado;
 
             default:
                 return ['status' => 200, 'error' => 'Método no permitido'];
@@ -314,5 +316,3 @@ echo json_encode($json, http_response_code($json['status']));
 //     http_response_code(405);
 //     echo json_encode(['error' => 'Method not allowed']);
 // }
-
-
